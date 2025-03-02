@@ -8,15 +8,41 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 80%;
+  width: 100%;
   margin: auto;
 }
+.dark {
+  background-color: black;
+  color: white;
+}
+.light {
+  background-color: white;
+  color: black;
+}
 .navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   height: 100px;
+  width: 70%;
+  margin: auto;
+  div {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
 }
 .content {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 70%;
+  height: 100%;
+  margin: auto;
 }
+
+//  creame #fefae0
+// tan #dda15e
+// dark green #283618
+// forest green #606c38
