@@ -23,14 +23,19 @@ function App() {
       localStorage.setItem("theme", "light");
     }
   }, [toggleDarkMode]);
-
+  // const wrapper = document.getElementById("wrapper");
+  // const isDark = wrapper?.classList[1] == "dark";
+  // console.log(isDark);
   return (
     <BrowserRouter>
-      <div id="wrapper" className={`app ${toggleDarkMode ? "light" : "dark"}`}>
+      <div id="wrapper" className={`app ${toggleDarkMode ? "" : "dark"}`}>
         <nav className="navbar">
           <div className="nav-left">left {toggleDarkMode}</div>
           <div className="nav-right">
-            <button onClick={() => setToggleDarkMode(!toggleDarkMode)}>
+            <button
+              onClick={() => setToggleDarkMode(!toggleDarkMode)}
+              className="button"
+            >
               {" "}
               {toggleDarkMode ? (
                 <MdDarkMode size={"1.2rem"} />
