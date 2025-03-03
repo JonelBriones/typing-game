@@ -1,0 +1,150 @@
+{
+  "sentences": [
+    {
+      "type": "Descriptive",
+      "sentence": "The waves crashed against the rugged cliffs, sending salty mist into the air as seagulls cried above, soaring effortlessly through the golden sky painted by the setting sun, casting long shadows across the empty shore, where footprints faded slowly with each retreating wave, lost to the rhythm of the ocean.",
+      "total": 50
+    },
+    {
+      "type": "Narrative",
+      "sentence": "Emily wandered through the ancient library, her fingers brushing dusty book spines, eyes scanning forgotten stories, searching for answers hidden within yellowed pages. A mysterious whisper echoed softly, sending chills down her spine as she turned, realizing she was completely alone—except for the flickering candlelight casting eerie moving shadows.",
+      "total": 50
+    },
+    {
+      "type": "Humorous",
+      "sentence": "I tried cooking dinner, but somehow set off the smoke alarm, scared the dog, melted a spatula, and ended up ordering pizza while pretending everything went perfectly fine, except for the part where I nearly burned water, proving once again that I should never, ever be allowed near a stove.",
+      "total": 50
+    },
+    {
+      "type": "Philosophical",
+      "sentence": "Every moment we live is both fleeting and eternal, existing only as memories once they pass. We chase time, yet time remains indifferent, moving forward without concern. Happiness, sorrow, success, and failure are merely pieces of a larger puzzle, forming the ever-evolving picture of life we struggle to understand.",
+      "total": 50
+    },
+    {
+      "type": "Absurd",
+      "sentence": "A talking pineapple wearing sunglasses rode a unicycle through downtown, humming an old jazz tune while tossing glitter into the air, causing total confusion among pedestrians who questioned reality, their sanity, and whether pineapples had secret lives. Meanwhile, a banana wearing roller skates cheered from the sidewalk, applauding wildly.",
+      "total": 50
+    },
+    {
+      "total": 25,
+      "type": "Descriptive",
+      "sentence": "The golden sun dipped below the horizon, painting the sky with brilliant hues of orange, pink, and purple, as waves gently kissed the sandy shoreline in harmony."
+    },
+    {
+      "total": 25,
+      "type": "Narrative",
+      "sentence": "Sarah wandered through the dense forest, listening to the rustling leaves and chirping birds, while sunlight filtered through the towering trees, creating beautiful patterns on the ground."
+    },
+    {
+      "total": 25,
+      "type": "Humorous",
+      "sentence": "I tried baking a cake last night, but somehow ended up with a science experiment that exploded, leaving my kitchen covered in flour and frosting."
+    },
+    {
+      "total": 25,
+      "type": "Philosophical",
+      "sentence": "Time moves forward without hesitation, carrying our dreams and regrets, yet we often fail to appreciate the moments that truly define our journey through life itself."
+    },
+    {
+      "total": 25,
+      "type": "Scientific",
+      "sentence": "The process of photosynthesis allows plants to convert sunlight, carbon dioxide, and water into energy, producing oxygen as a byproduct, which sustains life on our planet Earth."
+    },
+    {
+      "total": 25,
+      "type": "Inspirational",
+      "sentence": "Believe in yourself, embrace challenges with confidence, and always remember that perseverance, hard work, and passion are the keys to unlocking your fullest potential in life."
+    },
+    {
+      "total": 25,
+      "type": "Poetic",
+      "sentence": "Moonlight dances upon silver waves, whispering secrets to the night sky, as the cool breeze carries dreams, drifting softly through the endless expanse of silent eternity."
+    },
+    {
+      "total": 25,
+      "type": "Mystery",
+      "sentence": "The old mansion’s door creaked open slowly, revealing a dust-covered hallway where faint whispers echoed, hinting at secrets long forgotten and mysteries waiting to be unraveled."
+    },
+    {
+      "total": 25,
+      "type": "Instructional",
+      "sentence": "To assemble the bookshelf, first align the wooden panels, secure them with screws using a drill, attach the shelves, and finally ensure stability before placing books."
+    },
+    {
+      "total": 25,
+      "type": "Absurd",
+      "sentence": "A purple elephant wearing sunglasses and roller skates zoomed past me on the sidewalk, humming a catchy tune while juggling bananas with its flexible trunk."
+    },
+    {
+      "total": 10,
+      "type": "Descriptive",
+      "sentence": "Golden leaves danced in the wind beneath a cloudy sky."
+    },
+    {
+      "total": 10,
+      "type": "Narrative",
+      "sentence": "Jake hurried through the alley, chasing the shadowy mysterious figure."
+    },
+    {
+      "total": 10,
+      "type": "Humorous",
+      "sentence": "My cat stole my sandwich and acted like nothing happened."
+    },
+    {
+      "total": 10,
+      "type": "Philosophical",
+      "sentence": "Life is a journey, not a destination—embrace every moment."
+    },
+    {
+      "total": 10,
+      "type": "Scientific",
+      "sentence": "Water boils at one hundred degrees Celsius under normal atmospheric pressure."
+    },
+    {
+      "type": "Inspirational",
+      "sentence": "Dream big, work hard, and success will eventually find you."
+    },
+    {
+      "total": 10,
+      "type": "Poetic",
+      "sentence": "Stars twinkle softly, whispering secrets into the silent midnight sky."
+    },
+    {
+      "total": 10,
+      "type": "Mystery",
+      "sentence": "A hidden door revealed an ancient book covered in dust."
+    },
+    {
+      "total": 10,
+      "type": "Instructional",
+      "sentence": "Mix the ingredients thoroughly before baking at three hundred degrees."
+    },
+    {
+      "total": 10,
+      "type": "Absurd",
+      "sentence": "A chicken wearing sunglasses danced happily on the moon’s surface."
+    }
+  ],
+  "quotes": [
+    {
+      "type": "Inspirational",
+      "quote": "Success is not measured by wealth, but by resilience, passion, and growth. Challenges will test you, failures will shape you, but perseverance defines you. Keep moving forward, trust yourself, and embrace the journey. Every step you take brings new lessons, opportunities, and strength.",
+      "total": 50
+    },
+    {
+      "type": "Philosophical",
+      "quote": "Time is a river, always flowing, never pausing. We chase moments, hold memories, and fear the unknown. Yet, the present is all we truly possess. Embrace now, cherish existence, and understand that each second is a gift, fleeting yet powerful, shaping everything we become.",
+      "total": 50
+    },
+    {
+      "type": "Humorous",
+      "quote": "Life is like a stubborn cat—unpredictable, independent, and occasionally chaotic. Just when you think you’re in control, it knocks something over, stares at you smugly, and walks away. Embrace the absurdity, laugh at the chaos, and remember that sometimes, things just happen for absolutely no reason.",
+      "total": 50
+    },
+    {
+      "type": "Poetic",
+      "quote": "Winds whisper through golden fields, dancing under a sapphire sky. Sunlight kisses the earth, shadows stretch, and rivers hum forgotten lullabies. Time lingers, breathes, and fades gently into twilight’s embrace. Stars awaken, whispering silent dreams, while moonlight weaves silver threads across midnight’s delicate and endless canvas.",
+      "total": 50
+    }
+  ]
+}

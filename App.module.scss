@@ -1,6 +1,15 @@
+// dar green #31572c
+//dark green #283618
 :root {
   --bg-color: white;
-  --text-color: black;
+  --text-color: #121212;
+  --button-bg: black;
+  --button-text: white;
+}
+.dark {
+  --bg-color: #1e1e1e;
+  --text-color: white;
+  --options-bg-color: gray;
 }
 
 * {
@@ -9,6 +18,7 @@
   padding: 0;
   font-family: "Gill Sans", sans-serif;
 }
+
 .app {
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -18,16 +28,6 @@
   width: 100%;
   margin: auto;
   transition: background-color 300ms ease-in-out;
-}
-.dark {
-  background-color: black;
-  color: white;
-}
-.button {
-  color: white;
-  &:hover {
-    transition: all 200ms ease-in-out;
-  }
 }
 
 .navbar {
@@ -42,6 +42,25 @@
     align-items: center;
     gap: 2rem;
   }
+}
+.navbutton {
+  display: block;
+  cursor: pointer;
+  padding: 1rem;
+  background-color: transparent;
+  border: none;
+  color: rgb(170, 170, 170);
+  margin: auto;
+}
+.navbutton {
+  // color: white;
+  &:hover {
+    transition: all 200ms ease-in-out;
+  }
+}
+button {
+  // color: var(--text-color);
+  cursor: pointer;
 }
 .content {
   flex: 1;

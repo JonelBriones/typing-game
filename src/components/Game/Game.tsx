@@ -1,8 +1,9 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { MdRefresh } from "react-icons/md";
-
+import data from "../../../data.json";
 import styles from "./Game.module.scss";
-const Game = () => {
+console.log(data);
+const Game = ({ toggleDarkMode }: any) => {
   const [randomWord, setRandomWord] = useState(
     "the apple fox blew the horse away"
   );
@@ -16,12 +17,41 @@ const Game = () => {
   const [completedWord, setCompletedWord] = useState(0);
   const [extraInputs, setExtraInputs] = useState("");
   const [disableBackspaceIdx, setDisableBackspaceIdx] = useState(0);
-  const [loadingWords, setLoadingWords] = useState(true);
+  const [loading, setLoading] = useState(true);
   const wrapper = document.getElementById("wrapper");
   const isDark = wrapper?.classList[1] == "dark";
 
+  const modes = ["time", "words", "quote"];
+  const durations = [15, 30, 60];
+  const totalWords = [10, 25, 50, 100];
+  const [toggleMode, setToggleMode] = useState("words");
+  const [toggleDuration, setToggleDuration] = useState(15);
+  const [timer, setTimer] = useState(toggleDuration);
+  const [toggleTotalWords, setToggleTotalWords] = useState(10);
+  const [startTimer, setStartTimer] = useState(false);
+  async function fetchSentences(total?: number, duration?: number) {
+    let max = total == 50 ? 5 : 10;
+    let random = Math.floor(Math.random() * max);
+    console.log("total", total);
+    let sentences = data.sentences.filter((data) => data.total == total);
+    let randomSentence = sentences[random];
+
+    setRandomWord(randomSentence.sentence);
+    setWord(randomSentence.sentence);
+  }
+  function resetTypeBoard() {
+    setInputValue("");
+    setGameOver(false);
+    setDisableBackspaceIdx(0);
+    setCompletedWord(0);
+  }
+
   function handleOnchangeInput(e) {
     let input = e.target.value;
+
+    if (input.length == 1 && toggleMode == "time") {
+      setStartTimer(true);
+    }
 
     if (input.length < disableBackspaceIdx || gameOver) return;
 
@@ -58,68 +88,97 @@ const Game = () => {
   }
 
   useEffect(() => {
+    if (startTimer) {
+      let timer = toggleDuration;
+      const intervalId = setInterval(() => {
+        timer--;
+        console.log("counter: ", timer);
+        setTimer(timer);
+        if (timer < 0) {
+          setTimer(toggleDuration);
+          setStartTimer(false);
+          clearInterval(intervalId);
+        }
+      }, 1000);
+    }
+  }, [startTimer]);
+
+  useEffect(() => {
     if (inputRef.current) {
       inputRef?.current.focus();
     }
   }, [inputRef, inputRef?.current]);
 
-  const modes = ["time", "words", "quote", "zen"];
-  const durations = ["15", "30", "60"];
-
-  async function fetchWords() {
-    // let words
-    let length = Math.floor(Math.random() * (50 - 1 + 1) + 1);
-    const res = await fetch(
-      `https://random-word-api.herokuapp.com/word?number=${10}`
-    ).then((res) => res.json());
-
-    console.log(res);
-    console.log(res.join(" "));
-    setRandomWord(res.join(" "));
-    setWord(res.join(" "));
-  }
-
-  useEffect(() => {
-    // if (loadingWords) {
-    //   fetchWords();
-    // }
-    // setLoadingWords(false);
-    console.log(randomWord);
-  }, []);
-
   return (
-    <div className={`${styles.container}`}>
+    <div className={`${styles.container}`} onClick={inputRef?.current?.focus()}>
       <div className={`${styles.modes}`}>
         {modes.map((mode) => (
           <button
-            className={`button ${styles.option}`}
+            className={`${styles.optionBtn} ${
+              toggleMode == mode && styles.toggle
+            }`}
             key={mode}
-            onClick={fetchWords}
+            onClick={() => {
+              resetTypeBoard();
+              fetchSentences(toggleTotalWords);
+              setToggleMode(mode);
+            }}
           >
             {mode}
           </button>
         ))}
-        {durations.map((duration) => (
-          <button className={`button ${styles.option}`} key={duration}>
-            {duration}
-          </button>
-        ))}
+        {toggleMode == "time" &&
+          durations.map((duration) => (
+            <button
+              className={`${styles.optionBtn} ${
+                duration == toggleDuration && styles.toggle
+              }`}
+              key={duration}
+              onClick={() => {
+                resetTypeBoard();
+                fetchSentences(undefined, duration);
+                setToggleDuration(duration);
+              }}
+            >
+              {duration}
+            </button>
+          ))}
+        {toggleMode == "words" &&
+          totalWords.map((total) => (
+            <button
+              className={`${styles.optionBtn} ${
+                total == toggleTotalWords && styles.toggle
+              }`}
+              key={total}
+              onClick={() => {
+                resetTypeBoard();
+                fetchSentences(total, undefined);
+                setToggleTotalWords(total);
+              }}
+            >
+              {total}
+            </button>
+          ))}
       </div>
+
+      {/* GAME CONTAINER */}
+
       <div className={`${styles.game}`}>
         {gameOver && <p>Success</p>}
+
+        <div className={`${styles.timer}`}>
+          {startTimer && toggleMode == "time" && timer}
+        </div>
+
         {!toggleTypeCursor && (
           <div className={styles.gameFocus}>
             <p>click here or press any key to focus</p>
           </div>
         )}
-        <div
-          id="cursor"
-          onClick={inputRef?.current?.focus()}
-          className={`${styles.typeFieldContainer} ${
-            !toggleTypeCursor && styles.blur
-          }`}
-        >
-          <p className={`${styles.words}`}>
+        <div className={styles.typingContainer}>
+          <div
+            className={`${styles.words} ${!toggleTypeCursor && styles.blur}`}
+          >
             {word.split("").map((letter, idx) =>
               letter == " " ? (
                 <span
@@ -168,9 +227,9 @@ const Game = () => {
                   </span>
                 </Fragment>
               ))}
-          </p>
+          </div>
           <input
-            autoComplete="false"
+            autoComplete="off"
             spellCheck="false"
             id="gameTypeInput"
             ref={inputRef}
@@ -180,19 +239,11 @@ const Game = () => {
             onFocus={() => setToggleTypeCursor(true)}
             // onBlur={() => setToggleTypeCursor(false)}
           />
-        </div>
 
-        <button>
-          <MdRefresh
-            size={"1.5rem"}
-            onClick={() => {
-              setInputValue("");
-              setGameOver(false);
-              setDisableBackspaceIdx(0);
-              setCompletedWord(0);
-            }}
-          />
-        </button>
+          <button className={`${styles.resetBtn}`}>
+            <MdRefresh size={"1.5rem"} onClick={resetTypeBoard} />
+          </button>
+        </div>
       </div>
       <div className={`${styles.footer}`}>bottom container</div>
     </div>

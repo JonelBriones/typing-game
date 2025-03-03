@@ -1,0 +1,24 @@
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --button-bg: #007bff;
+  --button-text: white;
+  --background-options: white;
+  --text-options: #000000;
+}
+
+/* Dark mode variables */
+body.dark {
+  --bg-color: #2d2d2dd1;
+  --text-color: #ffffff;
+  --button-bg: #4caf50;
+  --button-text: white;
+  --background-options: #1e1e1e;
+  --text-options: #fefae0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

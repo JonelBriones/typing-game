@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import "./App.scss";
+import styles from "../App.module.scss";
+import "./index.scss";
 import Game from "./components/Game/Game";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
 import { IoSunnyOutline } from "react-icons/io5";
-
 function App() {
   const preferenceTheme = () => {
     const preference = localStorage.getItem("theme");
@@ -22,35 +22,37 @@ function App() {
       document.body.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
+    console.log(localStorage.getItem("theme"));
   }, [toggleDarkMode]);
-  // const wrapper = document.getElementById("wrapper");
-  // const isDark = wrapper?.classList[1] == "dark";
-  // console.log(isDark);
+
   return (
     <BrowserRouter>
-      <div id="wrapper" className={`app ${toggleDarkMode ? "" : "dark"}`}>
-        <nav className="navbar">
+      <div id="wrapper" className={styles.app}>
+        <nav className={styles.navbar}>
           <div className="nav-left">left {toggleDarkMode}</div>
-          <div className="nav-right">
+          <div className={`${styles.navright}`}>
             <button
               onClick={() => setToggleDarkMode(!toggleDarkMode)}
-              className="button"
+              className={`${styles.navbutton}`}
             >
               {" "}
               {toggleDarkMode ? (
-                <MdDarkMode size={"1.2rem"} />
-              ) : (
                 <IoSunnyOutline size={"1.2rem"} />
+              ) : (
+                <MdDarkMode size={"1.2rem"} />
               )}
             </button>
-            <button>
+            <button className={styles.navbutton}>
               <FaUser size={"1.2rem"} />
             </button>
           </div>
         </nav>
-        <div className="content">
+        <div className={styles.content}>
           <Routes>
-            <Route path="/" element={<Game />} />
+            <Route
+              path="/"
+              element={<Game toggleDarkMode={toggleDarkMode} />}
+            />
           </Routes>
         </div>
       </div>
