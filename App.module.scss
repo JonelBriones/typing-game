@@ -1,16 +1,5 @@
 // dar green #31572c
 //dark green #283618
-:root {
-  --bg-color: white;
-  --text-color: #121212;
-  --button-bg: black;
-  --button-text: white;
-}
-.dark {
-  --bg-color: #1e1e1e;
-  --text-color: white;
-  --options-bg-color: gray;
-}
 
 * {
   box-sizing: border-box;
@@ -20,8 +9,8 @@
 }
 
 .app {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  // background-color: var(--bg-color);
+  // color: var(--text-color);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -58,10 +47,7 @@
     transition: all 200ms ease-in-out;
   }
 }
-button {
-  // color: var(--text-color);
-  cursor: pointer;
-}
+
 .content {
   flex: 1;
   display: flex;
