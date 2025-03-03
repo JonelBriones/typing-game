@@ -1,10 +1,10 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import testRoute from "./server/routes/testRoute.js";
+import testRoute from "./routes/testRoute.js";
 dotenv.config();
 
-import connectDB from "./server/config/database.js";
+import connectDB from "./config/database.js";
 
 const app = express();
 
@@ -24,3 +24,4 @@ const PORT = process.env.PORT || 3000;
 // mongoose.connect(process.env.MONGO_URI)
 
 app.listen(PORT, () => console.log("Server running on:", PORT));
+export default app;
