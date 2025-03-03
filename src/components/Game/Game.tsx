@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from "react";
 import { MdRefresh } from "react-icons/md";
 import data from "../../../data.json";
 import styles from "./Game.module.scss";
+import { saveTestResult } from "../../services/api.js";
 console.log(data);
 const Game = ({ toggleDarkMode }: any) => {
   const [randomWord, setRandomWord] = useState(
@@ -30,37 +31,127 @@ const Game = ({ toggleDarkMode }: any) => {
   const [startTimer, setStartTimer] = useState(false);
 
   // SCORE TRACKING
-  const [startTime, setStartTime] = useState<number | null>(null);
+  const [startTime, setStartTime] = useState<number | undefined>(undefined);
   const [wordsTyped, setWordsTyped] = useState(0);
+  const [timeElapsedDisplay, setTimeElapsedDisplay] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [wpm, setWpm] = useState(0);
+  const [raw, setRawWpm] = useState(0);
+  type Test = {
+    user: string;
+    seconds: number;
+    words: number;
+    wpm: number;
+    raw: number;
+    language: string;
+  };
+  const user = "ijonel906";
+  const language = "English";
+  const [testData, setTestData] = useState<Test>({
+    user,
+    seconds: timeElapsed,
+    words: toggleTotalWords,
+    wpm,
+    raw,
+    language: "",
+  });
+
+  async function saveTest() {
+    setLoading(true);
+    try {
+      const result = await saveTestResult(testData);
+      console.log("test saved", result);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error saving test result", error);
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (gameOver) {
+      handleUpdateTestData();
+    }
+  }, [gameOver]);
+  useEffect(() => {
+    if (testData?.seconds > 0) {
+      saveTest();
+    }
+  }, [testData]);
+  function handleUpdateTestData() {
+    setTestData({
+      user,
+      seconds: timeElapsed,
+      words: toggleTotalWords,
+      wpm: wpm,
+      raw: raw,
+      language,
+    });
+  }
 
   async function fetchSentences(total?: number, duration?: number) {
-    let max = total == 50 ? 5 : 10;
-    let random = Math.floor(Math.random() * max);
+    // let max = total == 50 ? 5 : 10;
+    let random = () => Math.floor(Math.random() * 200);
     console.log("total", total);
-    let sentences = data.sentences.filter((data) => data.total == total);
-    let randomSentence = sentences[random];
+    let selectedWords = [];
+    if (total) {
+      while (selectedWords.length <= total) {
+        console.log(data.commonWords[random()]);
+        selectedWords.push(data.commonWords[random()]);
+      }
+    }
+    // let sentences = data.sentences.filter((data) => data.total == total);
+    // let sentences = data.commonWords.filter((data) => data.total == total);
+    let words = selectedWords.join(" ");
 
-    setRandomWord(randomSentence.sentence);
-    setWord(randomSentence.sentence);
+    setRandomWord(words);
+    setWord(words);
   }
   function resetTypeBoard() {
     setInputValue("");
     setGameOver(false);
     setDisableBackspaceIdx(0);
     setWordsTyped(0);
+    setStartTime(null);
+    setWpm(0);
+    setRawWpm(0);
+    setTimeElapsedDisplay(0);
+    setStartTimer(false);
+    setTimer(toggleDuration);
+    setToggleTypeCursor(true);
+  }
+
+  function handleWpmConversion() {
+    let correctedLetters = 0;
+    for (let i = 0; i < randomWord.length; i++) {
+      if (randomWord[i] == inputValue[i]) {
+        correctedLetters++;
+      }
+    }
+    const time = (Date.now() - startTime!) / 1000;
+    const wordsTyped = correctedLetters / 5;
+    console.log("TIME:", time);
+    const wpm = (wordsTyped * 60) / time;
+    const rawWpm = ((randomWord.length / 5) * 60) / time;
+    // const wpm = parseFloat((correctedLetters / (timeElapsedDisplay / 60)).toFixed(2));
+    // const rawWpm = parseFloat((wordsTyped / (timeElapsedDisplay / 60)).toFixed(2));
+    console.log(parseFloat(wpm.toFixed(2)));
+    console.log(parseFloat(rawWpm.toFixed(2)));
+    setWpm(parseFloat(wpm.toFixed(2)));
+    setRawWpm(parseFloat(rawWpm.toFixed(2)));
+    setTimeElapsed(parseFloat(time.toFixed(2)));
   }
 
   function handleOnchangeInput(e) {
     let input = e.target.value;
 
-    if (input.length == 1 && toggleMode == "time") {
-      setStartTimer(true);
-    }
-
-    if (input.length == 1 && toggleMode == "words") {
-      setStartTime(Date.now());
+    if (input.length == 1) {
+      if (toggleMode == "time") {
+        setStartTimer(true);
+      }
+      if (toggleMode == "words") {
+        setStartTime(Date.now());
+      }
     }
 
     if (input.length < disableBackspaceIdx || gameOver) return;
@@ -70,6 +161,7 @@ const Game = ({ toggleDarkMode }: any) => {
       if (input.split("").pop() == randomWord.split("").pop()) {
         setGameOver(true);
         setStartTime(null);
+        handleWpmConversion();
       }
     }
 
@@ -101,18 +193,11 @@ const Game = ({ toggleDarkMode }: any) => {
         const currentTime = Date.now();
         const elapsedTime = Math.floor((currentTime - startTime) / 1000);
         console.log("time: ", elapsedTime);
-        setTimeElapsed(elapsedTime);
+        setTimeElapsedDisplay(elapsedTime);
       }, 1000);
       return () => clearInterval(intervalId);
     }
   }, [startTime]);
-
-  useEffect(() => {
-    if (timeElapsed > 0) {
-      const wordsPerMinute = (wordsTyped / (timeElapsed / 60)).toFixed(2);
-      setWpm(parseFloat(wordsPerMinute));
-    }
-  }, [wordsTyped, timeElapsed]);
 
   useEffect(() => {
     if (startTimer) {
@@ -125,17 +210,17 @@ const Game = ({ toggleDarkMode }: any) => {
           setTimer(toggleDuration);
           setStartTimer(false);
           clearInterval(intervalId);
+          setGameOver(true);
         }
       }, 1000);
     }
   }, [startTimer]);
 
   useEffect(() => {
-    console.log("change", inputRef.current);
-    if (inputRef.current) {
+    if (inputRef.current && toggleTypeCursor) {
       inputRef?.current.focus();
     }
-  }, [inputRef, inputRef?.current]);
+  }, [inputRef, toggleTypeCursor]);
 
   function handleBlur() {}
 
@@ -229,7 +314,7 @@ const Game = ({ toggleDarkMode }: any) => {
         <div className={`${styles.timer}`}>
           {startTimer && toggleMode == "time" && <span>Time: {timer}</span>}
           {startTime && toggleMode == "words" && (
-            <span>Time: {timeElapsed}</span>
+            <span>Time: {timeElapsedDisplay}</span>
           )}
         </div>
 
@@ -296,6 +381,7 @@ const Game = ({ toggleDarkMode }: any) => {
           </div>
 
           <input
+            disabled={gameOver}
             autoComplete="off"
             spellCheck="false"
             id="gameTypeInput"
@@ -305,12 +391,18 @@ const Game = ({ toggleDarkMode }: any) => {
             onChange={(e) => handleOnchangeInput(e)}
             onFocus={() => setToggleTypeCursor(true)}
             onBlur={async () => {
-              await sleep(1200);
+              console.log("callback?");
+              // await sleep(1200);
               setToggleTypeCursor(false);
             }}
             className={`${styles.typeInput} ${
               toggleTypeCursor && styles.focus
             }`}
+            onKeyDown={(e) => {
+              if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
+                e.preventDefault();
+              }
+            }}
           />
         </div>
         <button

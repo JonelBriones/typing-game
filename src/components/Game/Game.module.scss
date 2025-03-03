@@ -152,6 +152,7 @@ span {
   padding: 0.5rem 1rem;
   margin: auto;
   display: flex;
+  transition: ease-in-out;
 }
 .valid {
   color: var(--typing-fields-valid);
