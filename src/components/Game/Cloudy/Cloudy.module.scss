@@ -1,12 +1,12 @@
 .container {
-  height: fit-content;
+  height: 400px;
   position: absolute;
   top: 0;
-  left: 0;
+  left: 20vw;
   right: 0;
   padding-top: 5rem;
   width: inherit;
   z-index: 0;
   cursor: default;
-  border: 2px solid black;
+  border: 2px solid red;
 }

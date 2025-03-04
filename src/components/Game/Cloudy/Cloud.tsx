@@ -1,15 +1,19 @@
 import React, { useEffect, useRef } from "react";
 
-const Cloud = () => {
+const Cloud = ({ startTimer }: { startTimer: boolean }) => {
   const boardRef = useRef(null);
-  const cloudRef = useRef({ x: 45, y: 320, velocityY: 0 });
+  const cloudRef = useRef({ x: 45, y: 0, velocityY: 0 });
   const animationFrameId = useRef(null);
   const gravity = 0.1; // 🛠️ Reduced gravity for slower fall
   const jumpVelocity = -3; // 🔼 Stronger upward force for better jump
   const cloudImage = new Image();
   cloudImage.src = "/src/assets/white-clout.png"; // Ensure correct path
-
   useEffect(() => {
+    console.log("start timer is true?");
+  }, [startTimer]);
+  useEffect(() => {
+    // if (!startTimer) return;
+    console.log("game start?", startTimer);
     const board = boardRef.current;
     if (!board) return;
 
@@ -76,7 +80,7 @@ const Cloud = () => {
       document.removeEventListener("keydown", moveCloud);
       cancelAnimationFrame(animationFrameId.current);
     };
-  }, []); // ✅ Empty dependency array ensures it runs only once
+  }, [startTimer]); // ✅ Empty dependency array ensures it runs only once
 
   return <canvas ref={boardRef} />;
 };

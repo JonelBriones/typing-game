@@ -3,8 +3,8 @@ import { MdRefresh } from "react-icons/md";
 import data from "../../../data.json";
 import styles from "./Game.module.scss";
 import { saveTestResult } from "../../services/api.js";
-import Cloudy from "./Cloudy/Cloudy.js";
 
+import Cloud from "./Cloudy/Cloud.js";
 const Game = ({ toggleDarkMode }: any) => {
   const [randomWord, setRandomWord] = useState(
     "the apple fox blew the horse away"
@@ -13,7 +13,7 @@ const Game = ({ toggleDarkMode }: any) => {
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef(null);
   const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
+  const [gameOver, setGameOver] = useState(true);
 
   const [extraInputs, setExtraInputs] = useState("");
   const [disableBackspaceIdx, setDisableBackspaceIdx] = useState(0);
@@ -221,193 +221,222 @@ const Game = ({ toggleDarkMode }: any) => {
 
   return (
     <div className={`${styles.container}`}>
-      {/* MODES */}
-      <div className={`${styles.modes}`}>
-        <div className={styles.mode}>
-          {modes.map((mode) => (
+      {/* GAME RESULT */}
+      {gameOver ? (
+        <div className={styles.results}>
+          <p>WPM:{wpm}</p>
+          <div className={styles.resultStatsContainer}>
+            <p>testt type</p>
+            <p>other</p>
+            <p>raw</p>
+            <p>characters</p>
+            <p>consistency</p>
+            <p>time</p>
+          </div>
+          <div className={styles.resultBtnContainer}>
             <button
-              className={`${styles.optionBtn} ${
-                toggleMode == mode && styles.toggle
-              }`}
-              key={mode}
-              onClick={() => {
-                resetTypeBoard();
-                fetchSentences(toggleTotalWords);
-                setToggleMode(mode);
-              }}
+              className={styles.resetBtn}
+              type="button"
+              tabIndex={0}
+              onClick={resetTypeBoard}
             >
-              {mode}
+              next
             </button>
-          ))}
-        </div>
-        <div className={styles.optionBreaker} />
-        <div className={styles.optionSettings}>
-          {toggleMode == "time" &&
-            durations.map((duration) => (
-              <button
-                className={`${styles.optionBtn} ${
-                  duration == toggleDuration && styles.toggle
-                }`}
-                key={duration}
-                onClick={() => {
-                  resetTypeBoard();
-                  fetchSentences(undefined, duration);
-                  setToggleDuration(duration);
-                }}
-              >
-                {duration}
-              </button>
-            ))}
-          {toggleMode == "words" &&
-            totalWords.map((total) => (
-              <button
-                className={`${styles.optionBtn} ${
-                  total == toggleTotalWords && styles.toggle
-                }`}
-                key={total}
-                onClick={() => {
-                  resetTypeBoard();
-                  fetchSentences(total, undefined);
-                  setToggleTotalWords(total);
-                  inputRef.current.focus();
-                }}
-              >
-                {total}
-              </button>
-            ))}
-          {toggleMode == "quote" &&
-            quotes.map((quote) => (
-              <button
-                className={`${styles.optionBtn} ${
-                  quote == toggleMode && styles.toggle
-                }`}
-                key={quote}
-                onClick={() => {
-                  resetTypeBoard();
-                }}
-              >
-                {quote}
-              </button>
-            ))}
-        </div>
-      </div>
-      {/* GAME CONTAINER */}
-      <div className={`${styles.game}`}>
-        {/* GAME RESULT */}
-        {gameOver && (
-          <div>
-            <p>Success</p>
-            <p>WPM:{wpm}</p>
+            <button
+              className={styles.resetBtn}
+              type="button"
+              tabIndex={0}
+              onClick={resetTypeBoard}
+            >
+              <MdRefresh size={"1.5rem"} />
+            </button>
           </div>
-        )}
-
-        <div className={`${styles.timer}`}>
-          {startTimer && toggleMode == "time" && <span>Time: {timer}</span>}
-          {startTime && toggleMode == "words" && (
-            <span>Time: {timeElapsedDisplay}</span>
-          )}
         </div>
-
-        {!toggleTypeCursor && (
-          <div
-            className={styles.gameFocus}
-            onClick={() => inputRef?.current?.focus()}
-          >
-            <p>click here or press any key to focus</p>
+      ) : (
+        <>
+          <div className={styles.cloudy}>
+            <Cloud startTimer={startTimer} />
           </div>
-        )}
-        <div className={styles.typingContainer}>
-          <div
-            className={`${styles.words} ${!toggleTypeCursor && styles.blur}`}
-          >
-            {word.split("").map((letter, idx) =>
-              letter == " " ? (
-                <span
-                  key={idx}
-                  className={` ${styles.space} ${styles.letter} ${
-                    inputValue[idx] == undefined
-                      ? ""
-                      : letter == inputValue[idx]
-                      ? styles.valid
-                      : styles.error
-                  } ${
-                    toggleTypeCursor &&
-                    idx == inputValue.length &&
-                    styles.cursor
-                  } `}
+          {/* MODES */}
+          <div className={`${styles.modes}`}>
+            <div className={styles.mode}>
+              {modes.map((mode) => (
+                <button
+                  className={`${styles.optionBtn} ${
+                    toggleMode == mode && styles.toggle
+                  }`}
+                  key={mode}
+                  onClick={() => {
+                    resetTypeBoard();
+                    fetchSentences(toggleTotalWords);
+                    setToggleMode(mode);
+                  }}
                 >
-                  {letter}
-                </span>
-              ) : (
-                <span
-                  key={idx}
-                  className={` ${styles.letter} ${
-                    inputValue[idx] == undefined
-                      ? ""
-                      : letter == inputValue[idx]
-                      ? styles.valid
-                      : styles.error
-                  } ${
-                    toggleTypeCursor &&
-                    idx == inputValue.length &&
-                    styles.cursor
-                  } `}
-                >
-                  {letter}
-                </span>
-              )
-            )}
-            {extraInputs &&
-              extraInputs.split("").map((letter, idx) => (
-                <Fragment key={idx}>
-                  <span className={styles.error}>
-                    {toggleTypeCursor && idx == inputValue.length && (
-                      <span className={styles.cursor} />
-                    )}
-                    {letter}
-                  </span>
-                </Fragment>
+                  {mode}
+                </button>
               ))}
+            </div>
+            <div className={styles.optionBreaker} />
+            <div className={styles.optionSettings}>
+              {toggleMode == "time" &&
+                durations.map((duration) => (
+                  <button
+                    className={`${styles.optionBtn} ${
+                      duration == toggleDuration && styles.toggle
+                    }`}
+                    key={duration}
+                    onClick={() => {
+                      resetTypeBoard();
+                      fetchSentences(undefined, duration);
+                      setToggleDuration(duration);
+                    }}
+                  >
+                    {duration}
+                  </button>
+                ))}
+              {toggleMode == "words" &&
+                totalWords.map((total) => (
+                  <button
+                    className={`${styles.optionBtn} ${
+                      total == toggleTotalWords && styles.toggle
+                    }`}
+                    key={total}
+                    onClick={() => {
+                      resetTypeBoard();
+                      fetchSentences(total, undefined);
+                      setToggleTotalWords(total);
+                      inputRef.current.focus();
+                    }}
+                  >
+                    {total}
+                  </button>
+                ))}
+              {toggleMode == "quote" &&
+                quotes.map((quote) => (
+                  <button
+                    className={`${styles.optionBtn} ${
+                      quote == toggleMode && styles.toggle
+                    }`}
+                    key={quote}
+                    onClick={() => {
+                      resetTypeBoard();
+                    }}
+                  >
+                    {quote}
+                  </button>
+                ))}
+            </div>
           </div>
-          <Cloudy />
+          {/* GAME CONTAINER */}
+          <div className={`${styles.game}`}>
+            <div className={`${styles.timer}`}>
+              {startTimer && toggleMode == "time" && <span>Time: {timer}</span>}
+              {startTime && toggleMode == "words" && (
+                <span>Time: {timeElapsedDisplay}</span>
+              )}
+            </div>
 
-          <input
-            disabled={gameOver}
-            autoComplete="off"
-            spellCheck="false"
-            id="gameTypeInput"
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={(e) => handleOnchangeInput(e)}
-            onFocus={() => setToggleTypeCursor(true)}
-            onBlur={async () => {
-              console.log("callback?");
-              // await sleep(1200);
-              setToggleTypeCursor(false);
-            }}
-            className={`${styles.typeInput} ${
-              toggleTypeCursor && styles.focus
-            }`}
-            onKeyDown={(e) => {
-              if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
-                e.preventDefault();
-              }
-            }}
-          />
-          {/* <div className={styles.cloudy}> */}
+            {!toggleTypeCursor && (
+              <div
+                className={styles.gameFocus}
+                onClick={() => inputRef?.current?.focus()}
+              >
+                <p>click here or press any key to focus</p>
+              </div>
+            )}
+            <div className={styles.typingContainer}>
+              <div
+                className={`${styles.words} ${
+                  !toggleTypeCursor && styles.blur
+                }`}
+              >
+                {word.split("").map((letter, idx) =>
+                  letter == " " ? (
+                    <span
+                      key={idx}
+                      className={` ${styles.space} ${styles.letter} ${
+                        inputValue[idx] == undefined
+                          ? ""
+                          : letter == inputValue[idx]
+                          ? styles.valid
+                          : styles.error
+                      } ${
+                        toggleTypeCursor &&
+                        idx == inputValue.length &&
+                        styles.cursor
+                      } `}
+                    >
+                      {letter}
+                    </span>
+                  ) : (
+                    <span
+                      key={idx}
+                      className={` ${styles.letter} ${
+                        inputValue[idx] == undefined
+                          ? ""
+                          : letter == inputValue[idx]
+                          ? styles.valid
+                          : styles.error
+                      } ${
+                        toggleTypeCursor &&
+                        idx == inputValue.length &&
+                        styles.cursor
+                      } `}
+                    >
+                      {letter}
+                    </span>
+                  )
+                )}
+                {extraInputs &&
+                  extraInputs.split("").map((letter, idx) => (
+                    <Fragment key={idx}>
+                      <span className={styles.error}>
+                        {toggleTypeCursor && idx == inputValue.length && (
+                          <span className={styles.cursor} />
+                        )}
+                        {letter}
+                      </span>
+                    </Fragment>
+                  ))}
+              </div>
 
-          {/* </div> */}
-        </div>
-        <button
-          className={styles.resetBtn}
-          type="button"
-          tabIndex={0}
-          onClick={resetTypeBoard}
-        >
-          <MdRefresh size={"1.5rem"} />
-        </button>
-      </div>
+              <input
+                disabled={gameOver}
+                autoComplete="off"
+                spellCheck="false"
+                id="gameTypeInput"
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={(e) => handleOnchangeInput(e)}
+                onFocus={() => setToggleTypeCursor(true)}
+                onBlur={async () => {
+                  console.log("callback?");
+                  // await sleep(1200);
+                  setToggleTypeCursor(false);
+                }}
+                className={`${styles.typeInput} ${
+                  toggleTypeCursor && styles.focus
+                }`}
+                onKeyDown={(e) => {
+                  if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
+                    e.preventDefault();
+                  }
+                }}
+              />
+            </div>
+            <button
+              className={styles.resetBtn}
+              type="button"
+              tabIndex={0}
+              onClick={resetTypeBoard}
+            >
+              <MdRefresh size={"1.5rem"} />
+            </button>
+          </div>
+        </>
+      )}
+
       <div className={`${styles.footer}`}>bottom container</div>
     </div>
   );
