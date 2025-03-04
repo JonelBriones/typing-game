@@ -4,9 +4,14 @@
 .container {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   height: 100%;
   width: 100%;
+  border: 2px solid black;
+}
+.cloudy {
+  border: 2px solid red;
 }
 .modes {
   display: flex;

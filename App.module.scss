@@ -1,6 +1,27 @@
-// dar green #31572c
-//dark green #283618
-
+@import "/src/styles/colors";
+@import "/src/styles/theme";
+:root {
+  --bg: #f5f5f5;
+  --text: #222222;
+  --primary: #228b22;
+  --accent: #ff4500;
+  --text-options: #36454f;
+  --text-options-toggled: #ff4500;
+  --typing-fields-placeholder: #a9a9a9;
+  --typing-fields-valid: #1e1e1e;
+  --cursor: #36454f;
+}
+.dark {
+  --bg: #1e1e1e;
+  --text: #fefae0;
+  --primary: #01579b;
+  --accent: #ffd700;
+  --text-options: #708090;
+  --text-options-toggled: #ffd700;
+  --typing-fields-placeholder: #b2beb5;
+  --typing-fields-valid: #f5f5f5;
+  --cursor: #fefae0;
+}
 * {
   box-sizing: border-box;
   margin: 0;
@@ -9,8 +30,8 @@
 }
 
 .app {
-  // background-color: var(--bg-color);
-  // color: var(--text-color);
+  background-color: var(--bg);
+  color: var(--text);
   display: flex;
   flex-direction: column;
   height: 100vh;

@@ -3,7 +3,8 @@ import { MdRefresh } from "react-icons/md";
 import data from "../../../data.json";
 import styles from "./Game.module.scss";
 import { saveTestResult } from "../../services/api.js";
-console.log(data);
+import Cloudy from "./Cloudy/Cloudy.js";
+
 const Game = ({ toggleDarkMode }: any) => {
   const [randomWord, setRandomWord] = useState(
     "the apple fox blew the horse away"
@@ -20,7 +21,7 @@ const Game = ({ toggleDarkMode }: any) => {
   const wrapper = document.getElementById("wrapper");
   const isDark = wrapper?.classList[1] == "dark";
 
-  const modes = ["time", "words", "quote"];
+  const modes = ["time", "words", "quote", "cloudy"];
   const quotes = ["short", "medium", "long"];
   const durations = [15, 30, 60, 120];
   const totalWords = [10, 25, 50, 100];
@@ -31,7 +32,7 @@ const Game = ({ toggleDarkMode }: any) => {
   const [startTimer, setStartTimer] = useState(false);
 
   // SCORE TRACKING
-  const [startTime, setStartTime] = useState<number | undefined>(undefined);
+  const [startTime, setStartTime] = useState<number | null>(null);
   const [wordsTyped, setWordsTyped] = useState(0);
   const [timeElapsedDisplay, setTimeElapsedDisplay] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -47,14 +48,7 @@ const Game = ({ toggleDarkMode }: any) => {
   };
   const user = "ijonel906";
   const language = "English";
-  const [testData, setTestData] = useState<Test>({
-    user,
-    seconds: timeElapsed,
-    words: toggleTotalWords,
-    wpm,
-    raw,
-    language: "",
-  });
+  const [testData, setTestData] = useState<Test | null>(null);
 
   async function saveTest() {
     setLoading(true);
@@ -75,7 +69,7 @@ const Game = ({ toggleDarkMode }: any) => {
   }, [gameOver]);
   useEffect(() => {
     if (testData?.seconds > 0) {
-      saveTest();
+      // saveTest();
     }
   }, [testData]);
   function handleUpdateTestData() {
@@ -92,11 +86,10 @@ const Game = ({ toggleDarkMode }: any) => {
   async function fetchSentences(total?: number, duration?: number) {
     // let max = total == 50 ? 5 : 10;
     let random = () => Math.floor(Math.random() * 200);
-    console.log("total", total);
+
     let selectedWords = [];
     if (total) {
       while (selectedWords.length <= total) {
-        console.log(data.commonWords[random()]);
         selectedWords.push(data.commonWords[random()]);
       }
     }
@@ -222,8 +215,6 @@ const Game = ({ toggleDarkMode }: any) => {
     }
   }, [inputRef, toggleTypeCursor]);
 
-  function handleBlur() {}
-
   function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -278,6 +269,7 @@ const Game = ({ toggleDarkMode }: any) => {
                   resetTypeBoard();
                   fetchSentences(total, undefined);
                   setToggleTotalWords(total);
+                  inputRef.current.focus();
                 }}
               >
                 {total}
@@ -299,9 +291,7 @@ const Game = ({ toggleDarkMode }: any) => {
             ))}
         </div>
       </div>
-
       {/* GAME CONTAINER */}
-
       <div className={`${styles.game}`}>
         {/* GAME RESULT */}
         {gameOver && (
@@ -379,6 +369,7 @@ const Game = ({ toggleDarkMode }: any) => {
                 </Fragment>
               ))}
           </div>
+          <Cloudy />
 
           <input
             disabled={gameOver}
@@ -404,6 +395,9 @@ const Game = ({ toggleDarkMode }: any) => {
               }
             }}
           />
+          {/* <div className={styles.cloudy}> */}
+
+          {/* </div> */}
         </div>
         <button
           className={styles.resetBtn}

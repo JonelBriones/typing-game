@@ -7,6 +7,11 @@ router.post("/save", async (req, res) => {
   console.log("saving...");
   try {
     const { user, seconds, words, wpm, raw, language } = req.body;
+
+    if (!user || !seconds || !words || !wpm || !raw || !language) {
+      return res.status(400).json({ message }, "Missing required fields");
+    }
+
     const newTest = new Test({
       user,
       seconds,

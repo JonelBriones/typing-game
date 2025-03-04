@@ -8,11 +8,9 @@ const connectDB = async (mongodbURI) => {
     return;
   }
   try {
-    console.log(mongodbURI);
-
     await mongoose.connect(mongodbURI);
     connected = true;
-    console.log("MONGODB is connecting");
+    console.log("connected to mongodb");
   } catch (error) {
     console.log("mongodb error", error);
   }

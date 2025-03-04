@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
 import { IoSunnyOutline } from "react-icons/io5";
+import Leaderboard from "./components/Leaderboard/Leaderboard";
 function App() {
   const preferenceTheme = () => {
     const preference = localStorage.getItem("theme");
@@ -29,7 +30,11 @@ function App() {
     <BrowserRouter>
       <div id="wrapper" className={styles.app}>
         <nav className={styles.navbar}>
-          <div className="nav-left">left {toggleDarkMode}</div>
+          <div className={styles.leaderboard}>
+            <li>
+              <a href="/leaderboard">Leaderboard</a>
+            </li>
+          </div>
           <div className={`${styles.navright}`}>
             <button
               onClick={() => setToggleDarkMode(!toggleDarkMode)}
@@ -53,6 +58,7 @@ function App() {
               path="/"
               element={<Game toggleDarkMode={toggleDarkMode} />}
             />
+            <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </div>
       </div>
