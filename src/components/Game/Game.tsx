@@ -236,7 +236,7 @@ const Game = () => {
   useEffect(() => {
     console.log("ref true", inputRef.current);
     console.log("cursore true", toggleTypeCursor);
-    if (inputRef.current && toggleTypeCursor) {
+    if (inputRef.current) {
       console.log("setting input focus!!");
       inputRef?.current?.focus();
     }
