@@ -54,10 +54,7 @@ function App() {
         </nav>
         <div className={styles.content}>
           <Routes>
-            <Route
-              path="/"
-              element={<Game toggleDarkMode={toggleDarkMode} />}
-            />
+            <Route path="/" element={<Game />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </div>

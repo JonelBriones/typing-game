@@ -2,14 +2,14 @@ import React, { Fragment, useEffect, useRef, useState } from "react";
 import { MdRefresh } from "react-icons/md";
 import data from "../../../data.json";
 import styles from "./Game.module.scss";
-import { saveTestResult } from "../../services/api.js";
+// import { saveTestResult } from "../../services/api.js";
 
-import Cloud from "./Cloudy/Cloud.js";
-const Game = ({ toggleDarkMode }: any) => {
+import Cloud from "./Cloudy/cloud.jsx";
+const Game = () => {
   const [randomWord, setRandomWord] = useState("apple");
   const [word, setWord] = useState(randomWord);
   const [inputValue, setInputValue] = useState("");
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [gameStart, setGameStart] = useState(false);
@@ -17,9 +17,7 @@ const Game = ({ toggleDarkMode }: any) => {
   const [extraInputs, setExtraInputs] = useState("");
   const [disableBackspaceIdx, setDisableBackspaceIdx] = useState(0);
   const [loading, setLoading] = useState(true);
-  const wrapper = document.getElementById("wrapper");
-  const isDark = wrapper?.classList[1] == "dark";
-
+  console.log(loading);
   const modes = ["time", "words", "quote", "cloudy"];
   const quotes = ["short", "medium", "long"];
   const durations = [15, 30, 60, 120];
@@ -52,15 +50,16 @@ const Game = ({ toggleDarkMode }: any) => {
 
   async function saveTest() {
     setLoading(true);
-    try {
-      const result = await saveTestResult(testData);
-      console.log("test saved", result);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error saving test result", error);
-      setLoading(false);
-    }
+    // try {
+    //   const result = await saveTestResult(testData);
+    //   console.log("test saved", result);
+    //   setLoading(false);
+    // } catch (error) {
+    //   console.error("Error saving test result", error);
+    //   setLoading(false);
+    // }
   }
+  console.log(saveTest);
 
   useEffect(() => {
     if (gameOver) {
@@ -69,11 +68,9 @@ const Game = ({ toggleDarkMode }: any) => {
       // customize cloud speed & position
       let time = () => Math.floor(Math.random() * (7 - 3 + 1)) + 3;
       let positionY = () => Math.floor(Math.random() * 100);
-      let positionX = () => Math.floor(Math.random() * 450);
       const clouds = document.getElementsByClassName("cloudyImg");
-      Array.from(clouds).forEach((cloud, idx) => {
-        if (cloud) {
-          cloud?.style.setProperty("animation", "");
+      Array.from(clouds).forEach((cloud) => {
+        if (cloud instanceof HTMLElement) {
           cloud?.style.setProperty("--animation-time", time() + "s");
           cloud?.style.setProperty("top", positionY() + "px");
         }
@@ -81,7 +78,9 @@ const Game = ({ toggleDarkMode }: any) => {
     }
   }, [gameOver]);
   useEffect(() => {
-    if (testData?.seconds > 0) {
+    if (testData?.seconds == null) {
+      return;
+    } else if (testData?.seconds > 0) {
       // saveTest();
     }
   }, [testData]);
@@ -96,15 +95,12 @@ const Game = ({ toggleDarkMode }: any) => {
     });
   }
 
-  async function fetchSentences(total?: number, duration?: number) {
-    // let max = total == 50 ? 5 : 10;
+  async function fetchSentences() {
+    resetTypeBoard();
     let random = () => Math.floor(Math.random() * 200);
-
     let selectedWords = [];
-    if (total) {
-      while (selectedWords.length <= total) {
-        selectedWords.push(data.commonWords[random()]);
-      }
+    while (selectedWords.length <= toggleTotalWords) {
+      selectedWords.push(data.commonWords[random()]);
     }
     // let sentences = data.sentences.filter((data) => data.total == total);
     // let sentences = data.commonWords.filter((data) => data.total == total);
@@ -141,16 +137,13 @@ const Game = ({ toggleDarkMode }: any) => {
     console.log("TIME:", time);
     const wpm = (wordsTyped * 60) / time;
     const rawWpm = ((randomWord.length / 5) * 60) / time;
-    // const wpm = parseFloat((correctedLetters / (timeElapsedDisplay / 60)).toFixed(2));
-    // const rawWpm = parseFloat((wordsTyped / (timeElapsedDisplay / 60)).toFixed(2));
-    console.log(parseFloat(wpm.toFixed(2)));
-    console.log(parseFloat(rawWpm.toFixed(2)));
+
     setWpm(parseFloat(wpm.toFixed(2)));
     setRawWpm(parseFloat(rawWpm.toFixed(2)));
     setTimeElapsed(parseFloat(time.toFixed(2)));
   }
 
-  function handleOnchangeInput(e) {
+  function handleOnchangeInput(e: React.ChangeEvent<HTMLInputElement>) {
     let input = e.target.value;
 
     if (input.length == 1) {
@@ -232,18 +225,9 @@ const Game = ({ toggleDarkMode }: any) => {
     console.log("cursore true", toggleTypeCursor);
     if (inputRef.current && toggleTypeCursor) {
       console.log("setting input focus!!");
-      inputRef?.current.focus();
+      inputRef?.current?.focus();
     }
   }, [inputRef, toggleTypeCursor]);
-
-  function handleFocusCursor() {
-    console.log("handing cursor focus", inputRef.current);
-    inputRef.current.focus();
-  }
-
-  function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
 
   function randomCloudGenerate() {
     return (
@@ -317,7 +301,7 @@ const Game = ({ toggleDarkMode }: any) => {
       <div className={` ${!gameOver ? styles.show : styles.hide}`}>
         {gameStart && (
           <div className={styles.cloudy}>
-            <Cloud gameStart={gameStart} />
+            <Cloud />
           </div>
         )}
         {/* MODES */}
@@ -331,7 +315,7 @@ const Game = ({ toggleDarkMode }: any) => {
                 key={mode}
                 onClick={() => {
                   resetTypeBoard();
-                  fetchSentences(toggleTotalWords);
+                  fetchSentences();
                   setToggleMode(mode);
                 }}
               >
@@ -349,8 +333,7 @@ const Game = ({ toggleDarkMode }: any) => {
                   }`}
                   key={duration}
                   onClick={() => {
-                    resetTypeBoard();
-                    fetchSentences(undefined, duration);
+                    fetchSentences();
                     setToggleDuration(duration);
                   }}
                 >
@@ -365,8 +348,7 @@ const Game = ({ toggleDarkMode }: any) => {
                   }`}
                   key={total}
                   onClick={() => {
-                    resetTypeBoard();
-                    fetchSentences(total, undefined);
+                    fetchSentences();
                     setToggleTotalWords(total);
                   }}
                 >
@@ -380,9 +362,7 @@ const Game = ({ toggleDarkMode }: any) => {
                     quote == toggleMode && styles.toggle
                   }`}
                   key={quote}
-                  onClick={() => {
-                    resetTypeBoard();
-                  }}
+                  onClick={() => {}}
                 >
                   {quote}
                 </button>

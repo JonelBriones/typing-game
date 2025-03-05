@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const Cloud = ({ gameStart }: { gameStart: boolean }) => {
+const Cloud = () => {
   console.log("loading");
   const [loading, setLoading] = useState(true);
   const boardRef = useRef(null);
@@ -77,7 +77,7 @@ const Cloud = ({ gameStart }: { gameStart: boolean }) => {
       document.removeEventListener("keydown", moveCloud);
       cancelAnimationFrame(animationFrameId.current);
     };
-  }, [gameStart]); // ✅ Empty dependency array ensures it runs only once
+  }, []); // ✅ Empty dependency array ensures it runs only once
 
   return <canvas ref={boardRef} />;
 };
