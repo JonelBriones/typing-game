@@ -83,6 +83,7 @@ const Game = () => {
     } else if (testData?.seconds > 0) {
       // saveTest();
     }
+    console.log(loading, timeElapsedDisplay, saveTest);
   }, [testData]);
   function handleUpdateTestData() {
     setTestData({
@@ -258,14 +259,6 @@ const Game = () => {
         src="/assets/white-cloud.png"
         className={`${styles.cloudyImg} cloudyImg`}
       />
-    );
-  }
-
-  function renderCloudType() {
-    return (
-      <div className={styles.cloudy}>
-        <Cloudy />
-      </div>
     );
   }
 
