@@ -6,8 +6,14 @@ import styles from "./Game.module.scss";
 // @ts-ignore
 import Cloudy from "../Cloudy/Cloudy.jsx";
 const Game = () => {
-  const [randomWord, setRandomWord] = useState("apple");
+  const [randomWord, setRandomWord] = useState("the fox and apple");
   const [word, setWord] = useState(randomWord);
+  const [currentWordIdx, setCurrentWordIdx] = useState(0);
+  const [splitWords, setSplitWords] = useState([]);
+
+  const [extraCharAddedIdx, setExtraCharAddedIdx] = useState(0);
+  const [extraCharWord, setExtraCharWord] = useState("");
+  const [extraChar, setExtraChar] = useState();
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
@@ -108,6 +114,7 @@ const Game = () => {
     let words = selectedWords.join(" ");
     setRandomWord(words);
     setWord(words);
+    setSplitWords(words.split(" "));
   }
   // async function fetchQuotes() {
   //   resetTypeBoard();
@@ -122,7 +129,7 @@ const Game = () => {
   //   setWord(quote);
   // }
   useEffect(() => {
-    fetchSentences();
+    // fetchSentences();
   }, [toggleMode, toggleTotalWords, toggleDuration]);
   function resetTypeBoard() {
     console.log("resetting board");
@@ -138,6 +145,7 @@ const Game = () => {
     setTimer(toggleDuration);
     setToggleTypeCursor(true);
     setGameStart(false);
+    setWord(randomWord);
   }
 
   function handleWpmConversion() {
@@ -172,6 +180,47 @@ const Game = () => {
       }
     }
 
+    let inputLength = input.split("").length;
+    let remainingWordChar = randomWord
+      .split("")
+      .slice(extraCharAddedIdx, randomWord.length)
+      .join("");
+    let splitInputValue = inputValue.split(" ");
+    let splitvalue = input.split("");
+    let lastInputChar = splitvalue[splitvalue.length - 1] == " ";
+    let matchInputWordChar = randomWord[splitvalue.length - 1] == " ";
+    let inputChar = splitvalue.join("");
+    console.log("input length:", inputLength, input);
+    console.log("extra char idx:", extraCharAddedIdx);
+    // EXTRA CHARS
+    // if (extraCharWord && extraCharAddedIdx == inputLength) {
+    //   console.log("RESTTING,  ", input);
+    //   console.log(1);
+    //   setInputValue(input);
+    //   setExtraCharWord("");
+    // }
+    if (extraCharWord && inputLength >= extraCharAddedIdx) {
+      if (lastInputChar && matchInputWordChar) {
+        console.log("correct space entry");
+        setInputValue(input);
+        setExtraCharWord("");
+        setExtraCharAddedIdx(0);
+      } else {
+        console.log(2);
+        setInputValue(input);
+        setExtraCharWord(input + remainingWordChar);
+      }
+    }
+    // if (inputLength == extraCharAddedIdx && extraCharWord) {
+    //   console.log(3);
+    //   setInputValue(input);
+    //   setExtraCharWord(input + remainingWordChar);
+    //   console.log("input length matches char", extraCharAddedIdx);
+    // }
+
+    if (extraCharWord) return;
+
+    console.log(splitWords[0]);
     if (input.length < disableBackspaceIdx || gameOver) return;
 
     if (input.length == word.length) {
@@ -184,23 +233,34 @@ const Game = () => {
       }
     }
 
-    if (input.length > word.length) {
-      console.log("extra", input);
-      setExtraInputs(input.slice(word.length, input.length));
-    }
+    if (matchInputWordChar) {
+      if (lastInputChar) {
+        let currentInputWord = splitInputValue[splitInputValue.length - 1];
+        let currentWord = splitWords[splitInputValue.length - 1];
+        // console.log(currentInputWord, currentWord);
+        if (currentInputWord == currentWord) {
+          console.log("words matched");
+          setWordsTyped(wordsTyped + 1);
+          setDisableBackspaceIdx(input.length);
+        }
+      } else {
+        // console.log("current input char", inputChar);
+        // console.log("current input length", splitvalue.length);
 
-    let arr = input.split("");
+        // console.log("remaing word char", remainingWordChar);
+        // console.log(inputChar + " " + remainingWordChar);
+        // setExtraInputs();
 
-    let isPrevValSpace = randomWord[arr.length - 1] == " ";
-
-    if (isPrevValSpace && input.length > 0) {
-      if (word.slice(0, inputValue.length) == inputValue) {
-        console.log("word 1: ", word.slice(0, inputValue.length));
-        console.log("word 2: ", inputValue);
-        setWordsTyped(wordsTyped + 1);
-        setDisableBackspaceIdx(input.length);
+        setExtraCharWord(inputChar + " " + remainingWordChar);
+        console.log("extra char added", splitvalue.length);
+        setExtraCharAddedIdx(splitvalue.length - 1);
       }
     }
+
+    // if (input.length > word.length) {
+    //   console.log("extra", input);
+    //   setExtraInputs(input.slice(word.length, input.length));
+    // }
 
     setInputValue(input);
   }
@@ -443,43 +503,82 @@ const Game = () => {
                   }
                 }}
               />
-              {word.split("").map((letter, idx) =>
-                letter == " " ? (
-                  <span
-                    key={idx}
-                    className={` ${styles.space} ${styles.letter} ${
-                      inputValue[idx] == undefined
-                        ? ""
-                        : letter == inputValue[idx]
-                        ? styles.valid
-                        : styles.error
-                    } ${
-                      toggleTypeCursor &&
-                      idx == inputValue.length &&
-                      styles.cursor
-                    } `}
-                  >
-                    {letter}
-                  </span>
-                ) : (
-                  <span
-                    key={idx}
-                    className={` ${styles.letter} ${
-                      inputValue[idx] == undefined
-                        ? ""
-                        : letter == inputValue[idx]
-                        ? styles.valid
-                        : styles.error
-                    } ${
-                      toggleTypeCursor &&
-                      idx == inputValue.length &&
-                      styles.cursor
-                    } `}
-                  >
-                    {letter}
-                  </span>
-                )
-              )}
+
+              {extraCharWord
+                ? extraCharWord.split("").map((letter, idx) =>
+                    letter == " " ? (
+                      <span
+                        key={idx}
+                        className={` ${styles.space} ${styles.letter} ${
+                          inputValue[idx] == undefined
+                            ? ""
+                            : letter == inputValue[idx]
+                            ? styles.valid
+                            : styles.error
+                        } ${
+                          toggleTypeCursor &&
+                          idx == inputValue.length &&
+                          styles.cursor
+                        } `}
+                      >
+                        {letter}
+                      </span>
+                    ) : (
+                      <span
+                        key={idx}
+                        className={` ${styles.letter} ${
+                          inputValue[idx] == undefined
+                            ? ""
+                            : letter == inputValue[idx]
+                            ? styles.valid
+                            : styles.error
+                        } ${
+                          toggleTypeCursor &&
+                          idx == inputValue.length &&
+                          styles.cursor
+                        } `}
+                      >
+                        {letter}
+                      </span>
+                    )
+                  )
+                : word.split("").map((letter, idx) =>
+                    letter == " " ? (
+                      <span
+                        key={idx}
+                        className={` ${styles.space} ${styles.letter} ${
+                          inputValue[idx] == undefined
+                            ? ""
+                            : letter == inputValue[idx]
+                            ? styles.valid
+                            : styles.error
+                        } ${
+                          toggleTypeCursor &&
+                          idx == inputValue.length &&
+                          styles.cursor
+                        } `}
+                      >
+                        {letter}
+                      </span>
+                    ) : (
+                      <span
+                        key={idx}
+                        className={` ${styles.letter} ${
+                          inputValue[idx] == undefined
+                            ? ""
+                            : letter == inputValue[idx]
+                            ? styles.valid
+                            : styles.error
+                        } ${
+                          toggleTypeCursor &&
+                          idx == inputValue.length &&
+                          styles.cursor
+                        } `}
+                      >
+                        {letter}
+                      </span>
+                    )
+                  )}
               {extraInputs &&
                 extraInputs.split("").map((letter, idx) => (
                   <Fragment key={idx}>
