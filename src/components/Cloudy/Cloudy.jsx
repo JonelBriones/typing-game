@@ -1,17 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const Cloudy = () => {
-  console.log("loading");
+const Cloudy = ({
+  setGameOver,
+  setStartTime,
+  handleWpmConversion,
+  setGameStart,
+}) => {
   const [loading, setLoading] = useState(true);
   const boardRef = useRef(null);
   const cloudRef = useRef({ x: 45, y: 0, velocityY: 0 });
   const animationFrameId = useRef(null);
-  const gravity = 0.1; // 🛠️ Reduced gravity for slower fall
+  const gravity = 0.2; // 🛠️ Reduced gravity for slower fall
   const jumpVelocity = -3; // 🔼 Stronger upward force for better jump
   const cloudImage = new Image();
-  cloudImage.src = "/src/assets/white-clout.png"; // Ensure correct path
+  cloudImage.src = "/assets/white-cloud.png"; // Ensure correct path
 
   useEffect(() => {
+    console.log("cloud moved");
+
     const board = boardRef.current;
     if (!board) return;
 
@@ -31,8 +37,15 @@ const Cloudy = () => {
 
     // **Cloud Movement Logic**
     const update = () => {
+      console.log("loading cloud gravity");
       context.clearRect(0, 0, board.width, board.height); // Clear canvas
-
+      if (cloudRef.current.y == 536) {
+        console.log("game over", cloudRef.current.y);
+        setGameOver(true);
+        setStartTime(null);
+        handleWpmConversion();
+        setGameStart(false);
+      }
       // Apply gravity
       cloudRef.current.velocityY += gravity;
       cloudRef.current.y = Math.max(

@@ -107,17 +107,16 @@
 }
 
 // MODES
-
+.modesContainer {
+  width: 600px;
+  margin: auto;
+  position: relative;
+}
 .modes {
+  position: absolute;
+  width: 600px;
   display: flex;
   align-items: center;
-  width: inherit;
-  gap: 1.5rem;
-  margin: auto;
-  height: fit-content;
-  width: 600px;
-  background-color: var(--background-options);
-  border-radius: 8px;
   .mode {
     flex: auto;
     display: flex;
@@ -165,15 +164,13 @@
 }
 
 .typingContainer {
-  height: fit-content;
+  height: 100%;
   position: relative;
 }
-.timer::before {
-  content: "";
-  padding: 2rem;
-  font-size: 2rem;
-}
+
 .timer {
+  height: 100px;
+
   padding: 2rem;
   font-size: 2rem;
 }
@@ -183,14 +180,13 @@
 }
 
 .gameFocus {
-  // position: absolute;
+  position: absolute;
   z-index: 10;
-  left: 0;
-  right: 0;
-  height: 100%;
+  width: 100%;
+
   p {
-    font-size: 2rem;
     text-align: center;
+    font-size: 2rem;
     // color: rgb(180, 180, 180);
   }
 }
@@ -238,6 +234,9 @@ span {
 }
 
 .typeInput {
+  position: absolute;
+  width: 100%;
+  height: 100%;
   width: 100%;
   background: transparent;
   border: none;

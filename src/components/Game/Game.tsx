@@ -17,8 +17,9 @@ const Game = () => {
   const [extraInputs, setExtraInputs] = useState("");
   const [disableBackspaceIdx, setDisableBackspaceIdx] = useState(0);
   const [loading, setLoading] = useState(true);
-  console.log(loading);
-  const modes = ["time", "words", "quote", "cloudy"];
+
+  // const modes = ["time", "words", "quote", "cloudy"];
+  const modes = ["time", "words", "cloudy"];
   const quotes = ["short", "medium", "long"];
   const durations = [15, 30, 60, 120];
   const totalWords = [10, 25, 50, 100];
@@ -59,7 +60,6 @@ const Game = () => {
     //   setLoading(false);
     // }
   }
-  console.log(saveTest);
 
   useEffect(() => {
     if (gameOver) {
@@ -99,16 +99,30 @@ const Game = () => {
     resetTypeBoard();
     let random = () => Math.floor(Math.random() * 200);
     let selectedWords = [];
-    while (selectedWords.length <= toggleTotalWords) {
+    while (selectedWords.length <= toggleTotalWords - 1) {
       selectedWords.push(data.commonWords[random()]);
     }
     // let sentences = data.sentences.filter((data) => data.total == total);
     // let sentences = data.commonWords.filter((data) => data.total == total);
     let words = selectedWords.join(" ");
-
     setRandomWord(words);
     setWord(words);
   }
+  // async function fetchQuotes() {
+  //   resetTypeBoard();
+  //   let random = () => Math.floor(Math.random() * 200);
+  //   // let selectedWords = [];
+  //   // while (selectedWords.length <= toggleTotalWords) {
+  //   //   selectedWords.push(data.commonWords[random()]);
+  //   // }
+  //   let quote = data.quotes[random()];
+  //   // let sentences = data.commonWords.filter((data) => data.total == total);
+  //   setRandomWord(quote);
+  //   setWord(quote);
+  // }
+  useEffect(() => {
+    fetchSentences();
+  }, [toggleMode, toggleTotalWords, toggleDuration]);
   function resetTypeBoard() {
     console.log("resetting board");
     setInputValue("");
@@ -151,7 +165,7 @@ const Game = () => {
         setStartTimer(true);
         setGameStart(true);
       }
-      if (toggleMode == "words") {
+      if (toggleMode == "words" || toggleMode == "cloudy") {
         setStartTime(Date.now());
         setGameStart(true);
       }
@@ -191,12 +205,10 @@ const Game = () => {
   }
 
   useEffect(() => {
-    console.log("starting?", startTime);
     if (startTime) {
       const intervalId = setInterval(() => {
         const currentTime = Date.now();
         const elapsedTime = Math.floor((currentTime - startTime) / 1000);
-        console.log("time: ", elapsedTime);
         setTimeElapsedDisplay(elapsedTime);
       }, 1000);
       return () => clearInterval(intervalId);
@@ -208,15 +220,15 @@ const Game = () => {
       let timer = toggleDuration;
       const intervalId = setInterval(() => {
         timer--;
-        console.log("counter: ", timer);
         setTimer(timer);
-        if (timer < 0) {
+        if (timer < 0 || gameOver) {
           setTimer(toggleDuration);
           setStartTimer(false);
           clearInterval(intervalId);
           setGameOver(true);
         }
       }, 1000);
+      return () => clearInterval(intervalId);
     }
   }, [startTimer]);
 
@@ -227,15 +239,33 @@ const Game = () => {
       console.log("setting input focus!!");
       inputRef?.current?.focus();
     }
+    if (!toggleTypeCursor) {
+      console.log("logging");
+      window.addEventListener("keydown", () => {
+        // inputRef?.current?.focus();
+        setToggleTypeCursor(true);
+      });
+      return () => {
+        window.removeEventListener("keydown", () => {});
+      };
+    }
   }, [inputRef, toggleTypeCursor]);
 
   function randomCloudGenerate() {
     return (
       <img
         id="cloudyImg"
-        src="/src/assets/white-clout.png"
+        src="/assets/white-cloud.png"
         className={`${styles.cloudyImg} cloudyImg`}
       />
+    );
+  }
+
+  function renderCloudType() {
+    return (
+      <div className={styles.cloudy}>
+        <Cloudy />
+      </div>
     );
   }
 
@@ -253,7 +283,7 @@ const Game = () => {
           {randomCloudGenerate()}
         </div>
 
-        <p>WPM:{wpm}</p>
+        <p>WPM:{Math.round(wpm)}</p>
         <div className={styles.resultStatsContainer}>
           <p>
             <span>test type</span>
@@ -283,7 +313,10 @@ const Game = () => {
             className={styles.resetBtn}
             type="button"
             tabIndex={0}
-            onClick={resetTypeBoard}
+            onClick={() => {
+              fetchSentences();
+              resetTypeBoard();
+            }}
           >
             next
           </button>
@@ -299,118 +332,124 @@ const Game = () => {
       </div>
 
       <div className={` ${!gameOver ? styles.show : styles.hide}`}>
-        {gameStart && (
+        {gameStart && toggleMode == "cloudy" && (
           <div className={styles.cloudy}>
-            <Cloudy />
+            <Cloudy
+              setGameOver={setGameOver}
+              setStartTime={setStartTime}
+              handleWpmConversion={handleWpmConversion}
+              setGameStart={setGameStart}
+            />
           </div>
         )}
         {/* MODES */}
-        <div className={`${styles.modes}`}>
-          <div className={styles.mode}>
-            {modes.map((mode) => (
-              <button
-                className={`${styles.optionBtn} ${
-                  toggleMode == mode && styles.toggle
-                }`}
-                key={mode}
-                onClick={() => {
-                  resetTypeBoard();
-                  fetchSentences();
-                  setToggleMode(mode);
-                }}
-              >
-                {mode}
-              </button>
-            ))}
-          </div>
-          <div className={styles.optionBreaker} />
-          <div className={styles.optionSettings}>
-            {toggleMode == "time" &&
-              durations.map((duration) => (
+        <div className={styles.modesContainer}>
+          <div className={`${styles.modes}`}>
+            <div className={styles.mode}>
+              {modes.map((mode) => (
                 <button
                   className={`${styles.optionBtn} ${
-                    duration == toggleDuration && styles.toggle
+                    toggleMode == mode && styles.toggle
                   }`}
-                  key={duration}
+                  key={mode}
                   onClick={() => {
-                    fetchSentences();
-                    setToggleDuration(duration);
+                    setToggleMode(mode);
                   }}
                 >
-                  {duration}
+                  {mode}
                 </button>
               ))}
-            {toggleMode == "words" &&
-              totalWords.map((total) => (
-                <button
-                  className={`${styles.optionBtn} ${
-                    total == toggleTotalWords && styles.toggle
-                  }`}
-                  key={total}
-                  onClick={() => {
-                    fetchSentences();
-                    setToggleTotalWords(total);
-                  }}
-                >
-                  {total}
-                </button>
-              ))}
-            {toggleMode == "quote" &&
-              quotes.map((quote) => (
-                <button
-                  className={`${styles.optionBtn} ${
-                    quote == toggleMode && styles.toggle
-                  }`}
-                  key={quote}
-                  onClick={() => {}}
-                >
-                  {quote}
-                </button>
-              ))}
+            </div>
+            <div className={styles.optionBreaker} />
+            <div className={styles.optionSettings}>
+              {toggleMode == "time" &&
+                durations.map((duration) => (
+                  <button
+                    className={`${styles.optionBtn} ${
+                      duration == toggleDuration && styles.toggle
+                    }`}
+                    key={duration}
+                    onClick={() => {
+                      setToggleDuration(duration);
+                    }}
+                  >
+                    {duration}
+                  </button>
+                ))}
+
+              {(toggleMode == "words" || toggleMode == "cloudy") && (
+                <>
+                  {totalWords.map((total) => (
+                    <button
+                      className={`${styles.optionBtn} ${
+                        total == toggleTotalWords && styles.toggle
+                      }`}
+                      key={total}
+                      onClick={() => {
+                        setToggleTotalWords(total);
+                      }}
+                    >
+                      {total}
+                    </button>
+                  ))}
+                </>
+              )}
+              {toggleMode == "quote" &&
+                quotes.map((quote) => (
+                  <button
+                    className={`${styles.optionBtn} ${
+                      quote == toggleMode && styles.toggle
+                    }`}
+                    key={quote}
+                    onClick={() => {}}
+                  >
+                    {quote}
+                  </button>
+                ))}
+            </div>
           </div>
         </div>
         {/* GAME CONTAINER */}
         <div className={`${styles.game}`}>
-          <input
-            autoComplete="off"
-            spellCheck="false"
-            id="gameTypeInput"
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={(e) => handleOnchangeInput(e)}
-            onFocus={() => setToggleTypeCursor(true)}
-            onBlur={async () => {
-              console.log("callback?");
-              // await sleep(1200);
-              setToggleTypeCursor(false);
-            }}
-            className={`${styles.typeInput}`}
-            onKeyDown={(e) => {
-              if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
-                e.preventDefault();
-              }
-            }}
-          />
-          <div className={`${styles.timer}`}>
-            {startTimer && toggleMode == "time" && <span>Time: {timer}</span>}
-            {startTime && toggleMode == "words" && (
-              <span>Time: {timeElapsedDisplay}</span>
-            )}
-          </div>
-
-          {!toggleTypeCursor && (
-            <div
-              className={styles.gameFocus}
-              onClick={() => inputRef?.current?.focus()}
-            >
-              <p>click here or press any key to focus</p>
-            </div>
-          )}
           <div className={styles.typingContainer}>
+            <div className={`${styles.timer}`}>
+              {startTimer && toggleMode == "time" && <span>{timer}</span>}
+              {startTime && toggleMode == "words" && toggleTypeCursor && (
+                <span>
+                  {wordsTyped}/{toggleTotalWords}
+                </span>
+              )}
+            </div>
+            {!toggleTypeCursor && (
+              <div
+                className={styles.gameFocus}
+                onClick={() => inputRef?.current?.focus()}
+              >
+                <p>click here or press any key to focus</p>
+              </div>
+            )}
             <div
               className={`${styles.words} ${!toggleTypeCursor && styles.blur}`}
             >
+              <input
+                autoComplete="off"
+                spellCheck="false"
+                id="gameTypeInput"
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={(e) => handleOnchangeInput(e)}
+                onFocus={() => setToggleTypeCursor(true)}
+                onBlur={async () => {
+                  setToggleTypeCursor(false);
+                }}
+                className={`${styles.typeInput}`}
+                onKeyDown={(e) => {
+                  if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
+                    e.preventDefault();
+                  }
+                }}
+              />
               {word.split("").map((letter, idx) =>
                 letter == " " ? (
                   <span
@@ -460,7 +499,6 @@ const Game = () => {
                   </Fragment>
                 ))}
             </div>
-
             <div className={styles.resetBtnContainer}>
               <button
                 className={styles.resetBtn}
