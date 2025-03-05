@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const Cloud = () => {
+const Cloudy = () => {
   console.log("loading");
   const [loading, setLoading] = useState(true);
   const boardRef = useRef(null);
@@ -82,4 +82,4 @@ const Cloud = () => {
   return <canvas ref={boardRef} />;
 };
 
-export default Cloud;
+export default Cloudy;

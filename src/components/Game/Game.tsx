@@ -3,8 +3,8 @@ import { MdRefresh } from "react-icons/md";
 import data from "../../../data.json";
 import styles from "./Game.module.scss";
 // import { saveTestResult } from "../../services/api.js";
-
-import Cloud from "./Cloudy/cloud.jsx";
+// @ts-ignore
+import Cloudy from "../Cloudy/Cloudy.jsx";
 const Game = () => {
   const [randomWord, setRandomWord] = useState("apple");
   const [word, setWord] = useState(randomWord);
@@ -301,7 +301,7 @@ const Game = () => {
       <div className={` ${!gameOver ? styles.show : styles.hide}`}>
         {gameStart && (
           <div className={styles.cloudy}>
-            <Cloud />
+            <Cloudy />
           </div>
         )}
         {/* MODES */}
