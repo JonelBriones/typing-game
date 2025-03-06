@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const Cloudy = ({
-  setGameOver,
+  setStartGame,
   setStartTime,
   handleWpmConversion,
   setGameStart,
@@ -41,7 +41,7 @@ const Cloudy = ({
       context.clearRect(0, 0, board.width, board.height); // Clear canvas
       if (cloudRef.current.y == 536) {
         console.log("game over", cloudRef.current.y);
-        setGameOver(true);
+        setStartGame(true);
         setStartTime(null);
         handleWpmConversion();
         setGameStart(false);

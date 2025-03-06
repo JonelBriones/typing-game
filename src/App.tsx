@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "../App.module.scss";
 import "./index.scss";
 import Game from "./components/Game/Game";
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
@@ -55,6 +56,7 @@ function App() {
         <div className={styles.content}>
           <Routes>
             <Route path="/" element={<Game />} />
+
             <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </div>

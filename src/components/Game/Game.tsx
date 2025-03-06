@@ -5,24 +5,25 @@ import styles from "./Game.module.scss";
 // import { saveTestResult } from "../../services/api.js";
 // @ts-ignore
 import Cloudy from "../Cloudy/Cloudy.jsx";
+import Board from "./Board.js";
 const Game = () => {
   const [randomWord, setRandomWord] = useState("the fox and apple");
   const [word, setWord] = useState(randomWord);
-  const [currentWordIdx, setCurrentWordIdx] = useState(0);
-  const [splitWords, setSplitWords] = useState([]);
+  const [splitWords, setSplitWords] = useState(randomWord.split(" "));
 
-  const [extraCharAddedIdx, setExtraCharAddedIdx] = useState(0);
+  const [extraCharAddedIdx, setExtraCharAddedIdx] = useState<number>(0);
+  const [inputContainsExtraChar, setInputContainsExtraChar] = useState(false);
+  const [startGame, setStartGame] = useState(false);
   const [extraCharWord, setExtraCharWord] = useState("");
-  const [extraChar, setExtraChar] = useState();
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
   const [gameOver, setGameOver] = useState(false);
-  const [gameStart, setGameStart] = useState(false);
 
   const [extraInputs, setExtraInputs] = useState("");
   const [disableBackspaceIdx, setDisableBackspaceIdx] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [wordCount, setWordCount] = useState(0);
 
   // const modes = ["time", "words", "quote", "cloudy"];
   const modes = ["time", "words", "cloudy"];
@@ -144,8 +145,8 @@ const Game = () => {
     setStartTimer(false);
     setTimer(toggleDuration);
     setToggleTypeCursor(true);
-    setGameStart(false);
     setWord(randomWord);
+    setStartGame(false);
   }
 
   function handleWpmConversion() {
@@ -169,58 +170,37 @@ const Game = () => {
   function handleOnchangeInput(e: React.ChangeEvent<HTMLInputElement>) {
     let input = e.target.value;
 
-    if (input.length == 1) {
-      if (toggleMode == "time") {
-        setStartTimer(true);
-        setGameStart(true);
-      }
-      if (toggleMode == "words" || toggleMode == "cloudy") {
-        setStartTime(Date.now());
-        setGameStart(true);
-      }
-    }
+    if (extraCharAddedIdx) {
+      console.log("current input is:", input);
+      let inputLength = input.split("").length;
+      let remainingWordChar = randomWord
+        .split("")
+        .slice(extraCharAddedIdx, randomWord.length)
+        .join("");
 
-    let inputLength = input.split("").length;
-    let remainingWordChar = randomWord
-      .split("")
-      .slice(extraCharAddedIdx, randomWord.length)
-      .join("");
-    let splitInputValue = inputValue.split(" ");
-    let splitvalue = input.split("");
-    let lastInputChar = splitvalue[splitvalue.length - 1] == " ";
-    let matchInputWordChar = randomWord[splitvalue.length - 1] == " ";
-    let inputChar = splitvalue.join("");
-    console.log("input length:", inputLength, input);
-    console.log("extra char idx:", extraCharAddedIdx);
-    // EXTRA CHARS
-    // if (extraCharWord && extraCharAddedIdx == inputLength) {
-    //   console.log("RESTTING,  ", input);
-    //   console.log(1);
-    //   setInputValue(input);
-    //   setExtraCharWord("");
-    // }
-    if (extraCharWord && inputLength >= extraCharAddedIdx) {
-      if (lastInputChar && matchInputWordChar) {
-        console.log("correct space entry");
+      console.log("input length:", inputLength, input);
+      console.log("extra char idx:", extraCharAddedIdx);
+      console.log(splitWords);
+
+      if (inputLength > extraCharAddedIdx) {
+        let splitvalue = input.split("");
+        let inputLength = splitvalue.length;
+        let currentWord = randomWord
+          .split("")
+          .slice(0, extraCharAddedIdx)
+          .join("");
+        let extraChar = splitvalue
+          .slice(extraCharAddedIdx, inputLength - 1)
+          .join("");
+        setExtraCharWord(currentWord + extraChar + remainingWordChar);
+      }
+      if (inputLength <= extraCharAddedIdx) {
         setInputValue(input);
         setExtraCharWord("");
         setExtraCharAddedIdx(0);
-      } else {
-        console.log(2);
-        setInputValue(input);
-        setExtraCharWord(input + remainingWordChar);
       }
     }
-    // if (inputLength == extraCharAddedIdx && extraCharWord) {
-    //   console.log(3);
-    //   setInputValue(input);
-    //   setExtraCharWord(input + remainingWordChar);
-    //   console.log("input length matches char", extraCharAddedIdx);
-    // }
 
-    if (extraCharWord) return;
-
-    console.log(splitWords[0]);
     if (input.length < disableBackspaceIdx || gameOver) return;
 
     if (input.length == word.length) {
@@ -229,88 +209,70 @@ const Game = () => {
         setGameOver(true);
         setStartTime(null);
         handleWpmConversion();
-        setGameStart(false);
+        setStartGame(false);
       }
     }
 
-    if (matchInputWordChar) {
-      if (lastInputChar) {
-        let currentInputWord = splitInputValue[splitInputValue.length - 1];
-        let currentWord = splitWords[splitInputValue.length - 1];
-        // console.log(currentInputWord, currentWord);
-        if (currentInputWord == currentWord) {
-          console.log("words matched");
-          setWordsTyped(wordsTyped + 1);
-          setDisableBackspaceIdx(input.length);
-        }
-      } else {
-        // console.log("current input char", inputChar);
-        // console.log("current input length", splitvalue.length);
+    let splitInputValue = inputValue.split(" ");
 
-        // console.log("remaing word char", remainingWordChar);
-        // console.log(inputChar + " " + remainingWordChar);
-        // setExtraInputs();
+    let splitvalue = input.split("");
+    let inputLength = splitvalue.length;
 
-        setExtraCharWord(inputChar + " " + remainingWordChar);
-        console.log("extra char added", splitvalue.length);
-        setExtraCharAddedIdx(splitvalue.length - 1);
+    let lastInputCharIsSpace = splitvalue[inputLength - 1] == " ";
+    let wordAtInputIsSpace = randomWord[inputLength - 1] == " ";
+
+    console.log("is valid space?", wordAtInputIsSpace);
+
+    // is current letter valid?
+
+    let currentInputWord = splitInputValue[splitInputValue.length - 1];
+    let currentWord = splitWords[splitInputValue.length - 1];
+
+    if (wordAtInputIsSpace && lastInputCharIsSpace) {
+      console.log("char is a valid space");
+      if (currentInputWord == currentWord) {
+        console.log("words matched");
+        setWordsTyped(wordsTyped + 1);
+        setDisableBackspaceIdx(input.length);
       }
     }
+    if (wordAtInputIsSpace && !lastInputCharIsSpace) {
+      console.log("char needed to be a space");
+      if (currentInputWord == currentWord) {
+        console.log("words matched");
+        setWordsTyped(wordsTyped + 1);
+        setDisableBackspaceIdx(input.length);
+      }
+      // an extra letter was added on required space
 
-    // if (input.length > word.length) {
-    //   console.log("extra", input);
-    //   setExtraInputs(input.slice(word.length, input.length));
-    // }
+      // setting contains extra char value as true
+      setInputContainsExtraChar(true);
+
+      // return the words with extra char
+
+      // should only set once
+      if (!extraCharAddedIdx) {
+        console.log("formating word with extra char");
+
+        const remainingChar = splitWords
+          .slice(wordsTyped + 1, splitWords.length)
+          .join(" ");
+
+        setExtraCharAddedIdx(inputLength - 1);
+        console.log(currentWord + currentInputWord + " " + remainingChar);
+        //  grab the extra char
+        console.log(inputLength);
+        console.log(
+          currentWord + splitvalue[inputLength - 1] + " " + remainingChar
+        );
+        setExtraCharWord(
+          currentWord + splitvalue[inputLength - 1] + " " + remainingChar
+        );
+      }
+    }
 
     setInputValue(input);
   }
-
-  useEffect(() => {
-    if (startTime) {
-      const intervalId = setInterval(() => {
-        const currentTime = Date.now();
-        const elapsedTime = Math.floor((currentTime - startTime) / 1000);
-        setTimeElapsedDisplay(elapsedTime);
-      }, 1000);
-      return () => clearInterval(intervalId);
-    }
-  }, [startTime]);
-
-  useEffect(() => {
-    if (startTimer) {
-      let timer = toggleDuration;
-      const intervalId = setInterval(() => {
-        timer--;
-        setTimer(timer);
-        if (timer < 0 || gameOver) {
-          setTimer(toggleDuration);
-          setStartTimer(false);
-          clearInterval(intervalId);
-          setGameOver(true);
-        }
-      }, 1000);
-      return () => clearInterval(intervalId);
-    }
-  }, [startTimer]);
-
-  useEffect(() => {
-    console.log("ref true", inputRef.current);
-    console.log("cursore true", toggleTypeCursor);
-    if (inputRef.current) {
-      console.log("setting input focus!!");
-      inputRef?.current?.focus();
-    }
-    if (!toggleTypeCursor) {
-      console.log("logging");
-      window.addEventListener("keydown", () => {
-        // inputRef?.current?.focus();
-        setToggleTypeCursor(true);
-      });
-      return () => {
-        window.removeEventListener("keydown", () => {});
-      };
-    }
-  }, [inputRef, toggleTypeCursor]);
 
   function randomCloudGenerate() {
     return (
@@ -321,7 +283,9 @@ const Game = () => {
       />
     );
   }
-
+  useEffect(() => {
+    console.log(startGame);
+  }, [startGame]);
   return (
     <div className={`${styles.container}`}>
       {/* GAME RESULT */}
@@ -385,13 +349,13 @@ const Game = () => {
       </div>
 
       <div className={` ${!gameOver ? styles.show : styles.hide}`}>
-        {gameStart && toggleMode == "cloudy" && (
+        {startGame && toggleMode == "cloudy" && (
           <div className={styles.cloudy}>
             <Cloudy
               setGameOver={setGameOver}
               setStartTime={setStartTime}
               handleWpmConversion={handleWpmConversion}
-              setGameStart={setGameStart}
+              setStartGame={setStartGame}
             />
           </div>
         )}
@@ -466,10 +430,10 @@ const Game = () => {
         <div className={`${styles.game}`}>
           <div className={styles.typingContainer}>
             <div className={`${styles.timer}`}>
-              {startTimer && toggleMode == "time" && <span>{timer}</span>}
-              {startTime && toggleMode == "words" && toggleTypeCursor && (
+              {startGame && toggleMode == "time" && <span>{timer}</span>}
+              {startGame && toggleMode == "words" && toggleTypeCursor && (
                 <span>
-                  {wordsTyped}/{toggleTotalWords}
+                  {wordCount}/{toggleTotalWords}
                 </span>
               )}
             </div>
@@ -484,122 +448,30 @@ const Game = () => {
             <div
               className={`${styles.words} ${!toggleTypeCursor && styles.blur}`}
             >
-              <input
-                autoComplete="off"
-                spellCheck="false"
-                id="gameTypeInput"
-                ref={inputRef}
-                type="text"
-                value={inputValue}
-                onChange={(e) => handleOnchangeInput(e)}
-                onFocus={() => setToggleTypeCursor(true)}
-                onBlur={async () => {
-                  setToggleTypeCursor(false);
-                }}
-                className={`${styles.typeInput}`}
-                onKeyDown={(e) => {
-                  if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
-                    e.preventDefault();
-                  }
-                }}
+              <Board
+                startTime={startTime}
+                startTimer={startTimer}
+                timer={timer}
+                toggleTypeCursor={toggleTypeCursor}
+                wordsTyped={wordsTyped}
+                inputRef={inputRef}
+                setToggleTypeCursor={setToggleTypeCursor}
+                toggleTotalWords={toggleTotalWords}
+                extraCharAddedIdx={extraCharAddedIdx}
+                extraCharWord={extraCharWord}
+                word={word}
+                extraInputs={extraInputs}
+                resetTypeBoard={resetTypeBoard}
+                setStartTimer={setStartTimer}
+                setStartTime={setStartTime}
+                toggleMode={toggleMode}
+                toggleDuration={toggleDuration}
+                gameOver={gameOver}
+                setGameOver={setGameOver}
+                wordCount={wordCount}
+                setWordCount={setWordCount}
+                setStartGame={setStartGame}
               />
-
-              {extraCharWord
-                ? extraCharWord.split("").map((letter, idx) =>
-                    letter == " " ? (
-                      <span
-                        key={idx}
-                        className={` ${styles.space} ${styles.letter} ${
-                          inputValue[idx] == undefined
-                            ? ""
-                            : letter == inputValue[idx]
-                            ? styles.valid
-                            : styles.error
-                        } ${
-                          toggleTypeCursor &&
-                          idx == inputValue.length &&
-                          styles.cursor
-                        } `}
-                      >
-                        {letter}
-                      </span>
-                    ) : (
-                      <span
-                        key={idx}
-                        className={` ${styles.letter} ${
-                          inputValue[idx] == undefined
-                            ? ""
-                            : letter == inputValue[idx]
-                            ? styles.valid
-                            : styles.error
-                        } ${
-                          toggleTypeCursor &&
-                          idx == inputValue.length &&
-                          styles.cursor
-                        } `}
-                      >
-                        {letter}
-                      </span>
-                    )
-                  )
-                : word.split("").map((letter, idx) =>
-                    letter == " " ? (
-                      <span
-                        key={idx}
-                        className={` ${styles.space} ${styles.letter} ${
-                          inputValue[idx] == undefined
-                            ? ""
-                            : letter == inputValue[idx]
-                            ? styles.valid
-                            : styles.error
-                        } ${
-                          toggleTypeCursor &&
-                          idx == inputValue.length &&
-                          styles.cursor
-                        } `}
-                      >
-                        {letter}
-                      </span>
-                    ) : (
-                      <span
-                        key={idx}
-                        className={` ${styles.letter} ${
-                          inputValue[idx] == undefined
-                            ? ""
-                            : letter == inputValue[idx]
-                            ? styles.valid
-                            : styles.error
-                        } ${
-                          toggleTypeCursor &&
-                          idx == inputValue.length &&
-                          styles.cursor
-                        } `}
-                      >
-                        {letter}
-                      </span>
-                    )
-                  )}
-              {extraInputs &&
-                extraInputs.split("").map((letter, idx) => (
-                  <Fragment key={idx}>
-                    <span className={styles.error}>
-                      {toggleTypeCursor && idx == inputValue.length && (
-                        <span className={styles.cursor} />
-                      )}
-                      {letter}
-                    </span>
-                  </Fragment>
-                ))}
-            </div>
-            <div className={styles.resetBtnContainer}>
-              <button
-                className={styles.resetBtn}
-                type="button"
-                tabIndex={0}
-                onClick={resetTypeBoard}
-              >
-                <MdRefresh size={"1.5rem"} />
-              </button>
             </div>
           </div>
         </div>
