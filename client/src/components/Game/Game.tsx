@@ -4,26 +4,18 @@ import data from "../../../data.json";
 import styles from "./Game.module.scss";
 // import { saveTestResult } from "../../services/api.js";
 // @ts-ignore
-import Cloudy from "../Cloudy/Cloudy.jsx";
+import Cloudy from "../Cloudy/Cloudy.js";
 import Board from "./Board.js";
 const Game = () => {
   const [randomWord, setRandomWord] = useState("the fox and apple");
   const [word, setWord] = useState(randomWord);
-  const [splitWords, setSplitWords] = useState(randomWord.split(" "));
 
-  const [extraCharAddedIdx, setExtraCharAddedIdx] = useState<number>(0);
-  const [inputContainsExtraChar, setInputContainsExtraChar] = useState(false);
   const [startGame, setStartGame] = useState(false);
-  const [extraCharWord, setExtraCharWord] = useState("");
-  const [inputValue, setInputValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+
   const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
   const [gameOver, setGameOver] = useState(false);
 
-  const [extraInputs, setExtraInputs] = useState("");
-  const [disableBackspaceIdx, setDisableBackspaceIdx] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [wordCount, setWordCount] = useState(0);
 
   // const modes = ["time", "words", "quote", "cloudy"];
   const modes = ["time", "words", "cloudy"];
@@ -34,15 +26,19 @@ const Game = () => {
   const [toggleDuration, setToggleDuration] = useState(15);
   const [timer, setTimer] = useState(toggleDuration);
   const [toggleTotalWords, setToggleTotalWords] = useState(10);
-  const [startTimer, setStartTimer] = useState(false);
-
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [disableBackspaceIdx, setDisableBackspaceIdx] = useState<number | null>(
+    null
+  );
   // SCORE TRACKING
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [wordsTyped, setWordsTyped] = useState(0);
-  const [timeElapsedDisplay, setTimeElapsedDisplay] = useState(0);
-  const [timeElapsed, setTimeElapsed] = useState(0);
+  const [input, setInput] = useState("");
+
+  const [time, setTime] = useState<number>(0);
+  const [timeElapsed, setTimeElapsed] = useState<number | null>(null);
+  const [wordCount, setWordCount] = useState(0);
   const [wpm, setWpm] = useState(0);
   const [raw, setRawWpm] = useState(0);
+  const [correctletter, setCorrectLetter] = useState(0);
 
   type Test = {
     user: string;
@@ -70,8 +66,7 @@ const Game = () => {
 
   useEffect(() => {
     if (gameOver) {
-      handleUpdateTestData();
-      console.log("hjello");
+      handleWpmConversion();
       // customize cloud speed & position
       let time = () => Math.floor(Math.random() * (7 - 3 + 1)) + 3;
       let positionY = () => Math.floor(Math.random() * 100);
@@ -90,9 +85,24 @@ const Game = () => {
     } else if (testData?.seconds > 0) {
       // saveTest();
     }
-    console.log(loading, timeElapsedDisplay, saveTest);
   }, [testData]);
-  function handleUpdateTestData() {
+  function handleWpmConversion() {
+    let correctedLetters = 0;
+    for (let i = 0; i < randomWord.length; i++) {
+      if (randomWord[i] == input[i]) {
+        correctedLetters++;
+      }
+    }
+    const timer = (Date.now() - time!) / 1000;
+    const wordsTyped = correctedLetters / 5;
+    const wpm = (wordsTyped * 60) / timer;
+    const raw = ((randomWord.length / 5) * 60) / timer;
+    console.log(wpm);
+    console.log(raw);
+    setCorrectLetter(correctedLetters);
+    setWpm(parseFloat(wpm.toFixed(2)));
+    setRawWpm(parseFloat(raw.toFixed(2)));
+    setTimeElapsed(parseFloat(timer.toFixed(2)));
     setTestData({
       user,
       seconds: timeElapsed,
@@ -115,7 +125,6 @@ const Game = () => {
     let words = selectedWords.join(" ");
     setRandomWord(words);
     setWord(words);
-    setSplitWords(words.split(" "));
   }
   // async function fetchQuotes() {
   //   resetTypeBoard();
@@ -130,148 +139,20 @@ const Game = () => {
   //   setWord(quote);
   // }
   useEffect(() => {
-    // fetchSentences();
+    fetchSentences();
   }, [toggleMode, toggleTotalWords, toggleDuration]);
   function resetTypeBoard() {
     console.log("resetting board");
-    setInputValue("");
     setGameOver(false);
-    setDisableBackspaceIdx(0);
-    setWordsTyped(0);
-    setStartTime(null);
+    setWordCount(0);
     setWpm(0);
     setRawWpm(0);
-    setTimeElapsedDisplay(0);
-    setStartTimer(false);
     setTimer(toggleDuration);
     setToggleTypeCursor(true);
     setWord(randomWord);
     setStartGame(false);
-  }
-
-  function handleWpmConversion() {
-    let correctedLetters = 0;
-    for (let i = 0; i < randomWord.length; i++) {
-      if (randomWord[i] == inputValue[i]) {
-        correctedLetters++;
-      }
-    }
-    const time = (Date.now() - startTime!) / 1000;
-    const wordsTyped = correctedLetters / 5;
-    console.log("TIME:", time);
-    const wpm = (wordsTyped * 60) / time;
-    const rawWpm = ((randomWord.length / 5) * 60) / time;
-
-    setWpm(parseFloat(wpm.toFixed(2)));
-    setRawWpm(parseFloat(rawWpm.toFixed(2)));
-    setTimeElapsed(parseFloat(time.toFixed(2)));
-  }
-
-  function handleOnchangeInput(e: React.ChangeEvent<HTMLInputElement>) {
-    let input = e.target.value;
-
-    if (extraCharAddedIdx) {
-      console.log("current input is:", input);
-      let inputLength = input.split("").length;
-      let remainingWordChar = randomWord
-        .split("")
-        .slice(extraCharAddedIdx, randomWord.length)
-        .join("");
-
-      console.log("input length:", inputLength, input);
-      console.log("extra char idx:", extraCharAddedIdx);
-      console.log(splitWords);
-
-      if (inputLength > extraCharAddedIdx) {
-        let splitvalue = input.split("");
-        let inputLength = splitvalue.length;
-        let currentWord = randomWord
-          .split("")
-          .slice(0, extraCharAddedIdx)
-          .join("");
-        let extraChar = splitvalue
-          .slice(extraCharAddedIdx, inputLength - 1)
-          .join("");
-        setExtraCharWord(currentWord + extraChar + remainingWordChar);
-      }
-      if (inputLength <= extraCharAddedIdx) {
-        setInputValue(input);
-        setExtraCharWord("");
-        setExtraCharAddedIdx(0);
-      }
-    }
-
-    if (input.length < disableBackspaceIdx || gameOver) return;
-
-    if (input.length == word.length) {
-      setExtraInputs("");
-      if (input.split("").pop() == randomWord.split("").pop()) {
-        setGameOver(true);
-        setStartTime(null);
-        handleWpmConversion();
-        setStartGame(false);
-      }
-    }
-
-    let splitInputValue = inputValue.split(" ");
-
-    let splitvalue = input.split("");
-    let inputLength = splitvalue.length;
-
-    let lastInputCharIsSpace = splitvalue[inputLength - 1] == " ";
-    let wordAtInputIsSpace = randomWord[inputLength - 1] == " ";
-
-    console.log("is valid space?", wordAtInputIsSpace);
-
-    // is current letter valid?
-
-    let currentInputWord = splitInputValue[splitInputValue.length - 1];
-    let currentWord = splitWords[splitInputValue.length - 1];
-
-    if (wordAtInputIsSpace && lastInputCharIsSpace) {
-      console.log("char is a valid space");
-      if (currentInputWord == currentWord) {
-        console.log("words matched");
-        setWordsTyped(wordsTyped + 1);
-        setDisableBackspaceIdx(input.length);
-      }
-    }
-    if (wordAtInputIsSpace && !lastInputCharIsSpace) {
-      console.log("char needed to be a space");
-      if (currentInputWord == currentWord) {
-        console.log("words matched");
-        setWordsTyped(wordsTyped + 1);
-        setDisableBackspaceIdx(input.length);
-      }
-      // an extra letter was added on required space
-
-      // setting contains extra char value as true
-      setInputContainsExtraChar(true);
-
-      // return the words with extra char
-
-      // should only set once
-      if (!extraCharAddedIdx) {
-        console.log("formating word with extra char");
-
-        const remainingChar = splitWords
-          .slice(wordsTyped + 1, splitWords.length)
-          .join(" ");
-
-        setExtraCharAddedIdx(inputLength - 1);
-        console.log(currentWord + currentInputWord + " " + remainingChar);
-        //  grab the extra char
-        console.log(inputLength);
-        console.log(
-          currentWord + splitvalue[inputLength - 1] + " " + remainingChar
-        );
-        setExtraCharWord(
-          currentWord + splitvalue[inputLength - 1] + " " + remainingChar
-        );
-      }
-    }
-
-    setInputValue(input);
+    setInput("");
+    setDisableBackspaceIdx(null);
   }
 
   function randomCloudGenerate() {
@@ -283,9 +164,21 @@ const Game = () => {
       />
     );
   }
+
   useEffect(() => {
-    console.log(startGame);
-  }, [startGame]);
+    if (inputRef.current) {
+      inputRef?.current?.focus();
+    }
+    if (!toggleTypeCursor) {
+      window.addEventListener("keydown", () => {
+        setToggleTypeCursor(true);
+      });
+      return () => {
+        window.removeEventListener("keydown", () => {});
+      };
+    }
+  }, [inputRef, toggleTypeCursor]);
+
   return (
     <div className={`${styles.container}`}>
       {/* GAME RESULT */}
@@ -314,7 +207,9 @@ const Game = () => {
           </p>
           <p>
             <span>characters</span>
-            <span>{`${randomWord.length}/0/0/0`}</span>
+            <span>{`${correctletter}/${word.length - correctletter}/${
+              input.length - word.length
+            }/${word.split(" ").length - input.split(" ").length}`}</span>
           </p>
           <p>
             <span>consistency</span>
@@ -351,12 +246,7 @@ const Game = () => {
       <div className={` ${!gameOver ? styles.show : styles.hide}`}>
         {startGame && toggleMode == "cloudy" && (
           <div className={styles.cloudy}>
-            <Cloudy
-              setGameOver={setGameOver}
-              setStartTime={setStartTime}
-              handleWpmConversion={handleWpmConversion}
-              setStartGame={setStartGame}
-            />
+            <Cloudy setStartGame={setStartGame} time={time} setTime={setTime} />
           </div>
         )}
         {/* MODES */}
@@ -449,21 +339,12 @@ const Game = () => {
               className={`${styles.words} ${!toggleTypeCursor && styles.blur}`}
             >
               <Board
-                startTime={startTime}
-                startTimer={startTimer}
                 timer={timer}
                 toggleTypeCursor={toggleTypeCursor}
-                wordsTyped={wordsTyped}
-                inputRef={inputRef}
                 setToggleTypeCursor={setToggleTypeCursor}
                 toggleTotalWords={toggleTotalWords}
-                extraCharAddedIdx={extraCharAddedIdx}
-                extraCharWord={extraCharWord}
                 word={word}
-                extraInputs={extraInputs}
                 resetTypeBoard={resetTypeBoard}
-                setStartTimer={setStartTimer}
-                setStartTime={setStartTime}
                 toggleMode={toggleMode}
                 toggleDuration={toggleDuration}
                 gameOver={gameOver}
@@ -471,6 +352,16 @@ const Game = () => {
                 wordCount={wordCount}
                 setWordCount={setWordCount}
                 setStartGame={setStartGame}
+                timeElapsed={timeElapsed}
+                setTimeElapsed={setTimeElapsed}
+                time={time}
+                setTime={setTime}
+                startGame={startGame}
+                input={input}
+                setInput={setInput}
+                inputRef={inputRef}
+                disableBackspaceIdx={disableBackspaceIdx}
+                setDisableBackspaceIdx={setDisableBackspaceIdx}
               />
             </div>
           </div>

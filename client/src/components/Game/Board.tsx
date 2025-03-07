@@ -9,7 +9,6 @@ const TypingGame = ({
   word,
   extraInputs,
   resetTypeBoard,
-
   gameOver,
   toggleMode,
   toggleDuration,
@@ -17,28 +16,31 @@ const TypingGame = ({
   wordCount,
   setWordCount,
   setStartGame,
+  timeElapsed,
+  input,
+  setInput,
+  setTimeElapsed,
+  startGame,
+  time,
+  setTime,
+  inputRef,
+  disableBackspaceIdx,
+  setDisableBackspaceIdx,
 }: any) => {
-  const [input, setInput] = useState("");
-  const [disableBackspaceIdx, setDisableBackspaceIdx] = useState<number | null>(
-    null
-  );
   const [lastKey, setLastKey] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const [time, setTime] = useState<number | null>(null);
-  const [timeElapsed, setTimeElapsed] = useState<number | null>(null);
-  useEffect(() => {});
   const onHandleInputChange = (e) => {
+    if (!toggleTypeCursor) return;
     let input = e.target.value;
 
     if (input.length == 1) {
       setToggleTypeCursor(true);
       setStartGame(true);
       if (toggleMode == "words") {
-        // countUp(Date.now());
+        setTime(Date.now());
       }
       if (toggleMode == "time") {
-        // countDown();
+        countDown();
       }
     }
     if (input.length < disableBackspaceIdx) return;
@@ -55,10 +57,6 @@ const TypingGame = ({
       if (inputCharArr[inputCharArr.length - 1] == " ") {
         let inputWordArr = input.split(" ");
 
-        // was the previous word correct?
-
-        // if word count was increment on wrong word find the difference of inputArr.length & wordCount
-        // verify if last word matches
         let currentWord = input.split(" ")[wordCount];
         let isWordMatch = word.split(" ")[wordCount];
 
@@ -84,6 +82,15 @@ const TypingGame = ({
     }
 
     setInput(input);
+    if (
+      input.split("")[input.split("").length - 1] ==
+        word.split("")[word.split("").length - 1] &&
+      input.length == word.length
+    ) {
+      setGameOver(true);
+      setStartGame(false);
+      setDisableBackspaceIdx(null);
+    }
   };
   const onHandleKeyDown = (e) => {
     setLastKey(e.key);
@@ -106,16 +113,19 @@ const TypingGame = ({
 
     return correctedInput;
   };
-  function countUp(time: number) {
+
+  useEffect(() => {
     console.log("Game mode:", toggleMode);
-    const intervalId = setInterval(() => {
-      const currentTime = Date.now();
-      const elapsedTime = Math.floor((currentTime - time) / 1000);
-      console.log("count up", elapsedTime);
-      setTimeElapsed(elapsedTime);
-    }, 1000);
-    return () => clearInterval(intervalId);
-  }
+    if (startGame) {
+      const intervalId = setInterval(() => {
+        const currentTime = Date.now();
+        const elapsedTime = Math.floor((currentTime - time) / 1000);
+        console.log("count up", elapsedTime);
+        setTimeElapsed(elapsedTime);
+      }, 1000);
+      return () => clearInterval(intervalId);
+    }
+  }, [startGame]);
 
   function countDown() {
     console.log("Game mode:", toggleMode);
@@ -132,20 +142,21 @@ const TypingGame = ({
     return () => clearInterval(intervalId);
   }
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef?.current?.focus();
-    }
-    if (!toggleTypeCursor) {
-      window.addEventListener("keydown", () => {
-        // inputRef?.current?.focus();
-        setToggleTypeCursor(true);
-      });
-      return () => {
-        window.removeEventListener("keydown", () => {});
-      };
-    }
-  }, [inputRef, toggleTypeCursor]);
+  //   useEffect(() => {
+  //     console.log("cursor on");
+  //     if (inputRef.current) {
+  //       inputRef?.current?.focus();
+  //     }
+  //     if (!toggleTypeCursor) {
+  //       window.addEventListener("keydown", () => {
+  //         // inputRef?.current?.focus();
+  //         setToggleTypeCursor(true);
+  //       });
+  //       return () => {
+  //         window.removeEventListener("keydown", () => {});
+  //       };
+  //     }
+  //   }, [inputRef, toggleTypeCursor]);
 
   return (
     <>

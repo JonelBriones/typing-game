@@ -7,17 +7,19 @@ dotenv.config();
 import connectDB from "./config/database.js";
 
 const app = express();
-
+const corsOptions = {
+  origin: [`http://localhost:5173`],
+};
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 connectDB(process.env.MONGODB_URI);
 
 app.get("/", (req, res) => {
-  res.send("Typing game backend isi running");
+  res.json({ test: "Typing game backend isi running" });
 });
 
-app.use("/api/tests", testRoute);
+// app.use("/api/tests", testRoute);
 
 const PORT = process.env.PORT || 3000;
 

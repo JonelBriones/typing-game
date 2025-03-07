@@ -1,12 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const Cloudy = ({
-  setStartGame,
-  setStartTime,
-  handleWpmConversion,
-  setGameStart,
-}) => {
-  const [loading, setLoading] = useState(true);
+const Cloudy = ({ setTime, setGameStart }) => {
   const boardRef = useRef(null);
   const cloudRef = useRef({ x: 45, y: 0, velocityY: 0 });
   const animationFrameId = useRef(null);
@@ -41,9 +35,7 @@ const Cloudy = ({
       context.clearRect(0, 0, board.width, board.height); // Clear canvas
       if (cloudRef.current.y == 536) {
         console.log("game over", cloudRef.current.y);
-        setStartGame(true);
-        setStartTime(null);
-        handleWpmConversion();
+        setTime(null);
         setGameStart(false);
       }
       // Apply gravity
