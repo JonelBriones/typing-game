@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const Cloudy = ({ setTime, setGameStart }) => {
+const Cloudy = ({ setTime, setGameStart }: any) => {
   const boardRef = useRef(null);
   const cloudRef = useRef({ x: 45, y: 0, velocityY: 0 });
   const animationFrameId = useRef(null);

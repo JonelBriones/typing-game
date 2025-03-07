@@ -1,0 +1,101 @@
+@import "../../styles/colors";
+@import "../../styles/theme";
+:root {
+  --textDark: #222222;
+  --textLight: #fefae0;
+}
+.container {
+  width: 100%;
+  height: 100%;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  div:nth-child(2) {
+    flex: 1;
+  }
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.userInfo {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100px;
+
+  .userImg {
+    border-radius: 50%;
+    background-color: $ash-gray;
+    width: 20px;
+    height: 20px;
+  }
+  .userName {
+    cursor: pointer;
+  }
+}
+.userTestStats {
+  display: flex;
+  gap: 1rem;
+  span {
+    width: 100px;
+  }
+}
+.tableBody,
+.tableHeader {
+  display: flex;
+  flex-direction: column;
+}
+.tableHeader {
+  font-size: 0.85rem;
+  * {
+    color: var(--text);
+  }
+}
+.tableBody {
+  .row:nth-child(odd) {
+    background-color: var(--table-row);
+  }
+  span {
+    color: var(--text);
+  }
+}
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--table-row);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  div {
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+  }
+}
+h1 {
+  margin-block: 1rem;
+}
+.button {
+  text-align: center;
+  flex: 1;
+  padding: 0.5rem 1rem;
+  color: var(--text);
+  border-radius: 0.75rem;
+  transition: background-color 100ms ease-in;
+  font-weight: 600;
+  &.button:hover {
+    background-color: $ash-gray;
+    &.toggle {
+      color: var(--textDark);
+      background-color: var(--accent);
+    }
+  }
+}
+
+.toggle {
+  color: var(--textDark);
+  background-color: var(--accent);
+}
