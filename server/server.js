@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
   res.json({ test: "Typing game backend isi running" });
 });
 
-// app.use("/api/tests", testRoute);
+app.use("/api/tests", testRoute);
 
 const PORT = process.env.PORT || 3000;
 
