@@ -1,7 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 import testRoute from "./routes/testRoute.js";
+import userRoute from "./routes/userRoute.js";
 dotenv.config();
 
 import connectDB from "./config/database.js";
@@ -19,6 +21,7 @@ app.get("/", (req, res) => {
   res.json({ test: "Typing game backend isi running" });
 });
 
+app.use("/api/user", userRoute);
 app.use("/api/tests", testRoute);
 
 const PORT = process.env.PORT || 3000;

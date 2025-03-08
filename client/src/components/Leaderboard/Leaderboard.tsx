@@ -7,12 +7,13 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // const res = await fetch("http://localhost:2222/api/tests");
         const res = await fetch("http://localhost:2222/api/tests");
         if (!res.ok) {
           throw new Error("Response state:", res.status);
         }
         const json = await res.json();
-        console.log(json);
+
         setTests(json);
         setLoading(false);
       } catch (err) {

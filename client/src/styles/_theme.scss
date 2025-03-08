@@ -1,8 +1,8 @@
 @import "../styles/colors"; // Import the color variables
 
 @mixin apply-theme($theme) {
-  // background-color: map-get($theme, bg);
-  // color: map-get($theme, text);
+  background-color: map-get($theme, bg);
+  color: map-get($theme, text);
 }
 
 :root {

@@ -175,10 +175,6 @@
   font-size: 2rem;
 }
 
-.footer {
-  height: 200px;
-}
-
 .gameFocus {
   position: absolute;
   z-index: 10;
@@ -210,7 +206,6 @@ span {
   text-align: center;
   word-break: keep-all;
   white-space: normal;
-
   color: var(--typing-fields-placeholder);
 }
 .space {
@@ -276,5 +271,12 @@ span {
   }
   to {
     opacity: 0;
+  }
+}
+.footer {
+  height: 200px;
+  color: var(--text);
+  a {
+    color: var(--accent);
   }
 }

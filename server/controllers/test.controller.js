@@ -29,6 +29,7 @@ const saveTest = async (request, response) => {
   }
 };
 const getTests = async (request, response) => {
+  console.log("getting tests from db");
   try {
     const tests = await Test.find();
     if (!tests) {

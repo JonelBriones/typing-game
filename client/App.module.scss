@@ -22,10 +22,12 @@
   --typing-fields-valid: #f5f5f5;
   --cursor: #fefae0;
 }
-
+body {
+  // background-color: var(--bg);
+}
 .app {
   font-family: "Nunito", sans-serif;
-  background-color: var(--bg);
+  // background-color: var(--bg);
   color: var(--text);
   display: flex;
   flex-direction: column;

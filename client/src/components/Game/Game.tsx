@@ -368,7 +368,11 @@ const Game = () => {
         </div>
       </div>
 
-      <div className={`${styles.footer}`}>bottom container</div>
+      <div className={`${styles.footer}`}>
+        <div>
+          Created by <a href="https://github.com/JonelBriones">Jonel Briones</a>
+        </div>
+      </div>
     </div>
   );
 };
