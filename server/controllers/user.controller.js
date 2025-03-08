@@ -68,7 +68,6 @@ const login = async (req, res) => {
     secure: false, //  production = true, development = false
     maxAge: 24 * 60 * 60 * 1000,
   });
-
   return res.status(201).json({
     accessToken,
     session: {
@@ -83,7 +82,7 @@ const refresh = (req, res) => {
   console.log("refresh");
   if (req.cookies?.jwt) {
     const refreshToken = req.cookies.jwt;
-    console.log("refresh token", refreshToken);
+    if (!refreshToken) return;
     const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     // console.log("verified", verified);
 
@@ -92,7 +91,6 @@ const refresh = (req, res) => {
       process.env.REFRESH_TOKEN_SECRET,
       (err, decoded) => {
         if (err) {
-          console.log("ERROR", err);
           return res.status(406).json({ message: "Unauthorized" });
         } else {
           const accessToken = jwt.sign(
@@ -100,7 +98,6 @@ const refresh = (req, res) => {
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: "10m" }
           );
-          console.log("decoded", decoded);
           return res.json({ accessToken, decoded });
         }
       }
@@ -108,6 +105,16 @@ const refresh = (req, res) => {
   } else {
     return res.status(406).json({ message: "Unauthorized" });
   }
+};
+
+const logout = (req, res) => {
+  console.log("logout");
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    sameSite: "Lax", // Should match your initial cookie settings
+    secure: false, // Change to true in production
+  });
+  res.status(200).json({ message: "Logout successful" });
 };
 
 const getUserById = async (req, res) => {
@@ -118,42 +125,8 @@ const getUserById = async (req, res) => {
     res.json(401).json({ message: "Could not find user" });
   }
   const { email, username } = result;
-  const user = {
-    email,
-    username,
-  };
+
   return res.json({ email, username });
 };
-// const generateToken = (req, res) => {
-//   let jwtSecretKey = process.env.JWT_SECRET_KEY;
-//   console.log(jwtSecretKey);
-//   let data = {
-//     time: Date(),
-//     userId: 22,
-//   };
-//   const token = jwt.sign(data, jwtSecretKey);
 
-//   // res.send({ token });
-//   return token;
-// };
-
-// const validateToken = async (req, res) => {
-//   let tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
-//   let jwtSecretKey = process.env.JWT_SECRET_KEY;
-//   // check if
-//   try {
-//     const token = req.header(tokenHeaderKey);
-
-//     const verified = jwt.verify(token, jwtSecretKey);
-
-//     if (verified) {
-//       return res.send("Token verified");
-//     } else {
-//       return res.status(401).send(error);
-//     }
-//   } catch (error) {
-//     return res.status(401).send(error);
-//   }
-// };
-
-export { createUser, login, refresh, getUserById };
+export { createUser, login, refresh, getUserById, logout };

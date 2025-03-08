@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import styles from "./Login.module.scss";
 import { useAuthContext } from "../../AuthProvider";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
+  const navigate = useNavigate();
   const { session, setSession, token, setToken } = useAuthContext();
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [userForm, setUserForm] = useState({
@@ -10,7 +13,9 @@ const Login = () => {
     password: "",
     username: "",
   });
+
   async function login() {
+    setLoading(true);
     try {
       const res = await fetch("http://localhost:2222/api/user/login", {
         method: "POST",
@@ -36,19 +41,21 @@ const Login = () => {
       setSession(data.session);
       // setMessage(data.message);
       // setError("");
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
   }
+
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserForm({
       ...userForm,
       [e.target.name]: e.target.value,
     });
   };
-  const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitHandler = (e: any) => {
     e.preventDefault();
-
+    console.log("submit");
     login();
   };
   return (
@@ -61,7 +68,7 @@ const Login = () => {
       {error && <h4>{error}</h4>}
       <p>email:{userForm.email}</p>
       <p>password:{userForm.password}</p>
-      <form action="" onSubmit={onSubmitHandler}>
+      <form onSubmit={onSubmitHandler}>
         <input
           type="text"
           placeholder="email"
@@ -83,7 +90,7 @@ const Login = () => {
           value={userForm.username}
           onChange={(e) => onChangeHandler(e)}
         />
-        <button type="submit" className={styles.loginBtn}>
+        <button type="submit" className={styles.loginBtn} disabled={loading}>
           Login
         </button>
       </form>

@@ -4,11 +4,13 @@ import {
   login,
   refresh,
   getUserById,
+  logout,
 } from "../controllers/user.controller.js";
 const router = express.Router();
 
 router.post("/create", createUser);
 router.post("/login", login);
 router.post("/refresh", refresh);
-router.get("/:id", getUserById);
+router.get("/user/:id", getUserById);
+router.post("/logout", logout);
 export default router;

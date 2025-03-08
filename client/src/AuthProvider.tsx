@@ -21,30 +21,20 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    console.log("checking token: ", session);
-
-    if (session === null) {
-      console.log(window.location.pathname);
-      console.log("session is empty", session);
-
-      const validateAuth = async () => {
-        const res = await fetch("http://localhost:2222/api/user/refresh", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const refreshToken = await res.json();
-        console.log(refreshToken);
-        setToken(refreshToken.accessToken);
-        setSession(refreshToken.decoded);
-      };
-      validateAuth();
-      if (window.location.pathname !== "/login") {
-        redirect("/login");
-      }
-    }
+    const validateAuth = async () => {
+      const res = await fetch("http://localhost:2222/api/user/refresh", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res) return;
+      const refreshToken = await res.json();
+      setToken(refreshToken.accessToken);
+      setSession(refreshToken.decoded);
+    };
+    validateAuth();
   }, [token]);
 
   useEffect(() => {
@@ -53,7 +43,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("token id valid", session._id);
       const fetchData = async () => {
         const resUser = await fetch(
-          `http://localhost:2222/api/user/${session._id}`
+          `http://localhost:2222/api/user/user/${session._id}`
         );
         const user = await resUser.json();
         setSession(user);
