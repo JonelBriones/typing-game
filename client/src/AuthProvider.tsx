@@ -1,35 +1,67 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
+import { redirect } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setToken] = useState("token");
+  const [session, setSession] = useState(null);
+  const [token, setToken] = useState(null);
 
   const value: any = {
+    session,
+    setSession,
     token,
+    setToken,
   };
 
-  // on render check from the backend if user has accessToken, setToken if available, if null redirect to login
   useEffect(() => {
-    const validateAuth = async () => {
-      // if token is null
-      // create a new token
-      // else, validate token
-      try {
-        const token = await fetch(
-          "http://localhost:2222/api/user/validateToken"
-        );
-        if (token.token == null) {
-          throw new Error("token does not exist");
-        }
-        const auth = await token.json();
-        console.log(auth);
-      } catch (error) {
-        console.log(error);
+    console.log("checking token: ", session);
+
+    if (session === null) {
+      console.log(window.location.pathname);
+      console.log("session is empty", session);
+
+      const validateAuth = async () => {
+        const res = await fetch("http://localhost:2222/api/user/refresh", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const refreshToken = await res.json();
+        console.log(refreshToken);
+        setToken(refreshToken.accessToken);
+        setSession(refreshToken.decoded);
+      };
+      validateAuth();
+      if (window.location.pathname !== "/login") {
+        redirect("/login");
       }
-    };
-    validateAuth();
+    }
   }, [token]);
+
+  useEffect(() => {
+    console.log(session);
+    if (session?._id) {
+      console.log("token id valid", session._id);
+      const fetchData = async () => {
+        const resUser = await fetch(
+          `http://localhost:2222/api/user/${session._id}`
+        );
+        const user = await resUser.json();
+        setSession(user);
+      };
+      fetchData();
+    }
+  }, [session]);
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 

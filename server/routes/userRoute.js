@@ -1,12 +1,14 @@
 import express from "express";
 import {
-  generateToken,
-  validateToken,
   createUser,
+  login,
+  refresh,
+  getUserById,
 } from "../controllers/user.controller.js";
 const router = express.Router();
 
-router.post("/generateToken", generateToken);
-router.get("/validateToken", validateToken);
 router.post("/create", createUser);
+router.post("/login", login);
+router.post("/refresh", refresh);
+router.get("/:id", getUserById);
 export default router;

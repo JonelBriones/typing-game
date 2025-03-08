@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
 import testRoute from "./routes/testRoute.js";
 import userRoute from "./routes/userRoute.js";
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 import connectDB from "./config/database.js";
@@ -11,10 +11,11 @@ import connectDB from "./config/database.js";
 const app = express();
 const corsOptions = {
   origin: [`http://localhost:5173`],
+  credentials: true,
 };
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors(corsOptions));
-
 connectDB(process.env.MONGODB_URI);
 
 app.get("/", (req, res) => {
