@@ -5,6 +5,7 @@
   flex-direction: column;
   gap: 0.5rem;
   position: relative;
+  color: var(--text-color);
   //   width: 100%;
 
   .header {
@@ -21,6 +22,11 @@
     gap: 0.75rem;
     div {
       position: relative;
+
+      input {
+        // all: unset;
+        color: var(--text-color);
+      }
 
       .checkmark,
       .xmark,

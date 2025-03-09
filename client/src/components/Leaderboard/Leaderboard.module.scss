@@ -1,12 +1,9 @@
 @import "../../styles/colors";
 @import "../../styles/theme";
-:root {
-  --textDark: #222222;
-  --textLight: #fefae0;
-}
 .container {
   width: 100%;
   height: 100%;
+  color: var(--text-color);
 }
 .row {
   display: flex;
@@ -28,7 +25,7 @@
 
   .userImg {
     border-radius: 50%;
-    background-color: $ash-gray;
+    background-color: var(--cloud-color);
     width: 20px;
     height: 20px;
   }
@@ -50,23 +47,19 @@
 }
 .tableHeader {
   font-size: 0.85rem;
-  * {
-    color: var(--text);
-  }
 }
 .tableBody {
   .row:nth-child(odd) {
-    background-color: var(--table-row);
+    background-color: var(--cloud-color);
   }
   span {
-    color: var(--text);
+    color: var(--text-color);
   }
 }
 .buttonContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: var(--table-row);
   padding: 1rem;
   border-radius: 0.75rem;
   div {
@@ -75,27 +68,27 @@
     gap: 1rem;
   }
 }
-h1 {
+.h1 {
   margin-block: 1rem;
 }
 .button {
   text-align: center;
   flex: 1;
   padding: 0.5rem 1rem;
-  color: var(--text);
+  color: var(--text-color);
   border-radius: 0.75rem;
-  transition: background-color 100ms ease-in;
+  transition: background-color 200ms ease;
   font-weight: 600;
   &.button:hover {
-    background-color: $ash-gray;
+    background-color: var(--accent-color);
+    background-color: rgb(162, 155, 254, 0.5);
     &.toggle {
-      color: var(--textDark);
-      background-color: var(--accent);
+      background-color: var(--accent-color);
     }
   }
 }
 
 .toggle {
-  color: var(--textDark);
-  background-color: var(--accent);
+  color: #e3f2fd;
+  background-color: var(--accent-color);
 }

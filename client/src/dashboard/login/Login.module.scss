@@ -4,7 +4,7 @@
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
-
+  color: var(--text-color);
   .header {
     display: flex;
     align-items: center;
@@ -17,9 +17,13 @@
   .providers {
     display: flex;
     gap: 1rem;
+    .button {
+      width: 100%;
+    }
   }
 
   .authForm {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -27,17 +31,17 @@
       font-size: 0.95rem;
       text-align: end;
     }
-    .forgotPassword {
-      all: unset;
-      text-align: end;
-      color: var(--text-color);
-      width: fit-content;
-      margin-left: auto;
-      opacity: 0.5;
-      transition: opacity 100ms ease-in-out;
-      &:hover {
-        opacity: 1;
-      }
+  }
+  .forgotPassword {
+    all: unset;
+    text-align: end;
+    color: var(--text-color);
+    width: fit-content;
+    margin-left: auto;
+    opacity: 0.5;
+    transition: opacity 100ms ease-in-out;
+    &:hover {
+      opacity: 1;
     }
   }
   span {
@@ -45,7 +49,7 @@
     font-weight: 700;
     text-align: center;
   }
-  button {
+  .button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -54,7 +58,6 @@
     padding: 0.5rem;
     border-radius: 0.5rem;
     font-weight: 700;
-    width: 100%;
     transition: opacity 100ms ease-in-out;
     opacity: 0.8;
     &:hover {

@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Signup.module.scss";
 import { useAuthContext } from "../../AuthProvider";
 import { IoMdPersonAdd } from "react-icons/io";
-import { IoPersonAddOutline } from "react-icons/io5";
+// import { IoPersonAddOutline } from "react-icons/io5";
 import { IoCheckmark } from "react-icons/io5";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
@@ -18,6 +18,7 @@ const Signup = ({ error, setError }: any) => {
     username: "",
   });
   const { session, setSession, setToken } = useAuthContext();
+  console.log(error, session);
   const [isloading, setIsLoading] = useState(false);
   const [userTaken, setUserTaken] = useState(false);
   const debounceSearch = useDebounceSearch(userForm.username);
@@ -49,7 +50,7 @@ const Signup = ({ error, setError }: any) => {
       console.log("missing fields");
       setError("Please fill in all fields");
     }
-    // signup();
+    signup();
   };
 
   let emailRegex: RegExp = /^[^@]+@[^@]+\.[^@]+$/;

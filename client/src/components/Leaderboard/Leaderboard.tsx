@@ -39,31 +39,31 @@ const Leaderboard = () => {
 
   return (
     <div className={styles.container}>
-      <div>
+      <div className={styles.buttonContainer}>
         <div>
-          <div className={styles.buttonContainer}>
-            <div>
-              <button
-                className={`${styles.button} ${
-                  toggleTime == 15 ? styles.toggle : ""
-                }`}
-                onClick={() => setToggleTime(15)}
-              >
-                time 15
-              </button>
-              <button
-                className={`${styles.button} ${
-                  toggleTime == 60 ? styles.toggle : ""
-                }`}
-                onClick={() => setToggleTime(60)}
-              >
-                time 60
-              </button>
-            </div>
-          </div>
+          <button
+            className={`${styles.button} ${
+              toggleTime == 15 ? styles.toggle : ""
+            }`}
+            onClick={() => setToggleTime(15)}
+          >
+            time 15
+          </button>
+          <button
+            className={`${styles.button} ${
+              toggleTime == 60 ? styles.toggle : ""
+            }`}
+            onClick={() => setToggleTime(60)}
+          >
+            time 60
+          </button>
         </div>
-        <h1>All-time English | Time {toggleTime} Leaderboard</h1>
       </div>
+
+      <h1 className={styles.h1}>
+        All-time English | Time {toggleTime} Leaderboard
+      </h1>
+
       {loading ? (
         <div>loading</div>
       ) : (

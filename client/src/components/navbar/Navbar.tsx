@@ -7,6 +7,7 @@ import { FaUser } from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
 import { IoSunnyOutline } from "react-icons/io5";
 import { useAuthContext } from "../../AuthProvider";
+import { FaTrophy } from "react-icons/fa";
 const Navbar = () => {
   const { setSession, setToken, session } = useAuthContext() as any;
   const navigate = useNavigate();
@@ -46,19 +47,20 @@ const Navbar = () => {
 
   return (
     <nav className={styles.navbar}>
-      <div className={styles.leaderboard}>
-        <Link to="/leaderboard">Leaderboard</Link>
-
+      <div className={styles.navLeft}>
+        <Link to="/">CloudType</Link>
+        <Link to="/leaderboard">
+          <FaTrophy size={"1.25rem"} />
+        </Link>
         <Link to="/">
           <FaRegKeyboard size={"1.25rem"} />
         </Link>
       </div>
-      <div className={`${styles.navright}`}>
+      <div>
         <button
           onClick={() => setToggleDarkMode(!toggleDarkMode)}
           className={`${styles.navbutton}`}
         >
-          {" "}
           {toggleDarkMode ? (
             <IoSunnyOutline size={"1.2rem"} />
           ) : (

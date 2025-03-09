@@ -8,14 +8,14 @@ import { FaGoogle } from "react-icons/fa";
 const Login = ({ error, setError }: any) => {
   const navigate = useNavigate();
   const { session, setSession, setToken } = useAuthContext();
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   // const [message, setMessage] = useState("");
 
   const [userForm, setUserForm] = useState({
     email: "",
     password: "",
   });
-
+  console.log(session, error);
   async function login() {
     // setLoading(true);
     try {
@@ -69,10 +69,10 @@ const Login = ({ error, setError }: any) => {
         <h4>login</h4>
       </div>
       <div className={styles.providers}>
-        <button>
+        <button className={styles.button}>
           <FaGoogle size={"1.5rem"} />
         </button>
-        <button>
+        <button className={styles.button}>
           <FaGoogle size={"1.5rem"} />
         </button>
       </div>
@@ -94,11 +94,11 @@ const Login = ({ error, setError }: any) => {
           value={userForm.password}
           onChange={(e) => onChangeHandler(e)}
         />
-        <button type="submit" className={styles.submitBtn}>
+        <button type="submit" className={styles.button}>
           login
         </button>
-        <button className={styles.forgotPassword}>forgot password?</button>
       </form>
+      <button className={styles.forgotPassword}>forgot password?</button>
     </div>
   );
 };

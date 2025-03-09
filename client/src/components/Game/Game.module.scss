@@ -9,14 +9,13 @@
   height: 100%;
   width: 100%;
   position: relative;
+  color: var(--text-color);
 }
 
 // RESULTS
 .results {
   height: inherit;
   width: inherit;
-
-  // background-color: var(--bg);
   z-index: 200;
   display: flex;
   flex-direction: column;
@@ -130,26 +129,28 @@
   width: 240px;
   display: flex;
   justify-content: center;
+  gap: 1rem;
 }
 .optionBtn {
-  color: var(--text-options);
+  color: var(--text-color);
   background-color: transparent;
   border: none;
-  padding: 1rem 1rem;
+  padding: 0.5rem;
+  transition: color 100ms ease-in;
   &:hover {
-    color: $granite-gray;
+    color: var(--accent-color);
   }
   &.toggle {
-    color: var(--text-options-toggled);
+    color: var(--accent-color);
     &:hover {
-      color: var(--text-options-toggled);
+      color: var(--accent-color);
     }
   }
 }
 .optionBreaker {
   width: 6px;
   height: 30px;
-  background-color: $slate-gray;
+  background-color: var(--text-color);
   border-radius: 2rem;
 }
 
@@ -183,7 +184,6 @@
   p {
     text-align: center;
     font-size: 2rem;
-    // color: rgb(180, 180, 180);
   }
 }
 
@@ -202,11 +202,13 @@
   overflow: hidden;
 }
 span {
-  // display: inline-block;
-  // text-align: center;
-  // word-break: keep-all;
-  // white-space: normal;
-  // color: var(--typing-fields-placeholder);
+  // fix this
+  display: inline-block;
+  text-align: center;
+  word-break: keep-all;
+  white-space: normal;
+  color: var(--typing-fields-placeholder);
+  // border: 2px solid red;
 }
 .space {
   width: 10px;
@@ -215,12 +217,13 @@ span {
 }
 .letter {
   border-left: 3px solid transparent;
+  opacity: 0.5;
 }
 
 .cursor::before {
   content: "";
   margin-left: -3px;
-  border-left: 3px solid var(--cursor);
+  border-left: 3px solid var(--text-color);
   animation: blink;
   animation-duration: 1.1s;
   animation-iteration-count: infinite;
@@ -240,9 +243,7 @@ span {
   color: transparent;
   cursor: default;
 }
-.resetBtn:focus {
-  border: 2px solid;
-}
+
 .resetBtnContainer {
   position: absolute;
   margin: auto;
@@ -256,10 +257,20 @@ span {
   transition: ease-in-out;
   display: flex;
   justify-content: center;
+  color: var(--text-color);
+  opacity: 0.5;
+  border: 2px solid transparent;
+
+  &:hover {
+    opacity: 1;
+  }
+  &:active {
+    border: 2px solid var(--text-color);
+  }
 }
 .valid {
-  color: var(--typing-fields-valid);
-  //   color: white;
+  color: var(--text-color);
+  opacity: 1;
 }
 .error {
   color: red;
@@ -271,12 +282,5 @@ span {
   }
   to {
     opacity: 0;
-  }
-}
-.footer {
-  height: 200px;
-  color: var(--text);
-  a {
-    color: var(--accent);
   }
 }

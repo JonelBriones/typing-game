@@ -13,13 +13,12 @@
   input {
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    background-color: white;
     width: 100%;
     background-color: var(--background);
     color: var(--text-color);
     border: 2px solid transparent;
     &:focus {
-      border: 2px solid var(--accent-color);
+      border: 2px solid var(--text-color);
     }
   }
   div {
