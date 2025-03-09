@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Leaderboard.module.scss";
 const Leaderboard = () => {
   const [tests, setTests] = useState([]);
@@ -10,14 +10,16 @@ const Leaderboard = () => {
         // const res = await fetch("http://localhost:2222/api/tests");
         const res = await fetch("http://localhost:2222/api/tests");
         if (!res.ok) {
-          throw new Error("Response state:", res.status);
+          throw new Error("Response state:");
         }
         const json = await res.json();
 
         setTests(json);
         setLoading(false);
       } catch (err) {
-        console.error(err.message);
+        if (err instanceof TypeError) {
+          console.error(err.message);
+        }
       }
     };
     fetchData();
@@ -80,25 +82,20 @@ const Leaderboard = () => {
             </div>
           </div>
           <div className={styles.tableBody}>
-            {tests.map(
-              (
-                { date, language, seconds, user, words, raw, wpm, _id },
-                idx
-              ) => (
-                <div key={_id} className={styles.row}>
-                  <div>{idx + 1}</div>
-                  <div className={styles.userInfo}>
-                    <span className={styles.userImg} />
-                    <span className={styles.userName}>{user}</span>
-                  </div>
-                  <div className={styles.userTestStats}>
-                    <span>{wpm}</span>
-                    <span>{raw}</span>
-                    <span>{formatDate(date)}</span>
-                  </div>
+            {tests.map(({ date, user, raw, wpm, _id }, idx) => (
+              <div key={_id} className={styles.row}>
+                <div>{idx + 1}</div>
+                <div className={styles.userInfo}>
+                  <span className={styles.userImg} />
+                  <span className={styles.userName}>{user}</span>
                 </div>
-              )
-            )}
+                <div className={styles.userTestStats}>
+                  <span>{wpm}</span>
+                  <span>{raw}</span>
+                  <span>{formatDate(date)}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

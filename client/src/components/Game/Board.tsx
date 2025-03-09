@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useRef } from "react";
+import { useEffect, Fragment } from "react";
 import styles from "./Game.module.scss";
 import { MdRefresh } from "react-icons/md";
 const TypingGame = ({
@@ -16,7 +16,6 @@ const TypingGame = ({
   wordCount,
   setWordCount,
   setStartGame,
-  timeElapsed,
   input,
   setInput,
   setTimeElapsed,
@@ -27,9 +26,9 @@ const TypingGame = ({
   disableBackspaceIdx,
   setDisableBackspaceIdx,
 }: any) => {
-  const [lastKey, setLastKey] = useState<string | null>(null);
+  // const [lastKey, setLastKey] = useState<string | null>(null);
 
-  const onHandleInputChange = (e) => {
+  const onHandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!toggleTypeCursor) return;
     let input = e.target.value;
 
@@ -55,7 +54,7 @@ const TypingGame = ({
       console.log("char needs to be a space");
 
       if (inputCharArr[inputCharArr.length - 1] == " ") {
-        let inputWordArr = input.split(" ");
+        // let inputWordArr = input.split(" ");
 
         let currentWord = input.split(" ")[wordCount];
         let isWordMatch = word.split(" ")[wordCount];
@@ -92,27 +91,27 @@ const TypingGame = ({
       setDisableBackspaceIdx(null);
     }
   };
-  const onHandleKeyDown = (e) => {
-    setLastKey(e.key);
-  };
+  // const onHandleKeyDown = (e) => {
+  //   setLastKey(e.key);
+  // };
 
-  const renderText = () => {
-    console.log("logging");
-    let displayText = "";
-    let correctedInput;
+  // const renderText = () => {
+  //   console.log("logging");
+  //   let displayText = "";
+  //   let correctedInput;
 
-    for (let i = 0; i < input.length; i++) {
-      if (word[i] === input[i]) {
-        console.log("valid letter");
-      } else if (word[i] == " ") {
-        console.log("value requires a space");
-      } else {
-        console.log("wrong letter");
-      }
-    }
+  //   for (let i = 0; i < input.length; i++) {
+  //     if (word[i] === input[i]) {
+  //       console.log("valid letter");
+  //     } else if (word[i] == " ") {
+  //       console.log("value requires a space");
+  //     } else {
+  //       console.log("wrong letter");
+  //     }
+  //   }
 
-    return correctedInput;
-  };
+  //   return correctedInput;
+  // };
 
   useEffect(() => {
     console.log("Game mode:", toggleMode);
@@ -168,7 +167,7 @@ const TypingGame = ({
         type="text"
         value={input}
         onChange={(e) => onHandleInputChange(e)}
-        onKeyDownCapture={(e) => onHandleKeyDown(e)}
+        // onKeyDownCapture={(e) => onHandleKeyDown(e)}
         onFocus={() => setToggleTypeCursor(true)}
         onBlur={async () => {
           setToggleTypeCursor(false);
@@ -178,12 +177,12 @@ const TypingGame = ({
           if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
             e.preventDefault();
           }
-          setLastKey(e.key);
+          // setLastKey(e.key);
         }}
       />
 
       {extraCharWord
-        ? extraCharWord.split("").map((letter, idx) =>
+        ? extraCharWord.split("").map((letter: string, idx: number) =>
             letter == " " ? (
               <span
                 key={idx}
@@ -212,7 +211,7 @@ const TypingGame = ({
               </span>
             )
           )
-        : word.split("").map((letter, idx) =>
+        : word.split("").map((letter: string, idx: number) =>
             letter == " " ? (
               <span
                 key={idx}
@@ -242,7 +241,7 @@ const TypingGame = ({
             )
           )}
       {extraInputs &&
-        extraInputs.split("").map((letter, idx) => (
+        extraInputs.split("").map((letter: string, idx: number) => (
           <Fragment key={idx}>
             <span className={styles.error}>
               {toggleTypeCursor && idx == input.length && (

@@ -1,0 +1,35 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 150px;
+
+  width: 100%;
+  margin: auto;
+  div {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+.leaderboard {
+  a {
+    display: flex;
+    align-items: center;
+  }
+}
+.navbutton {
+  display: block;
+  cursor: pointer;
+  padding: 1rem;
+  background-color: transparent;
+  border: none;
+  color: rgb(170, 170, 170);
+  margin: auto;
+}
+.navbutton {
+  // color: white;
+  &:hover {
+    transition: all 200ms ease-in-out;
+  }
+}

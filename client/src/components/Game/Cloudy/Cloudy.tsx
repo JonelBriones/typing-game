@@ -1,9 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 const Cloudy = ({ setTime, setGameStart }: any) => {
-  const boardRef = useRef(null);
+  // interface Board {
+  //   width: number;
+  //   height: number;
+  //   getContext: (value: string) => string;
+  // }
+  const boardRef = useRef<any | null>(null);
   const cloudRef = useRef({ x: 45, y: 0, velocityY: 0 });
-  const animationFrameId = useRef(null);
+  const animationFrameId = useRef<number | null>(null);
   const gravity = 0.2; // 🛠️ Reduced gravity for slower fall
   const jumpVelocity = -3; // 🔼 Stronger upward force for better jump
   const cloudImage = new Image();
@@ -19,7 +24,7 @@ const Cloudy = ({ setTime, setGameStart }: any) => {
     const boardHeight = 640;
     board.width = boardWidth;
     board.height = boardHeight;
-    const context = board.getContext("2d");
+    const context = board.getContext("2d") as any;
 
     if (!context) {
       console.error("Failed to get canvas context.");
@@ -69,7 +74,7 @@ const Cloudy = ({ setTime, setGameStart }: any) => {
     };
 
     // **Handle Key Press for Movement**
-    const moveCloud = (e) => {
+    const moveCloud = (e: any) => {
       if (e.code === "ArrowUp" || e.code === "Space") {
         cloudRef.current.velocityY = jumpVelocity; // Apply jump force
       }
@@ -80,7 +85,7 @@ const Cloudy = ({ setTime, setGameStart }: any) => {
     // **Cleanup on unmount**
     return () => {
       document.removeEventListener("keydown", moveCloud);
-      cancelAnimationFrame(animationFrameId.current);
+      cancelAnimationFrame(animationFrameId.current as any);
     };
   }, []); // ✅ Empty dependency array ensures it runs only once
 

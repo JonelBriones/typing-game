@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdRefresh } from "react-icons/md";
 import data from "../../../data.json";
 import styles from "./Game.module.scss";
@@ -34,7 +34,7 @@ const Game = () => {
   const [input, setInput] = useState("");
 
   const [time, setTime] = useState<number>(0);
-  const [timeElapsed, setTimeElapsed] = useState<number | null>(null);
+  const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [wordCount, setWordCount] = useState(0);
   const [wpm, setWpm] = useState(0);
   const [raw, setRawWpm] = useState(0);
@@ -105,7 +105,7 @@ const Game = () => {
     setTimeElapsed(parseFloat(timer.toFixed(2)));
     setTestData({
       user,
-      seconds: timeElapsed,
+      seconds: timeElapsed!,
       words: toggleTotalWords,
       wpm: wpm,
       raw: raw,
@@ -178,6 +178,7 @@ const Game = () => {
       };
     }
   }, [inputRef, toggleTypeCursor]);
+  console.log(loading, saveTest);
 
   return (
     <div className={`${styles.container}`}>
@@ -365,12 +366,6 @@ const Game = () => {
               />
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className={`${styles.footer}`}>
-        <div>
-          Created by <a href="https://github.com/JonelBriones">Jonel Briones</a>
         </div>
       </div>
     </div>

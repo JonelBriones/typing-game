@@ -1,5 +1,5 @@
-@import "/src/styles/theme";
-@import "../src/styles/colors";
+// @import "/src/styles/theme";
+// @import "../src/styles/colors";
 @import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 :root {
@@ -13,6 +13,15 @@
   --typing-fields-valid: #1e1e1e;
   --cursor: #36454f;
   --table-row: #ebebeb;
+
+  // cloud theme
+
+  --background-dimmed: rgb(227, 242, 253, 0.8); /* Soft blue sky */
+  --background: #e3f2fd; /* Soft blue sky */
+  --text-color: #333; /* Dark gray for readability */
+  --cloud-color: #f5f5f5; /* White clouds */
+  --accent-color: #87ceeb; /* Sky blue */
+  --highlight-color: #ff9f45; /* Sunset orange */
 }
 .dark {
   --bg: #1e1e1e;
@@ -25,6 +34,14 @@
   --typing-fields-valid: #f5f5f5;
   --cursor: #fefae0;
   --table-row: #3b3b3b;
+
+  // cloud theme
+  --background-dimmed: rgb(27, 27, 47, 0.2);
+  --background: #1b1b2f;
+  --text-color: #f5f5f5;
+  --cloud-color: #6d6d6d;
+  --accent-color: #a29bfe;
+  --highlight-color: #ff9f45;
 }
 // CSS Reset (Modern Normalize)
 *,

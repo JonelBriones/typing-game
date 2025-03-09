@@ -1,16 +1,11 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
-import { redirect } from "react-router-dom";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-const AuthContext = createContext(null);
-
+const AuthContext = createContext<any>(null);
+interface Session {
+  _id: string;
+}
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [token, setToken] = useState(null);
 
   const value: any = {
@@ -21,23 +16,27 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    const validateAuth = async () => {
-      const res = await fetch("http://localhost:2222/api/user/refresh", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!res) return;
-      const refreshToken = await res.json();
-      setToken(refreshToken.accessToken);
-      setSession(refreshToken.decoded);
-    };
-    validateAuth();
+    console.log(token, session);
+    if (!token && !session) {
+      const validateAuth = async () => {
+        const res = await fetch("http://localhost:2222/api/user/refresh", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res) return;
+        const refreshToken = await res.json();
+        setToken(refreshToken.accessToken);
+        setSession(refreshToken.decoded);
+      };
+      validateAuth();
+    }
   }, [token]);
 
   useEffect(() => {
+    // use when needed user data
     console.log(session);
     if (session?._id) {
       console.log("token id valid", session._id);
