@@ -42,7 +42,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("token id valid", session._id);
       const fetchData = async () => {
         const resUser = await fetch(
-          `http://localhost:2222/api/user/user/${session._id}`
+          `http://localhost:2222/api/user/${session._id}`
         );
         const user = await resUser.json();
         setSession(user);

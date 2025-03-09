@@ -165,6 +165,8 @@
 }
 
 .typingContainer {
+  border: 2px solid red;
+  padding-inline: 24px;
   height: 100%;
   position: relative;
 }
@@ -283,4 +285,7 @@ span {
   to {
     opacity: 0;
   }
+}
+.infinite {
+  color: var(--accent-color);
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-const Cloudy = ({ setTime, setGameStart }: any) => {
+const Cloudy = ({ setTime, resetTypeBoard }: any) => {
   // interface Board {
   //   width: number;
   //   height: number;
@@ -40,8 +40,8 @@ const Cloudy = ({ setTime, setGameStart }: any) => {
       context.clearRect(0, 0, board.width, board.height); // Clear canvas
       if (cloudRef.current.y == 536) {
         console.log("game over", cloudRef.current.y);
-        setTime(null);
-        setGameStart(false);
+        // setTime(null);
+        resetTypeBoard();
       }
       // Apply gravity
       cloudRef.current.velocityY += gravity;

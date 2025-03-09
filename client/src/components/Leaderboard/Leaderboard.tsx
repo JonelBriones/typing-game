@@ -7,7 +7,6 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const res = await fetch("http://localhost:2222/api/tests");
         const res = await fetch("http://localhost:2222/api/tests");
         if (!res.ok) {
           throw new Error("Response state:");
@@ -63,7 +62,7 @@ const Leaderboard = () => {
       <h1 className={styles.h1}>
         All-time English | Time {toggleTime} Leaderboard
       </h1>
-
+      {/*  convert into tables */}
       {loading ? (
         <div>loading</div>
       ) : (

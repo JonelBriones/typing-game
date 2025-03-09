@@ -1,4 +1,4 @@
-import { useEffect, Fragment } from "react";
+import { useEffect, Fragment, useState } from "react";
 import styles from "./Game.module.scss";
 import { MdRefresh } from "react-icons/md";
 const TypingGame = ({
@@ -27,6 +27,27 @@ const TypingGame = ({
   setDisableBackspaceIdx,
 }: any) => {
   // const [lastKey, setLastKey] = useState<string | null>(null);
+  const [wordCharTracker, setWordCharTrack] = useState([]);
+
+  useEffect(() => {
+    console.log("setting word char tracker");
+    let splitwords = word.split(" ");
+    for (let i = 0; i < splitwords.length; i++) {
+      let currentWord = splitwords[i];
+      console.log(currentWord);
+      let charIdx = [];
+      for (let j = 0; j < currentWord.length; j++) {
+        let char = currentWord[j];
+        charIdx.push(currentWord[j]);
+      }
+      if (i !== splitwords.length - 1) {
+        charIdx.push(" ");
+      }
+      // console.log(charIdx);
+      wordCharTracker[i] = charIdx;
+    }
+    console.log(wordCharTracker);
+  }, [word]);
 
   const onHandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!toggleTypeCursor) return;
@@ -35,7 +56,7 @@ const TypingGame = ({
     if (input.length == 1) {
       setToggleTypeCursor(true);
       setStartGame(true);
-      if (toggleMode == "words") {
+      if (toggleMode == "words" || "cloudy") {
         setTime(Date.now());
       }
       if (toggleMode == "time") {
@@ -43,6 +64,8 @@ const TypingGame = ({
       }
     }
     if (input.length < disableBackspaceIdx) return;
+
+    for (let i = 0; i < word.length - 1; i++) {}
 
     // if space is valid
     let inputCharArr = input.split("");
@@ -54,7 +77,7 @@ const TypingGame = ({
       console.log("char needs to be a space");
 
       if (inputCharArr[inputCharArr.length - 1] == " ") {
-        // let inputWordArr = input.split(" ");
+        // space in correct position
 
         let currentWord = input.split(" ")[wordCount];
         let isWordMatch = word.split(" ")[wordCount];
@@ -66,18 +89,19 @@ const TypingGame = ({
             "is a space?",
             input.split("")[input.split("").length - 1] == " "
           );
-          if (input.split("")[input.split("").length - 1] == " ") {
-            setWordCount(wordCount + 1);
-          }
+          setWordCount(wordCount + 1);
+          // if (input.split("")[input.split("").length - 1] == " ") {
+          //   setWordCount(wordCount + 1);
+          // }
         }
       }
     } else {
-      let inputChar = input.split("");
-      if (inputChar[inputChar.length - 1] == " ") {
-        console.log("space was press");
-      } else {
-        console.log("another letter was pressed");
-      }
+      // let inputChar = input.split("");
+      // if (inputChar[inputChar.length - 1] == " ") {
+      //   console.log("space was press");
+      // } else {
+      //   console.log("another letter was pressed");
+      // }
     }
 
     setInput(input);
@@ -119,7 +143,7 @@ const TypingGame = ({
       const intervalId = setInterval(() => {
         const currentTime = Date.now();
         const elapsedTime = Math.floor((currentTime - time) / 1000);
-        console.log("count up", elapsedTime);
+        // console.log("count up", elapsedTime);
         setTimeElapsed(elapsedTime);
       }, 1000);
       return () => clearInterval(intervalId);
@@ -140,22 +164,6 @@ const TypingGame = ({
     }, 1000);
     return () => clearInterval(intervalId);
   }
-
-  //   useEffect(() => {
-  //     console.log("cursor on");
-  //     if (inputRef.current) {
-  //       inputRef?.current?.focus();
-  //     }
-  //     if (!toggleTypeCursor) {
-  //       window.addEventListener("keydown", () => {
-  //         // inputRef?.current?.focus();
-  //         setToggleTypeCursor(true);
-  //       });
-  //       return () => {
-  //         window.removeEventListener("keydown", () => {});
-  //       };
-  //     }
-  //   }, [inputRef, toggleTypeCursor]);
 
   return (
     <>
@@ -180,8 +188,36 @@ const TypingGame = ({
           // setLastKey(e.key);
         }}
       />
-
-      {extraCharWord
+      {word.split("").map((letter: string, idx: number) =>
+        letter == " " ? (
+          <span
+            key={idx}
+            className={` ${styles.space} ${styles.letter} ${
+              input[idx] == undefined
+                ? ""
+                : letter == input[idx]
+                ? styles.valid
+                : styles.error
+            } ${toggleTypeCursor && idx == input.length && styles.cursor} `}
+          >
+            {letter}
+          </span>
+        ) : (
+          <span
+            key={idx}
+            className={` ${styles.letter} ${
+              input[idx] == undefined
+                ? ""
+                : letter == input[idx]
+                ? styles.valid
+                : styles.error
+            } ${toggleTypeCursor && idx == input.length && styles.cursor} `}
+          >
+            {letter}
+          </span>
+        )
+      )}
+      {/* {extraCharWord
         ? extraCharWord.split("").map((letter: string, idx: number) =>
             letter == " " ? (
               <span
@@ -239,7 +275,7 @@ const TypingGame = ({
                 {letter}
               </span>
             )
-          )}
+          )} */}
       {extraInputs &&
         extraInputs.split("").map((letter: string, idx: number) => (
           <Fragment key={idx}>

@@ -1,19 +1,18 @@
-body {
-  color: var(--text);
-  background-color: var(--background-dimmed);
-}
-
 .app {
   font-family: "Nunito", sans-serif;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 70%;
+  width: 100%;
   margin: auto;
-  transition: background-color 300ms ease-in-out;
-  transition: color 300ms ease-in-out;
+  padding: 8px;
 }
-
+/* Small Laptops (769px - 1024px) */
+@media (min-width: 769px) {
+  .app {
+    width: 70%;
+  }
+}
 .content {
   height: 100%;
 }

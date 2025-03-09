@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { MdRefresh } from "react-icons/md";
 import data from "../../../data.json";
 import styles from "./Game.module.scss";
+import { IoIosInfinite } from "react-icons/io";
+
 // import { saveTestResult } from "../../services/api.js";
 // @ts-ignore
 import Cloudy from "./Cloudy/Cloudy.js";
@@ -11,9 +13,9 @@ const Game = () => {
   const [word, setWord] = useState(randomWord);
 
   const [startGame, setStartGame] = useState(false);
-
-  const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
 
   const [loading, setLoading] = useState(true);
 
@@ -26,9 +28,8 @@ const Game = () => {
   const [toggleDuration, setToggleDuration] = useState(15);
   const [timer, setTimer] = useState(toggleDuration);
   const [toggleTotalWords, setToggleTotalWords] = useState(10);
-  const inputRef = useRef<HTMLInputElement>(null);
   const [disableBackspaceIdx, setDisableBackspaceIdx] = useState<number | null>(
-    null
+    18 // null
   );
   // SCORE TRACKING
   const [input, setInput] = useState("");
@@ -66,6 +67,7 @@ const Game = () => {
 
   useEffect(() => {
     if (gameOver) {
+      console.log("game over");
       handleWpmConversion();
       // customize cloud speed & position
       let time = () => Math.floor(Math.random() * (7 - 3 + 1)) + 3;
@@ -143,16 +145,22 @@ const Game = () => {
   }, [toggleMode, toggleTotalWords, toggleDuration]);
   function resetTypeBoard() {
     console.log("resetting board");
+    // board
     setGameOver(false);
-    setWordCount(0);
-    setWpm(0);
-    setRawWpm(0);
+    setStartGame(false);
     setTimer(toggleDuration);
     setToggleTypeCursor(true);
     setWord(randomWord);
-    setStartGame(false);
-    setInput("");
     setDisableBackspaceIdx(null);
+
+    // stats
+    setInput("");
+    setTime(0);
+    setTimeElapsed(0);
+    setWordCount(0);
+    setWpm(0);
+    setRawWpm(0);
+    setCorrectLetter(0);
   }
 
   function randomCloudGenerate() {
@@ -178,8 +186,47 @@ const Game = () => {
       };
     }
   }, [inputRef, toggleTypeCursor]);
-  console.log(loading, saveTest);
+  const [cursorPosition, setCursorPosition] = useState({
+    x: 0,
+    y: 0,
+  });
+  const cursorRef = useRef(null);
+  useEffect(() => {
+    if (startGame) {
+      const rect = inputRef.current.getBoundingClientRect();
 
+      window.addEventListener("keydown", () => {
+        // console.log("right", rect.right);
+        // console.log("rect top", rect.top);
+        setCursorPosition({
+          x: rect.right,
+          y: rect.top,
+        });
+      });
+      return () => {
+        window.removeEventListener("keydown", () => {});
+      };
+    }
+    // if (toggleTotalWords > 25) {
+    //   if(disableBackspaceIdx == 15 ){
+    //     // when cursor is on the 2nd line, on last word on space, replace first line
+    //   }
+    //   console.log('changing words')
+    //   // when disable back space is or when current word is at 20, replace last 15 words with the next 15, repeat
+    // }
+  }, [startGame]);
+
+  useEffect(() => {
+    // for every word, count each letter
+    console.log();
+    // example: "the fox ran"
+    // cursor on "0", = words[1][0]
+    // word1 [0,1,2,3]
+    // word2 [4,5,6,7]
+    // word3 [8,9,10]
+  }, []);
+
+  // console.log(loading, saveTest);
   return (
     <div className={`${styles.container}`}>
       {/* GAME RESULT */}
@@ -247,7 +294,7 @@ const Game = () => {
       <div className={` ${!gameOver ? styles.show : styles.hide}`}>
         {startGame && toggleMode == "cloudy" && (
           <div className={styles.cloudy}>
-            <Cloudy setStartGame={setStartGame} time={time} setTime={setTime} />
+            <Cloudy resetTypeBoard={resetTypeBoard} />
           </div>
         )}
         {/* MODES */}
@@ -285,7 +332,7 @@ const Game = () => {
                   </button>
                 ))}
 
-              {(toggleMode == "words" || toggleMode == "cloudy") && (
+              {toggleMode == "words" && (
                 <>
                   {totalWords.map((total) => (
                     <button
@@ -301,6 +348,9 @@ const Game = () => {
                     </button>
                   ))}
                 </>
+              )}
+              {toggleMode == "cloudy" && (
+                <IoIosInfinite size={"1.5rem"} className={styles.infinite} />
               )}
               {toggleMode == "quote" &&
                 quotes.map((quote) => (
@@ -322,6 +372,9 @@ const Game = () => {
           <div className={styles.typingContainer}>
             <div className={`${styles.timer}`}>
               {startGame && toggleMode == "time" && <span>{timer}</span>}
+              {startGame && toggleMode == "cloudy" && (
+                <span>{timeElapsed}</span>
+              )}
               {startGame && toggleMode == "words" && toggleTypeCursor && (
                 <span>
                   {wordCount}/{toggleTotalWords}
