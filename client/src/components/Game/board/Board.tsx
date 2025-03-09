@@ -1,7 +1,8 @@
 import { useEffect, Fragment, useState } from "react";
-import styles from "./Game.module.scss";
+import styles from "./Board.module.scss";
 import { MdRefresh } from "react-icons/md";
-const TypingGame = ({
+import Words from "./Words";
+const Board = ({
   toggleTypeCursor,
   setToggleTypeCursor,
   extraCharAddedIdx,
@@ -25,34 +26,16 @@ const TypingGame = ({
   inputRef,
   disableBackspaceIdx,
   setDisableBackspaceIdx,
+  board,
 }: any) => {
   // const [lastKey, setLastKey] = useState<string | null>(null);
   const [wordCharTracker, setWordCharTrack] = useState([]);
-
-  useEffect(() => {
-    console.log("setting word char tracker");
-    let splitwords = word.split(" ");
-    for (let i = 0; i < splitwords.length; i++) {
-      let currentWord = splitwords[i];
-      console.log(currentWord);
-      let charIdx = [];
-      for (let j = 0; j < currentWord.length; j++) {
-        let char = currentWord[j];
-        charIdx.push(currentWord[j]);
-      }
-      if (i !== splitwords.length - 1) {
-        charIdx.push(" ");
-      }
-      // console.log(charIdx);
-      wordCharTracker[i] = charIdx;
-    }
-    console.log(wordCharTracker);
-  }, [word]);
+  const [cursorPosition, setCursorPosition] = useState(0);
 
   const onHandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!toggleTypeCursor) return;
     let input = e.target.value;
-
+    setCursorPosition(input.length);
     if (input.length == 1) {
       setToggleTypeCursor(true);
       setStartGame(true);
@@ -95,13 +78,6 @@ const TypingGame = ({
           // }
         }
       }
-    } else {
-      // let inputChar = input.split("");
-      // if (inputChar[inputChar.length - 1] == " ") {
-      //   console.log("space was press");
-      // } else {
-      //   console.log("another letter was pressed");
-      // }
     }
 
     setInput(input);
@@ -115,27 +91,6 @@ const TypingGame = ({
       setDisableBackspaceIdx(null);
     }
   };
-  // const onHandleKeyDown = (e) => {
-  //   setLastKey(e.key);
-  // };
-
-  // const renderText = () => {
-  //   console.log("logging");
-  //   let displayText = "";
-  //   let correctedInput;
-
-  //   for (let i = 0; i < input.length; i++) {
-  //     if (word[i] === input[i]) {
-  //       console.log("valid letter");
-  //     } else if (word[i] == " ") {
-  //       console.log("value requires a space");
-  //     } else {
-  //       console.log("wrong letter");
-  //     }
-  //   }
-
-  //   return correctedInput;
-  // };
 
   useEffect(() => {
     console.log("Game mode:", toggleMode);
@@ -188,94 +143,15 @@ const TypingGame = ({
           // setLastKey(e.key);
         }}
       />
-      {word.split("").map((letter: string, idx: number) =>
-        letter == " " ? (
-          <span
-            key={idx}
-            className={` ${styles.space} ${styles.letter} ${
-              input[idx] == undefined
-                ? ""
-                : letter == input[idx]
-                ? styles.valid
-                : styles.error
-            } ${toggleTypeCursor && idx == input.length && styles.cursor} `}
-          >
-            {letter}
-          </span>
-        ) : (
-          <span
-            key={idx}
-            className={` ${styles.letter} ${
-              input[idx] == undefined
-                ? ""
-                : letter == input[idx]
-                ? styles.valid
-                : styles.error
-            } ${toggleTypeCursor && idx == input.length && styles.cursor} `}
-          >
-            {letter}
-          </span>
-        )
-      )}
-      {/* {extraCharWord
-        ? extraCharWord.split("").map((letter: string, idx: number) =>
-            letter == " " ? (
-              <span
-                key={idx}
-                className={` ${styles.space} ${styles.letter} ${
-                  input[idx] == undefined
-                    ? ""
-                    : letter == input[idx]
-                    ? styles.valid
-                    : styles.error
-                } ${toggleTypeCursor && idx == input.length && styles.cursor} `}
-              >
-                {letter}
-              </span>
-            ) : (
-              <span
-                key={idx}
-                className={` ${styles.letter} ${
-                  input[idx] == undefined
-                    ? ""
-                    : idx >= extraCharAddedIdx - 1
-                    ? styles.error
-                    : styles.valid
-                } ${toggleTypeCursor && idx == input.length && styles.cursor} `}
-              >
-                {letter}
-              </span>
-            )
-          )
-        : word.split("").map((letter: string, idx: number) =>
-            letter == " " ? (
-              <span
-                key={idx}
-                className={` ${styles.space} ${styles.letter} ${
-                  input[idx] == undefined
-                    ? ""
-                    : letter == input[idx]
-                    ? styles.valid
-                    : styles.error
-                } ${toggleTypeCursor && idx == input.length && styles.cursor} `}
-              >
-                {letter}
-              </span>
-            ) : (
-              <span
-                key={idx}
-                className={` ${styles.letter} ${
-                  input[idx] == undefined
-                    ? ""
-                    : letter == input[idx]
-                    ? styles.valid
-                    : styles.error
-                } ${toggleTypeCursor && idx == input.length && styles.cursor} `}
-              >
-                {letter}
-              </span>
-            )
-          )} */}
+
+      <Words
+        board={board}
+        styles={styles}
+        input={input}
+        toggleTypeCursor={toggleTypeCursor}
+        word={word}
+      />
+
       {extraInputs &&
         extraInputs.split("").map((letter: string, idx: number) => (
           <Fragment key={idx}>
@@ -287,7 +163,6 @@ const TypingGame = ({
             </span>
           </Fragment>
         ))}
-
       <div className={styles.resetBtnContainer}>
         <button
           className={styles.resetBtn}
@@ -302,4 +177,4 @@ const TypingGame = ({
   );
 };
 
-export default TypingGame;
+export default Board;

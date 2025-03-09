@@ -1,0 +1,78 @@
+.space {
+  width: 10px;
+  display: inline-block;
+  text-align: center;
+}
+.word {
+}
+.letter {
+  border-left: 3px solid transparent;
+  opacity: 0.5;
+}
+
+.cursor::before {
+  content: "";
+  margin-left: -3px;
+  border-left: 3px solid var(--text-color);
+  animation: blink;
+  animation-duration: 1.1s;
+  animation-iteration-count: infinite;
+  transition-timing-function: ease-out;
+  opacity: 1;
+}
+
+.typeInput {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: Arial, sans-serif;
+  color: transparent;
+  cursor: default;
+}
+
+.resetBtnContainer {
+  position: absolute;
+  margin: auto;
+  bottom: -100px;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+.resetBtn {
+  padding: 0.5rem 1rem;
+  transition: ease-in-out;
+  display: flex;
+  justify-content: center;
+  color: var(--text-color);
+  opacity: 0.5;
+  border: 2px solid transparent;
+
+  &:hover {
+    opacity: 1;
+  }
+  &:active {
+    border: 2px solid var(--text-color);
+  }
+}
+.valid {
+  color: var(--text-color);
+  opacity: 1;
+}
+.error {
+  color: red;
+}
+@keyframes blink {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.infinite {
+  color: var(--accent-color);
+}

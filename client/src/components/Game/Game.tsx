@@ -7,11 +7,12 @@ import { IoIosInfinite } from "react-icons/io";
 // import { saveTestResult } from "../../services/api.js";
 // @ts-ignore
 import Cloudy from "./Cloudy/Cloudy.js";
-import Board from "./Board.js";
+import Board from "./board/Board.js";
 const Game = () => {
   const [randomWord, setRandomWord] = useState("the fox and apple");
   const [word, setWord] = useState(randomWord);
 
+  const [board, setBoard] = useState([]);
   const [startGame, setStartGame] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -127,7 +128,44 @@ const Game = () => {
     let words = selectedWords.join(" ");
     setRandomWord(words);
     setWord(words);
+    createBoard(words.split(" "));
   }
+  function createBoard(words) {
+    let board = [];
+    for (let i = 0; i < words.length; i++) {
+      let currentWord = words[i];
+      let charIdx = [];
+      for (let j = 0; j < currentWord.length; j++) {
+        let char = currentWord[j];
+        charIdx.push(currentWord[j]);
+      }
+      if (i !== words.length - 1) {
+        charIdx.push(" ");
+      }
+      // console.log(charIdx);
+      board[i] = charIdx;
+    }
+    setBoard(board);
+  }
+  // useEffect(() => {
+  //   console.log("setting word char tracker");
+  //   for (let i = 0; i < splitWords.length; i++) {
+  //     let currentWord = splitWords[i];
+  //     console.log(currentWord);
+  //     let charIdx = [];
+  //     for (let j = 0; j < currentWord.length; j++) {
+  //       let char = currentWord[j];
+  //       charIdx.push(currentWord[j]);
+  //     }
+  //     if (i !== splitWords.length - 1) {
+  //       charIdx.push(" ");
+  //     }
+  //     // console.log(charIdx);
+  //     wordCharTracker[i] = charIdx;
+  //   }
+  //   console.log(wordCharTracker);
+  // }, [splitWords]);
+
   // async function fetchQuotes() {
   //   resetTypeBoard();
   //   let random = () => Math.floor(Math.random() * 200);
@@ -215,16 +253,6 @@ const Game = () => {
     //   // when disable back space is or when current word is at 20, replace last 15 words with the next 15, repeat
     // }
   }, [startGame]);
-
-  useEffect(() => {
-    // for every word, count each letter
-    console.log();
-    // example: "the fox ran"
-    // cursor on "0", = words[1][0]
-    // word1 [0,1,2,3]
-    // word2 [4,5,6,7]
-    // word3 [8,9,10]
-  }, []);
 
   // console.log(loading, saveTest);
   return (
@@ -416,6 +444,7 @@ const Game = () => {
                 inputRef={inputRef}
                 disableBackspaceIdx={disableBackspaceIdx}
                 setDisableBackspaceIdx={setDisableBackspaceIdx}
+                board={board}
               />
             </div>
           </div>
