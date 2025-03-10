@@ -14,6 +14,7 @@ const corsOptions = {
     "http://localhost:5173",
     "http://localhost:4173",
     "https://cloudytype.vercel.app",
+    "https://cloudytype-git-typeboard-validations-jonels-projects-684e0f31.vercel.app",
   ],
   credentials: true,
 };
