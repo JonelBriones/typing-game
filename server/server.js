@@ -26,7 +26,7 @@ connectDB(process.env.MONGODB_URI);
 app.get("/", (req, res) => {
   res.json({ test: "Typing game backend isi running" });
 });
-
+app.use(express.static("dist"));
 app.use("/api/user", userRoute);
 app.use("/api/tests", testRoute);
 

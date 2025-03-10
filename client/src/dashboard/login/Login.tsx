@@ -7,7 +7,7 @@ import { FaGoogle } from "react-icons/fa";
 
 const Login = ({ error, setError }: any) => {
   const navigate = useNavigate();
-  const apiUrl = import.meta.env.VITE_API_URL;
+
   const { session, setSession, setToken } = useAuthContext();
   // const [loading, setLoading] = useState(false);
   // const [message, setMessage] = useState("");
@@ -20,7 +20,7 @@ const Login = ({ error, setError }: any) => {
   async function login() {
     // setLoading(true);
     try {
-      const res = await fetch(`${apiUrl}/user/login`, {
+      const res = await fetch("/api/user/login", {
         method: "POST",
         credentials: "include",
         headers: {

@@ -5,12 +5,11 @@ const Leaderboard = () => {
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toggleTime, setToggleTime] = useState(15);
-  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${apiUrl}/tests`);
+        const res = await fetch("/api/tests");
         if (!res.ok) {
           throw new Error("Response state:");
         }

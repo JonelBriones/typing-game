@@ -6,11 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": {
-        target:
-          "https://cloudytype-git-typeboard-validations-jonels-projects-684e0f31.vercel.app/",
-        changeOrigin: true,
-      },
+      "/api": "http://localhost:2222",
     },
   },
 });

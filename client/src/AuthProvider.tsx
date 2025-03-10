@@ -7,7 +7,6 @@ interface Session {
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [token, setToken] = useState(null);
-  const apiUrl = import.meta.env.VITE_API_URL;
 
   const value: any = {
     session,
@@ -20,7 +19,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     console.log(token, session);
     if (!token && !session) {
       const validateAuth = async () => {
-        const res = await fetch(`${apiUrl}/user/refresh`, {
+        const res = await fetch(`/api/user/refresh`, {
           method: "POST",
           credentials: "include",
           headers: {
@@ -42,7 +41,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (session?._id) {
       console.log("token id valid", session._id);
       const fetchData = async () => {
-        const resUser = await fetch(`${apiUrl}/user/${session._id}`);
+        const resUser = await fetch(`/api/user/${session._id}`);
         const user = await resUser.json();
         setSession(user);
       };
