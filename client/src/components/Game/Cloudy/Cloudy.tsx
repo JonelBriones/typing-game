@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-const Cloudy = ({ setTime, resetTypeBoard }: any) => {
+const Cloudy = ({ resetTypeBoard }: any) => {
   // interface Board {
   //   width: number;
   //   height: number;

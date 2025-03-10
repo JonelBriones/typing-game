@@ -1,12 +1,10 @@
-import { useEffect, Fragment, useState } from "react";
+import { useEffect, Fragment } from "react";
 import styles from "./Board.module.scss";
 import { MdRefresh } from "react-icons/md";
 import Words from "./Words";
 const Board = ({
   toggleTypeCursor,
   setToggleTypeCursor,
-  extraCharAddedIdx,
-  extraCharWord,
   word,
   extraInputs,
   resetTypeBoard,
@@ -29,13 +27,12 @@ const Board = ({
   board,
 }: any) => {
   // const [lastKey, setLastKey] = useState<string | null>(null);
-  const [wordCharTracker, setWordCharTrack] = useState([]);
-  const [cursorPosition, setCursorPosition] = useState(0);
+  // const [wordCharTracker, setWordCharTrack] = useState([]);
+  // const [cursorPosition, setCursorPosition] = useState(0);
 
   const onHandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!toggleTypeCursor) return;
     let input = e.target.value;
-    setCursorPosition(input.length);
     if (input.length == 1) {
       setToggleTypeCursor(true);
       setStartGame(true);

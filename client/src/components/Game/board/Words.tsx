@@ -1,9 +1,7 @@
-import React from "react";
-
 const Words = ({ board, styles, input }: any) => {
-  return board.map((word, wordIdx) => (
+  return board.map((word: string[], wordIdx: number) => (
     <span className={styles.word}>
-      {word.map((char, charIdx) =>
+      {word.map((char: string, charIdx) =>
         // Flattened index
         {
           const charIndex = board.slice(0, wordIdx).flat().length + charIdx;

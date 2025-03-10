@@ -12,7 +12,7 @@ const Game = () => {
   const [randomWord, setRandomWord] = useState("the fox and apple");
   const [word, setWord] = useState(randomWord);
 
-  const [board, setBoard] = useState([]);
+  const [board, setBoard] = useState<any>([]);
   const [startGame, setStartGame] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -130,13 +130,12 @@ const Game = () => {
     setWord(words);
     createBoard(words.split(" "));
   }
-  function createBoard(words) {
+  function createBoard(words: string[]) {
     let board = [];
     for (let i = 0; i < words.length; i++) {
       let currentWord = words[i];
       let charIdx = [];
       for (let j = 0; j < currentWord.length; j++) {
-        let char = currentWord[j];
         charIdx.push(currentWord[j]);
       }
       if (i !== words.length - 1) {
@@ -147,24 +146,6 @@ const Game = () => {
     }
     setBoard(board);
   }
-  // useEffect(() => {
-  //   console.log("setting word char tracker");
-  //   for (let i = 0; i < splitWords.length; i++) {
-  //     let currentWord = splitWords[i];
-  //     console.log(currentWord);
-  //     let charIdx = [];
-  //     for (let j = 0; j < currentWord.length; j++) {
-  //       let char = currentWord[j];
-  //       charIdx.push(currentWord[j]);
-  //     }
-  //     if (i !== splitWords.length - 1) {
-  //       charIdx.push(" ");
-  //     }
-  //     // console.log(charIdx);
-  //     wordCharTracker[i] = charIdx;
-  //   }
-  //   console.log(wordCharTracker);
-  // }, [splitWords]);
 
   // async function fetchQuotes() {
   //   resetTypeBoard();
@@ -224,37 +205,31 @@ const Game = () => {
       };
     }
   }, [inputRef, toggleTypeCursor]);
-  const [cursorPosition, setCursorPosition] = useState({
-    x: 0,
-    y: 0,
-  });
-  const cursorRef = useRef(null);
-  useEffect(() => {
-    if (startGame) {
-      const rect = inputRef.current.getBoundingClientRect();
+  // const [cursorPosition, setCursorPosition] = useState({
+  //   x: 0,
+  //   y: 0,
+  // });
+  // const cursorRef = useRef(null);
+  // useEffect(() => {
+  //   if (startGame) {
+  //     const rect = inputRef.current.getBoundingClientRect();
 
-      window.addEventListener("keydown", () => {
-        // console.log("right", rect.right);
-        // console.log("rect top", rect.top);
-        setCursorPosition({
-          x: rect.right,
-          y: rect.top,
-        });
-      });
-      return () => {
-        window.removeEventListener("keydown", () => {});
-      };
-    }
-    // if (toggleTotalWords > 25) {
-    //   if(disableBackspaceIdx == 15 ){
-    //     // when cursor is on the 2nd line, on last word on space, replace first line
-    //   }
-    //   console.log('changing words')
-    //   // when disable back space is or when current word is at 20, replace last 15 words with the next 15, repeat
-    // }
-  }, [startGame]);
+  //     window.addEventListener("keydown", () => {
+  //       // console.log("right", rect.right);
+  //       // console.log("rect top", rect.top);
+  //       setCursorPosition({
+  //         x: rect.right,
+  //         y: rect.top,
+  //       });
+  //     });
+  //     return () => {
+  //       window.removeEventListener("keydown", () => {});
+  //     };
+  //   }
 
-  // console.log(loading, saveTest);
+  // }, [startGame]);
+
+  console.log(loading, saveTest);
   return (
     <div className={`${styles.container}`}>
       {/* GAME RESULT */}
