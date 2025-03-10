@@ -10,6 +10,7 @@ import { HiMiniXMark } from "react-icons/hi2";
 import useDebounceSearch from "../../hooks/user.hook";
 
 const Signup = ({ error, setError }: any) => {
+  const apiUrl = import.meta.env.VITE_API_URL;
   const [userForm, setUserForm] = useState({
     email: "",
     confirmEmail: "",
@@ -23,7 +24,7 @@ const Signup = ({ error, setError }: any) => {
   const [userTaken, setUserTaken] = useState(false);
   const debounceSearch = useDebounceSearch(userForm.username);
   async function signup() {
-    const res = await fetch("http://localhost:2222/api/user/create", {
+    const res = await fetch(`${apiUrl}/user/create`, {
       method: "POST",
       credentials: "include",
       headers: {

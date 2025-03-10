@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import styles from "./Leaderboard.module.scss";
+
 const Leaderboard = () => {
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toggleTime, setToggleTime] = useState(15);
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:2222/api/tests");
+        const res = await fetch(`${apiUrl}/tests`);
         if (!res.ok) {
           throw new Error("Response state:");
         }
