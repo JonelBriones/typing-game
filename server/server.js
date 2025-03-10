@@ -30,7 +30,7 @@ app.use(express.static("dist"));
 app.use("/api/user", userRoute);
 app.use("/api/tests", testRoute);
 
-// const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-// const server = app.listen(PORT, () => console.log("Server running on:", PORT));
-export { app };
+const server = app.listen(PORT, () => console.log("Server running on:", PORT));
+export { server, app };
