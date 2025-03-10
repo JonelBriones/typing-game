@@ -30,9 +30,8 @@ app.use(express.static("dist"));
 app.use("/api/user", userRoute);
 app.use("/api/tests", testRoute);
 
-let server;
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 3000;
-  server = app.listen(PORT, () => console.log("Server running on:", PORT));
+  app.listen(PORT, () => console.log("Server running on:", PORT));
 }
-export { server, app };
+export default { app };
