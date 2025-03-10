@@ -10,7 +10,11 @@ import connectDB from "./config/database.js";
 
 const app = express();
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:4173"],
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:4173",
+    "https://cloudytype.vercel.app",
+  ],
   credentials: true,
 };
 app.use(express.json());

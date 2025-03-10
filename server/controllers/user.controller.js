@@ -20,24 +20,18 @@ const createUser = async (req, res) => {
   });
 
   const result = await newUser.save();
-  // const token = generateToken();
-
-  // manually check for email and username exist
-  // throw error if either one exist
 
   if (!result) {
     throw new Error("Error when saving user to database");
   }
   let _id = newUser._id;
-  // const accessToken = jwt.sign({ _id }, process.env.ACCESS_TOKEN_SECRET, {
-  //   expiresIn: "10m",
-  // });
+
   const { accessToken, refreshToken } = await createToken(_id, req);
 
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
-    sameSite: "Lax", // production = "None", development = "Lax"
-    secure: false, //  production = true, development = false
+    sameSite: "None", // production = "None", development = "Lax"
+    secure: true, //  production = true, development = false
     maxAge: 24 * 60 * 60 * 1000,
   });
   console.log("access token created", accessToken);
@@ -83,8 +77,8 @@ const login = async (req, res) => {
 
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
-    sameSite: "Lax", // production = "None", development = "Lax"
-    secure: false, //  production = true, development = false
+    sameSite: "None", // production = "None", development = "Lax"
+    secure: true, //  production = true, development = false
     maxAge: 24 * 60 * 60 * 1000,
   });
   return res.status(201).json({
@@ -115,8 +109,6 @@ const refresh = (req, res) => {
   if (req.cookies?.jwt) {
     const refreshToken = req.cookies.jwt;
     if (!refreshToken) return;
-    const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    // console.log("verified", verified);
 
     jwt.verify(
       refreshToken,
@@ -143,8 +135,8 @@ const logout = (req, res) => {
   console.log("logout");
   res.clearCookie("jwt", {
     httpOnly: true,
-    sameSite: "Lax", // Should match your initial cookie settings
-    secure: false, // Change to true in production
+    sameSite: "None", // Should match your initial cookie settings
+    secure: true, // Change to true in production
   });
   res.status(200).json({ message: "Logout successful" });
 };
