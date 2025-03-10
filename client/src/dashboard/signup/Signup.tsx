@@ -8,21 +8,26 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 import { HiMiniXMark } from "react-icons/hi2";
 import useDebounceSearch from "../../hooks/user.hook";
-
+import { redirect, useNavigate } from "react-router-dom";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
+import { getUsername } from "../../api/users";
+const defaultForm = {
+  email: "",
+  confirmEmail: "",
+  password: "",
+  confirmPassword: "",
+  username: "",
+};
 const Signup = ({ error, setError }: any) => {
+  const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
-  const [userForm, setUserForm] = useState({
-    email: "",
-    confirmEmail: "",
-    password: "",
-    confirmPassword: "",
-    username: "",
-  });
+  const [userForm, setUserForm] = useState(defaultForm);
   const { session, setSession, setToken } = useAuthContext();
   console.log(error, session);
   const [isloading, setIsLoading] = useState(false);
   const [userTaken, setUserTaken] = useState(false);
   const debounceSearch = useDebounceSearch(userForm.username);
+
   async function signup() {
     const res = await fetch(`${API_URL}/api/user/create`, {
       method: "POST",
@@ -47,11 +52,9 @@ const Signup = ({ error, setError }: any) => {
   const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!userForm.email || !userForm.password || !userForm.username) {
-      console.log("missing fields");
-      setError("Please fill in all fields");
-    }
-    signup();
+    // signup();
+    setUserForm(defaultForm);
+    navigate("/");
   };
 
   let emailRegex: RegExp = /^[^@]+@[^@]+\.[^@]+$/;
@@ -110,19 +113,12 @@ const Signup = ({ error, setError }: any) => {
     }
   }
 
-  const fetchUsername = async (search: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const res = await fetch(`http://localhost:2222/api/user/${search}`);
-    const { user } = await res.json();
-    return user;
-  };
-
   useEffect(() => {
     if (userForm.username.length == 0) return;
 
     const checkUsername = async () => {
       setIsLoading(true);
-      const res = await fetchUsername(debounceSearch);
+      const res = await getUsername(debounceSearch);
       setUserTaken(res == null ? false : true);
       setIsLoading(false);
     };
@@ -181,10 +177,9 @@ const Signup = ({ error, setError }: any) => {
         </div>
         <div>
           {isloading ? (
-            <AiOutlineLoading3Quarters
-              size={"1.5rem"}
-              className={styles.loading}
-            />
+            <div className={styles.loading}>
+              <LoadingSpinner size={"1.25rem"} />
+            </div>
           ) : (
             validateUsername()
           )}

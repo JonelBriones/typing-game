@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { getRefreshToken, getUserById } from "./api/auth";
 
 const AuthContext = createContext<any>(null);
 interface Session {
   _id: string;
 }
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
   const [session, setSession] = useState<Session | null>(null);
   const [token, setToken] = useState(null);
 
@@ -17,20 +17,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    console.log(token, session);
     if (!token && !session) {
       const validateAuth = async () => {
-        const res = await fetch(`${API_URL}/api/user/refresh`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (!res) return;
-        const refreshToken = await res.json();
-        setToken(refreshToken.accessToken);
-        setSession(refreshToken.decoded);
+        const refreshToken = await getRefreshToken();
+        if (refreshToken) {
+          setToken(refreshToken.accessToken);
+          setSession(refreshToken.decoded);
+        } else {
+        }
       };
       validateAuth();
     }
@@ -38,13 +32,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // use when needed user data
-    console.log(session);
     if (session?._id) {
-      console.log("token id valid", session._id);
       const fetchData = async () => {
-        const resUser = await fetch(`${API_URL}/api/user/${session._id}`);
-        const user = await resUser.json();
-        setSession(user);
+        const user = await getUserById(session._id);
+        if (user) {
+          setSession(user);
+        } else {
+          console.error("Failed to fetch user by id");
+        }
       };
       fetchData();
     }

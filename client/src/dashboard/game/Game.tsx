@@ -4,10 +4,9 @@ import data from "../../../data.json";
 import styles from "./Game.module.scss";
 import { IoIosInfinite } from "react-icons/io";
 
-// import { saveTestResult } from "../../services/api.js";
-// @ts-ignore
-import Cloudy from "./Cloudy/Cloudy.js";
-import Board from "./board/Board.js";
+import { saveTestResult } from "../../api/tests.ts";
+import Cloudy from "./cloudy/Cloudy.js";
+import Board from "./board/Board.tsx";
 const Game = () => {
   const [randomWord, setRandomWord] = useState("the fox and apple");
   const [word, setWord] = useState(randomWord);
@@ -30,7 +29,7 @@ const Game = () => {
   const [timer, setTimer] = useState(toggleDuration);
   const [toggleTotalWords, setToggleTotalWords] = useState(10);
   const [disableBackspaceIdx, setDisableBackspaceIdx] = useState<number | null>(
-    18 // null
+    null
   );
   // SCORE TRACKING
   const [input, setInput] = useState("");
@@ -56,14 +55,14 @@ const Game = () => {
 
   async function saveTest() {
     setLoading(true);
-    // try {
-    //   const result = await saveTestResult(testData);
-    //   console.log("test saved", result);
-    //   setLoading(false);
-    // } catch (error) {
-    //   console.error("Error saving test result", error);
-    //   setLoading(false);
-    // }
+    try {
+      const result = await saveTestResult(testData);
+      console.log("test saved", result);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error saving test result", error);
+      setLoading(false);
+    }
   }
 
   useEffect(() => {

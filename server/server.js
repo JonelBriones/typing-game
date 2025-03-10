@@ -20,8 +20,6 @@ const corsOptions = {
     "http://localhost:5173",
     "http://localhost:4173",
     "https://cloudytype.vercel.app",
-    "https://cloudytype-git-typeboard-validations-jonels-projects-684e0f31.vercel.app",
-    "https://typing-game-backend-one.vercel.app",
   ],
   credentials: true,
 };
@@ -32,9 +30,6 @@ connectDB();
 
 app.use("/api/user", userRoute);
 app.use("/api/tests", testRoute);
-
-// if (process.env.NODE_ENV !== "production") {
-// }
 
 const PORT = 2222;
 // const PORT = process.env.PORT || 2222;
