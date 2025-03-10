@@ -24,7 +24,7 @@ app.use(cors(corsOptions));
 connectDB(process.env.MONGODB_URI);
 
 app.get("/", (req, res) => {
-  res.json({ test: "Typing game backend isi running" });
+  res.json({ message: "Backend for CloudyType is working" });
 });
 app.use(express.static("dist"));
 app.use("/api/user", userRoute);
@@ -32,5 +32,5 @@ app.use("/api/tests", testRoute);
 
 const PORT = process.env.PORT || 3000;
 
-const server = app.listen(PORT, () => console.log("Server running on:", PORT));
+// const server = app.listen(PORT, () => console.log("Server running on:", PORT));
 export { server, app };
