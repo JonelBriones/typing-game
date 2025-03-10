@@ -1,0 +1,85 @@
+.signupContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  color: var(--text-color);
+  //   width: 100%;
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    h4 {
+      font-size: 1.25rem;
+    }
+  }
+  .authForm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    div {
+      position: relative;
+
+      input {
+        // all: unset;
+        color: var(--text-color);
+      }
+
+      .checkmark,
+      .xmark,
+      .loading {
+        position: absolute;
+        height: 100%;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 25px;
+        margin-right: 10px;
+      }
+      .checkmark {
+        color: var(--accent-color);
+      }
+      .xmark {
+        color: rgb(255, 50, 50);
+      }
+      .loading {
+        width: 20px;
+        animation: 2s infinite linear loading;
+      }
+      @keyframes loading {
+        from {
+          rotate: 0deg;
+        }
+        to {
+          rotate: 360deg;
+        }
+      }
+    }
+    span {
+      font-size: 0.95rem;
+      text-align: end;
+    }
+    button {
+      transition: opacity 100ms ease-in-out;
+      text-align: center;
+      background-color: var(--accent-color);
+      color: var(--text-color);
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      font-weight: 700;
+      opacity: 0.8;
+      &:hover {
+        opacity: 1;
+      }
+      &[disabled] {
+        cursor: default;
+        opacity: 0.6;
+      }
+    }
+    // .disabled {
+    //   background-color: var(--accent-color);
+    //   opacity: 0.5;
+    // }
+  }
+}

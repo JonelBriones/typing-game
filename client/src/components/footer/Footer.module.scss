@@ -1,0 +1,12 @@
+.container {
+  color: var(--text-color);
+  opacity: 0.6;
+  height: 220px;
+  .guide {
+    text-align: center;
+  }
+  ul {
+    display: flex;
+    gap: 0.5rem;
+  }
+}

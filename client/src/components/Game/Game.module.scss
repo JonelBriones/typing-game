@@ -1,0 +1,223 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  color: var(--text-color);
+}
+
+// RESULTS
+.results {
+  height: inherit;
+  width: inherit;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+
+  p {
+    font-size: 2rem;
+  }
+}
+
+@keyframes result {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  100% {
+    left: 100%;
+    opacity: 100;
+  }
+}
+.show {
+  animation-duration: 2s;
+  animation: ease-in-out result 5s;
+}
+.hide {
+  transition: opacity ease-in-out;
+  transition-duration: 2s;
+  display: none;
+}
+.resultStatsContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+  p {
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    span {
+      all: unset;
+    }
+    span:nth-child(1) {
+      font-size: 1.2rem;
+    }
+    span:nth-child(2) {
+      font-size: 1.75rem;
+    }
+  }
+  p:nth-child(1) {
+    span:nth-child(2) {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.resultBtnContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.cloudy {
+  position: absolute;
+  top: 0;
+  z-index: 0;
+}
+.cloudyImgContainer {
+  display: block;
+  width: 100%;
+  height: 100px;
+  .cloudyImg {
+    position: absolute;
+    display: flex;
+    width: 100px;
+    animation: linear infinite alternate clouds var(--animation-time);
+  }
+  @keyframes clouds {
+    0% {
+      left: 0;
+      transform: translateX(0);
+    }
+    100% {
+      left: 100%;
+      transform: translateX(-100%);
+    }
+  }
+}
+
+// MODES
+.modesContainer {
+  width: 600px;
+  margin: auto;
+  position: relative;
+}
+.modes {
+  position: absolute;
+  width: 600px;
+  display: flex;
+  align-items: center;
+  .mode {
+    flex: auto;
+    display: flex;
+    justify-content: space-evenly;
+  }
+  div {
+    display: flex;
+  }
+}
+.optionSettings {
+  width: 240px;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.optionBtn {
+  color: var(--text-color);
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem;
+  transition: color 100ms ease-in;
+  &:hover {
+    color: var(--accent-color);
+  }
+  &.toggle {
+    color: var(--accent-color);
+    &:hover {
+      color: var(--accent-color);
+    }
+  }
+}
+.optionBreaker {
+  width: 6px;
+  height: 30px;
+  background-color: var(--text-color);
+  border-radius: 2rem;
+}
+
+.game {
+  flex: 1;
+  padding-top: 5rem;
+  width: inherit;
+  cursor: default;
+  .resetBtn {
+    margin: auto;
+  }
+}
+
+.typingContainer {
+  min-width: 500px;
+  padding-inline: 24px;
+  height: 100%;
+  position: relative;
+}
+
+.timer {
+  height: 100px;
+
+  padding: 2rem;
+  font-size: 2rem;
+}
+
+.gameFocus {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+
+  p {
+    text-align: center;
+    font-size: 2rem;
+  }
+}
+
+.blur {
+  filter: blur(4px);
+  cursor: pointer;
+}
+
+.words {
+  height: 150px;
+  font-family: Arial, sans-serif;
+  font-size: 2rem;
+  background: transparent;
+  word-break: keep-all;
+  white-space: normal;
+  overflow: hidden;
+}
+span {
+  // fix this
+  display: inline-block;
+  text-align: center;
+  word-break: keep-all;
+  white-space: normal;
+  color: var(--typing-fields-placeholder);
+  // border: 2px solid red;
+}
+
+@keyframes blink {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.infinite {
+  color: var(--accent-color);
+}
