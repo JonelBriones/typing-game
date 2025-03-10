@@ -8,7 +8,7 @@ const Leaderboard = () => {
   const API_URL = import.meta.env.PROD
     ? "https://cloudytype-git-typeboard-validations-jonels-projects-684e0f31.vercel.app/api/tests"
     : "/api/tests";
-  console.log(API_URL);
+  console.log("current url", API_URL);
   useEffect(() => {
     const fetchData = async () => {
       try {
