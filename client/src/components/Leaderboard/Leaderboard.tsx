@@ -6,7 +6,7 @@ const Leaderboard = () => {
   const [loading, setLoading] = useState(true);
   const [toggleTime, setToggleTime] = useState(15);
   const API_URL = import.meta.env.PROD
-    ? "https://cloudytype-22m1dws54-jonels-projects-684e0f31.vercel.app/api/tests"
+    ? "https://cloudytype-git-typeboard-validations-jonels-projects-684e0f31.vercel.app/api/tests"
     : "/api/tests";
   console.log(API_URL);
   useEffect(() => {
