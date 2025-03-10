@@ -1,32 +1,28 @@
 import { useEffect, useState } from "react";
 import styles from "./Leaderboard.module.scss";
+import { getTestLeaderboard } from "../../api/tests";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 
 const Leaderboard = () => {
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toggleTime, setToggleTime] = useState(15);
-  const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/tests`);
-        if (!res.ok) {
-          throw new Error("Response state:");
-        }
-        const json = await res.json();
+      setLoading(true);
+      const leaderboard = await getTestLeaderboard();
 
-        setTests(json);
-        setLoading(false);
-      } catch (err) {
-        if (err instanceof TypeError) {
-          console.error(err.message);
-        }
+      if (leaderboard) {
+        setTests(leaderboard);
+      } else {
+        console.error("Failed to fetch leaderboard data.");
       }
+
+      setLoading(false);
     };
     fetchData();
   }, []);
-  if (loading) return <div>Loading...</div>;
 
   const options = {
     day: "2-digit",
@@ -67,7 +63,9 @@ const Leaderboard = () => {
       </h1>
       {/*  convert into tables */}
       {loading ? (
-        <div>loading</div>
+        <div className={styles.loading}>
+          <LoadingSpinner size={"5rem"} />
+        </div>
       ) : (
         <div className={styles.table}>
           <div className={styles.tableHeader}>

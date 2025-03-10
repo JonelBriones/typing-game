@@ -44,16 +44,8 @@
         color: rgb(255, 50, 50);
       }
       .loading {
-        width: 20px;
-        animation: 2s infinite linear loading;
-      }
-      @keyframes loading {
-        from {
-          rotate: 0deg;
-        }
-        to {
-          rotate: 360deg;
-        }
+        display: flex;
+        align-items: center;
       }
     }
     span {

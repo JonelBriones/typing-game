@@ -15,7 +15,9 @@
   padding: 1rem;
   border-radius: 4px;
 }
-
+.table {
+  overflow: hidden;
+}
 .userInfo {
   display: flex;
   gap: 0.5rem;
@@ -94,4 +96,7 @@
   opacity: 1;
   color: #e3f2fd;
   background-color: var(--accent-color);
+}
+.loading {
+  text-align: center;
 }

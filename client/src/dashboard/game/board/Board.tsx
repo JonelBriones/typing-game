@@ -1,7 +1,7 @@
 import { useEffect, Fragment } from "react";
 import styles from "./Board.module.scss";
 import { MdRefresh } from "react-icons/md";
-import Words from "./Words";
+import Words from "./words/Words";
 const Board = ({
   toggleTypeCursor,
   setToggleTypeCursor,
