@@ -9,6 +9,9 @@ dotenv.config();
 import connectDB from "./config/database.js";
 
 const app = express();
+app.get("/", (req, res) => {
+  res.json({ message: "Backend for CloudyType is working" });
+});
 const corsOptions = {
   origin: [
     "http://localhost:5173",
@@ -23,14 +26,13 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 connectDB(process.env.MONGODB_URI);
 
-app.get("/", (req, res) => {
-  res.json({ message: "Backend for CloudyType is working" });
-});
 app.use(express.static("dist"));
 app.use("/api/user", userRoute);
 app.use("/api/tests", testRoute);
 
-const PORT = process.env.PORT || 3000;
-
-const server = app.listen(PORT, () => console.log("Server running on:", PORT));
+let server;
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3000;
+  server = app.listen(PORT, () => console.log("Server running on:", PORT));
+}
 export { server, app };
