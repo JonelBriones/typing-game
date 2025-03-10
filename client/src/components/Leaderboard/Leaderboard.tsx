@@ -5,14 +5,12 @@ const Leaderboard = () => {
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toggleTime, setToggleTime] = useState(15);
-  const API_URL = import.meta.env.PROD
-    ? "https://cloudytype-git-typeboard-validations-jonels-projects-684e0f31.vercel.app/api/tests"
-    : "/api/tests";
-  console.log("current url", API_URL);
+  const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(`${API_URL}/api/tests`);
         if (!res.ok) {
           throw new Error("Response state:");
         }
