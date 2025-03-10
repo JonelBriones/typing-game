@@ -12,6 +12,9 @@ const app = express();
 app.get("/", (req, res) => {
   res.json({ message: "Backend for CloudyType is working" });
 });
+app.get("/api/hello", (req, res) => {
+  res.json({ message: "Hello" });
+});
 const corsOptions = {
   origin: [
     "http://localhost:5173",
@@ -24,13 +27,15 @@ const corsOptions = {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
-connectDB(process.env.MONGODB_URI);
+connectDB();
 
 app.use("/api/user", userRoute);
 app.use("/api/tests", testRoute);
 
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => console.log("Server running on:", PORT));
-}
+// if (process.env.NODE_ENV !== "production") {
+// }
+
+const PORT = 2222;
+// const PORT = process.env.PORT || 2222;
+app.listen(PORT, () => console.log("Server running on:", PORT));
 export default app;
