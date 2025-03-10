@@ -21,6 +21,7 @@ const corsOptions = {
     "http://localhost:4173",
     "https://cloudytype.vercel.app",
     "https://cloudytype-git-typeboard-validations-jonels-projects-684e0f31.vercel.app",
+    "https://typing-game-backend-one.vercel.app",
   ],
   credentials: true,
 };
