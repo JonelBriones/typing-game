@@ -18,5 +18,23 @@ const getUsername = async (search: string) => {
     }
   }
 };
+const getUserById = async (id: string) => {
+  try {
+    const res = await fetch(`${API_URL}/api/user/user/${id}`, {
+      credentials: "include",
+    });
 
-export { getUsername };
+    if (!res.ok) {
+      throw new Error(`http status: ${res.status} ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    if (err instanceof TypeError) {
+      console.error("Error fetching user by id: ", err.message);
+      return null;
+    }
+  }
+};
+
+export { getUsername, getUserById };

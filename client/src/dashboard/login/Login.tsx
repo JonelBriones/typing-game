@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Login.module.scss";
 import { useAuthContext } from "../../AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { IoLogInOutline } from "react-icons/io5";
 import { FaGoogle } from "react-icons/fa";
 import { login } from "../../api/auth.ts";
+
 const Login = ({ setError }: any) => {
   const navigate = useNavigate();
 
-  const { setSession, setToken } = useAuthContext();
-  // const [loading, setLoading] = useState(false);
+  const { session, setSession, setToken } = useAuthContext();
 
   const [userForm, setUserForm] = useState({
     email: "",
@@ -18,21 +18,26 @@ const Login = ({ setError }: any) => {
 
   async function handleLogin() {
     const res = await login(userForm);
-    // if (res.status == 401) {
-    //   // setError(data?.error);
-    //   throw new Error("wrong pass");
-    // }
     if (res.error) {
       console.log(res.error);
       setError(res.error);
     } else {
       console.log(res);
       setToken(res.accessToken);
-      setSession(res.session);
+      setSession({
+        _id: res.session._id,
+      });
       setError("");
       navigate("/");
     }
   }
+
+  useEffect(() => {
+    if (session?._id) {
+      console.log("redirect");
+      navigate("/");
+    }
+  }, [session]);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserForm({
@@ -45,6 +50,7 @@ const Login = ({ setError }: any) => {
     console.log("submit");
     handleLogin();
   };
+
   return (
     <div className={styles.loginContainer}>
       <div className={styles.header}>

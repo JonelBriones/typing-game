@@ -1,4 +1,13 @@
 .navbar {
+  visibility: hidden;
+}
+@media (min-width: 481px) {
+  .navbar {
+    visibility: visible;
+    height: 240px;
+  }
+}
+.navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -11,54 +20,66 @@
     align-items: center;
     gap: 2rem;
   }
-}
-.navLeft {
+  button,
   a {
+    transition: opacity 100ms ease-in;
     display: flex;
     align-items: center;
-    color: var(--text-color);
     opacity: 0.5;
-    transition: opacity 100ms ease-in;
     &:hover {
       opacity: 1;
     }
   }
-}
-.toggleDarkMode {
-  display: flex;
-  align-items: center;
-  color: var(--text-color);
-  opacity: 0.5;
-  &:hover {
-    opacity: 1;
+  .logo {
+    all: unset;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    img {
+      height: 50px;
+    }
   }
-  z-index: 100;
-}
-.profileActionsContainer {
-  position: relative;
-}
-.hoverActive {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 10;
-  width: 140px;
-  border-radius: 8px;
-  height: fit-content;
 }
 
-.profileActions {
-  background-color: var(--background);
-  width: 100%;
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-  border-radius: 8px;
+.navRight {
+  .toggleDarkMode {
+    display: flex;
+    align-items: center;
+    color: var(--text-color);
+    opacity: 0.5;
+    &:hover {
+      opacity: 1;
+    }
+    z-index: 100;
+  }
+  .profileActionsContainer {
+    position: relative;
+  }
+  .hoverActive {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    width: 140px;
+    border-radius: 8px;
+    height: fit-content;
+  }
+
+  .profileActions {
+    background-color: var(--background);
+    width: 100%;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border-radius: 8px;
+  }
   button {
     width: 100%;
     text-align: center;
   }
-}
-.navRight {
+  .navbutton {
+    display: flex;
+    align-items: center;
+  }
 }

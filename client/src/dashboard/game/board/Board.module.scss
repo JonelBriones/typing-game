@@ -1,13 +1,15 @@
+.letter,
 .space {
-  width: 10px;
-  display: inline-block;
-  text-align: center;
-}
-.word {
-}
-.letter {
-  border-left: 3px solid transparent;
+  flex-shrink: none;
+  border: 3px solid transparent;
   opacity: 0.5;
+  width: 25px;
+  // border: 3px solid red;
+}
+
+.typingContainer {
+  position: relative;
+  height: 100%;
 }
 
 .cursor::before {
@@ -23,41 +25,19 @@
 
 .typeInput {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  width: 100%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: transparent;
   border: none;
   outline: none;
   font-family: Arial, sans-serif;
   color: transparent;
   cursor: default;
+  z-index: 9000;
 }
 
-.resetBtnContainer {
-  position: absolute;
-  margin: auto;
-  bottom: -100px;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-}
-.resetBtn {
-  padding: 0.5rem 1rem;
-  transition: ease-in-out;
-  display: flex;
-  justify-content: center;
-  color: var(--text-color);
-  opacity: 0.5;
-  border: 2px solid transparent;
-  margin: auto;
-  &:hover {
-    opacity: 1;
-  }
-  &:active {
-    border: 2px solid var(--text-color);
-  }
-}
 .valid {
   color: var(--text-color);
   opacity: 1;

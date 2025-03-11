@@ -1,4 +1,4 @@
-import { useEffect, Fragment } from "react";
+import { useEffect, Fragment, useState } from "react";
 import styles from "./Board.module.scss";
 import { MdRefresh } from "react-icons/md";
 import Words from "./words/Words";
@@ -25,13 +25,18 @@ const Board = ({
   disableBackspaceIdx,
   setDisableBackspaceIdx,
   board,
+  timeElapsed,
+  afk,
+  setAfk,
 }: any) => {
   // const [lastKey, setLastKey] = useState<string | null>(null);
   // const [wordCharTracker, setWordCharTrack] = useState([]);
   // const [cursorPosition, setCursorPosition] = useState(0);
+  const [lastKeyDown, setLastKeyDown] = useState<string | null>(null);
 
   const onHandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!toggleTypeCursor) return;
+    setAfk(false);
     let input = e.target.value;
     if (input.length == 1) {
       setToggleTypeCursor(true);
@@ -40,8 +45,10 @@ const Board = ({
         setTime(Date.now());
       }
       if (toggleMode == "time") {
-        countDown();
+        setTime(toggleDuration);
       }
+
+      console.log(lastKeyDown);
     }
     if (input.length < disableBackspaceIdx) return;
 
@@ -52,9 +59,9 @@ const Board = ({
     let currentInput = inputCharArr[inputCharArr.length - 1];
     let matchCharInWord = word[inputCharArr.length - 1];
     if (currentInput == matchCharInWord && currentInput !== " ") {
-      console.log("correct letter");
+      // console.log("correct letter");
     } else if (matchCharInWord == " ") {
-      console.log("char needs to be a space");
+      // console.log("char needs to be a space");
 
       if (inputCharArr[inputCharArr.length - 1] == " ") {
         // space in correct position
@@ -77,6 +84,7 @@ const Board = ({
       }
     }
 
+    setKeydownTime(timeElapsed);
     setInput(input);
     if (
       input.split("")[input.split("").length - 1] ==
@@ -89,36 +97,45 @@ const Board = ({
     }
   };
 
+  const [keydownTime, setKeydownTime] = useState(0);
   useEffect(() => {
-    console.log("Game mode:", toggleMode);
-    if (startGame) {
+    if (startGame && toggleMode == "words") {
       const intervalId = setInterval(() => {
         const currentTime = Date.now();
         const elapsedTime = Math.floor((currentTime - time) / 1000);
-        // console.log("count up", elapsedTime);
         setTimeElapsed(elapsedTime);
       }, 1000);
       return () => clearInterval(intervalId);
     }
   }, [startGame]);
 
-  function countDown() {
-    console.log("Game mode:", toggleMode);
-    let timer = toggleDuration;
-    const intervalId = setInterval(() => {
-      timer--;
-      setTime(timer);
-      console.log("count down", timer);
-      if (timer < 0 || gameOver) {
-        clearInterval(intervalId);
-        setGameOver(true);
-      }
-    }, 1000);
-    return () => clearInterval(intervalId);
-  }
+  useEffect(() => {
+    console.log(`last key down:${keydownTime}, current time:${timeElapsed}`);
+    if (timeElapsed - keydownTime >= 5) {
+      console.log("afk");
+      // setAfk(true);
+      // resetTypeBoard();
+    }
+  }, [timeElapsed]);
+
+  useEffect(() => {
+    if (startGame && toggleMode == "time") {
+      let timer = toggleDuration;
+      const intervalId = setInterval(() => {
+        timer--;
+        setTime(timer);
+        console.log("count down", timer);
+        if (timer < 0 || gameOver) {
+          clearInterval(intervalId);
+          setGameOver(true);
+        }
+      }, 1000);
+      return () => clearInterval(intervalId);
+    }
+  }, [startGame]);
 
   return (
-    <>
+    <div className={styles.typingContainer}>
       <input
         autoComplete="off"
         spellCheck="false"
@@ -127,7 +144,6 @@ const Board = ({
         type="text"
         value={input}
         onChange={(e) => onHandleInputChange(e)}
-        // onKeyDownCapture={(e) => onHandleKeyDown(e)}
         onFocus={() => setToggleTypeCursor(true)}
         onBlur={async () => {
           setToggleTypeCursor(false);
@@ -137,7 +153,7 @@ const Board = ({
           if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
             e.preventDefault();
           }
-          // setLastKey(e.key);
+          setLastKeyDown(e.key);
         }}
       />
 
@@ -160,17 +176,7 @@ const Board = ({
             </span>
           </Fragment>
         ))}
-      <div className={styles.resetBtnContainer}>
-        <button
-          className={styles.resetBtn}
-          type="button"
-          tabIndex={0}
-          onClick={resetTypeBoard}
-        >
-          <MdRefresh size={"1.5rem"} />
-        </button>
-      </div>
-    </>
+    </div>
   );
 };
 

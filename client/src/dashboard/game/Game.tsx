@@ -4,10 +4,13 @@ import data from "../../../data.json";
 import styles from "./Game.module.scss";
 import { IoIosInfinite } from "react-icons/io";
 
-import { saveTestResult } from "../../api/tests.ts";
+import { saveTest } from "../../api/tests.ts";
 import Cloudy from "./cloudy/Cloudy.js";
 import Board from "./board/Board.tsx";
+import { useAuthContext } from "../../AuthProvider.tsx";
 const Game = () => {
+  const { session } = useAuthContext();
+
   const [randomWord, setRandomWord] = useState("the fox and apple");
   const [word, setWord] = useState(randomWord);
 
@@ -18,6 +21,7 @@ const Game = () => {
   const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
 
   const [loading, setLoading] = useState(true);
+  const [afk, setAfk] = useState(false);
 
   // const modes = ["time", "words", "quote", "cloudy"];
   const modes = ["time", "words", "cloudy"];
@@ -34,13 +38,13 @@ const Game = () => {
   // SCORE TRACKING
   const [input, setInput] = useState("");
 
-  const [time, setTime] = useState<number>(0);
-  const [timeElapsed, setTimeElapsed] = useState<number>(0);
+  const [time, setTime] = useState<number | null>(null);
+  const [timeElapsed, setTimeElapsed] = useState<number | null>(null);
   const [wordCount, setWordCount] = useState(0);
   const [wpm, setWpm] = useState(0);
   const [raw, setRawWpm] = useState(0);
   const [correctletter, setCorrectLetter] = useState(0);
-
+  const [error, setError] = useState<string>("");
   type Test = {
     user: string;
     seconds: number;
@@ -49,25 +53,28 @@ const Game = () => {
     raw: number;
     language: string;
   };
-  const user = "ijonel906";
+
   const language = "English";
   const [testData, setTestData] = useState<Test | null>(null);
 
-  async function saveTest() {
-    setLoading(true);
-    try {
-      const result = await saveTestResult(testData);
-      console.log("test saved", result);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error saving test result", error);
-      setLoading(false);
+  async function saveHandler() {
+    console.log("saving test result", testData);
+    const res = await saveTest(testData);
+
+    if (!res) {
+      console.error("Failed to save test. Pleast try again.");
+      setError("Failed to save test. Pleast try again.");
+    }
+
+    if (res.error) {
+      console.error(res.error);
+      setError(res.error);
     }
   }
 
   useEffect(() => {
     if (gameOver) {
-      console.log("game over");
+      setStartGame(false);
       handleWpmConversion();
       // customize cloud speed & position
       let time = () => Math.floor(Math.random() * (7 - 3 + 1)) + 3;
@@ -81,13 +88,12 @@ const Game = () => {
       });
     }
   }, [gameOver]);
+
   useEffect(() => {
-    if (testData?.seconds == null) {
-      return;
-    } else if (testData?.seconds > 0) {
-      // saveTest();
-    }
+    if (!session || !session._id) return;
+    // saveHandler();
   }, [testData]);
+
   function handleWpmConversion() {
     let correctedLetters = 0;
     for (let i = 0; i < randomWord.length; i++) {
@@ -99,14 +105,13 @@ const Game = () => {
     const wordsTyped = correctedLetters / 5;
     const wpm = (wordsTyped * 60) / timer;
     const raw = ((randomWord.length / 5) * 60) / timer;
-    console.log(wpm);
-    console.log(raw);
+
     setCorrectLetter(correctedLetters);
     setWpm(parseFloat(wpm.toFixed(2)));
     setRawWpm(parseFloat(raw.toFixed(2)));
     setTimeElapsed(parseFloat(timer.toFixed(2)));
     setTestData({
-      user,
+      user: session?.username,
       seconds: timeElapsed!,
       words: toggleTotalWords,
       wpm: wpm,
@@ -158,6 +163,7 @@ const Game = () => {
   //   setRandomWord(quote);
   //   setWord(quote);
   // }
+
   useEffect(() => {
     fetchSentences();
   }, [toggleMode, toggleTotalWords, toggleDuration]);
@@ -203,36 +209,14 @@ const Game = () => {
         window.removeEventListener("keydown", () => {});
       };
     }
+    if (toggleTypeCursor) {
+      inputRef?.current?.focus();
+    }
   }, [inputRef, toggleTypeCursor]);
-  // const [cursorPosition, setCursorPosition] = useState({
-  //   x: 0,
-  //   y: 0,
-  // });
-  // const cursorRef = useRef(null);
-  // useEffect(() => {
-  //   if (startGame) {
-  //     const rect = inputRef.current.getBoundingClientRect();
-
-  //     window.addEventListener("keydown", () => {
-  //       // console.log("right", rect.right);
-  //       // console.log("rect top", rect.top);
-  //       setCursorPosition({
-  //         x: rect.right,
-  //         y: rect.top,
-  //       });
-  //     });
-  //     return () => {
-  //       window.removeEventListener("keydown", () => {});
-  //     };
-  //   }
-
-  // }, [startGame]);
-
-  console.log(loading, saveTest);
+  console.log(board.length);
   return (
     <div className={`${styles.container}`}>
       {/* GAME RESULT */}
-
       <div
         className={`${styles.results} ${gameOver ? styles.show : styles.hide}`}
       >
@@ -259,7 +243,7 @@ const Game = () => {
             <span>characters</span>
             <span>{`${correctletter}/${word.length - correctletter}/${
               input.length - word.length
-            }/${word.split(" ").length - input.split(" ").length}`}</span>
+            }/${board.length}`}</span>
           </p>
           <p>
             <span>consistency</span>
@@ -267,7 +251,7 @@ const Game = () => {
           </p>
           <p>
             <span>time</span>
-            <span>{Math.round(timeElapsed)}s</span>
+            <span>{Math.round(timeElapsed ? timeElapsed : 0)}s</span>
           </p>
         </div>
         <div className={styles.resultBtnContainer}>
@@ -371,57 +355,75 @@ const Game = () => {
         </div>
         {/* GAME CONTAINER */}
         <div className={`${styles.game}`}>
-          <div className={styles.typingContainer}>
-            <div className={`${styles.timer}`}>
-              {startGame && toggleMode == "time" && <span>{timer}</span>}
-              {startGame && toggleMode == "cloudy" && (
-                <span>{timeElapsed}</span>
-              )}
-              {startGame && toggleMode == "words" && toggleTypeCursor && (
-                <span>
-                  {wordCount}/{toggleTotalWords}
-                </span>
-              )}
-            </div>
-            {!toggleTypeCursor && (
-              <div
-                className={styles.gameFocus}
-                onClick={() => inputRef?.current?.focus()}
-              >
-                <p>click here or press any key to focus</p>
-              </div>
+          <div className={`${styles.timer}`}>
+            {startGame && toggleMode == "time" && <span>timeR:{time}</span>}
+            {startGame && toggleMode == "cloudy" && <span>{timeElapsed}</span>}
+            {startGame && toggleMode == "words" && toggleTypeCursor && (
+              <span>
+                {wordCount}/{toggleTotalWords}
+              </span>
             )}
-            <div
-              className={`${styles.words} ${!toggleTypeCursor && styles.blur}`}
-            >
-              <Board
-                timer={timer}
-                toggleTypeCursor={toggleTypeCursor}
-                setToggleTypeCursor={setToggleTypeCursor}
-                toggleTotalWords={toggleTotalWords}
-                word={word}
-                resetTypeBoard={resetTypeBoard}
-                toggleMode={toggleMode}
-                toggleDuration={toggleDuration}
-                gameOver={gameOver}
-                setGameOver={setGameOver}
-                wordCount={wordCount}
-                setWordCount={setWordCount}
-                setStartGame={setStartGame}
-                timeElapsed={timeElapsed}
-                setTimeElapsed={setTimeElapsed}
-                time={time}
-                setTime={setTime}
-                startGame={startGame}
-                input={input}
-                setInput={setInput}
-                inputRef={inputRef}
-                disableBackspaceIdx={disableBackspaceIdx}
-                setDisableBackspaceIdx={setDisableBackspaceIdx}
-                board={board}
-              />
-            </div>
           </div>
+
+          {afk && (
+            <div
+              className={`${styles.afk} ${
+                afk ? styles.afkWarning : styles.afkHide
+              }`}
+              onClick={() => setAfk(false)}
+            >
+              <p>inactivity detected</p>
+            </div>
+          )}
+
+          {!toggleTypeCursor && (
+            <div
+              className={styles.gameFocus}
+              onClick={() => inputRef?.current?.focus()}
+            >
+              <p>click here or press any key to focus</p>
+            </div>
+          )}
+          <div
+            className={`${styles.words} ${!toggleTypeCursor && styles.blur}`}
+          >
+            <Board
+              timer={timer}
+              toggleTypeCursor={toggleTypeCursor}
+              setToggleTypeCursor={setToggleTypeCursor}
+              toggleTotalWords={toggleTotalWords}
+              word={word}
+              resetTypeBoard={resetTypeBoard}
+              toggleMode={toggleMode}
+              toggleDuration={toggleDuration}
+              gameOver={gameOver}
+              setGameOver={setGameOver}
+              wordCount={wordCount}
+              setWordCount={setWordCount}
+              setStartGame={setStartGame}
+              timeElapsed={timeElapsed}
+              setTimeElapsed={setTimeElapsed}
+              time={time}
+              setTime={setTime}
+              startGame={startGame}
+              input={input}
+              setInput={setInput}
+              inputRef={inputRef}
+              disableBackspaceIdx={disableBackspaceIdx}
+              setDisableBackspaceIdx={setDisableBackspaceIdx}
+              board={board}
+              afk={afk}
+              setAfk={setAfk}
+            />
+          </div>
+          <button
+            className={styles.resetBtn}
+            type="button"
+            tabIndex={0}
+            onClick={resetTypeBoard}
+          >
+            <MdRefresh size={"1.5rem"} />
+          </button>
         </div>
       </div>
     </div>

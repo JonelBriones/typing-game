@@ -4,13 +4,14 @@ import { useAuthContext } from "../../AuthProvider";
 import { IoMdPersonAdd } from "react-icons/io";
 // import { IoPersonAddOutline } from "react-icons/io5";
 import { IoCheckmark } from "react-icons/io5";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+// import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 import { HiMiniXMark } from "react-icons/hi2";
 import useDebounceSearch from "../../hooks/user.hook";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { getUsername } from "../../api/users";
+import { signup } from "../../api/auth.ts";
 const defaultForm = {
   email: "",
   confirmEmail: "",
@@ -20,7 +21,7 @@ const defaultForm = {
 };
 const Signup = ({ error, setError }: any) => {
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
+
   const [userForm, setUserForm] = useState(defaultForm);
   const { session, setSession, setToken } = useAuthContext();
   console.log(error, session);
@@ -28,20 +29,22 @@ const Signup = ({ error, setError }: any) => {
   const [userTaken, setUserTaken] = useState(false);
   const debounceSearch = useDebounceSearch(userForm.username);
 
-  async function signup() {
-    const res = await fetch(`${API_URL}/api/user/create`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userForm),
-    });
-    const token = await res.json();
-    console.log(token);
-    setToken(token.accessToken);
-    setSession(token._id);
+  async function signupHandler() {
+    const res = await signup(userForm);
+
+    if (res.status == 401) {
+      console.log(res);
+    } else {
+      console.log(res);
+      setToken(res.accessToken);
+      setSession({
+        _id: res.session._id,
+      });
+      setUserForm(defaultForm);
+      navigate("/");
+    }
   }
+  console.log(setError);
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserForm({
       ...userForm,
@@ -52,9 +55,7 @@ const Signup = ({ error, setError }: any) => {
   const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // signup();
-    setUserForm(defaultForm);
-    navigate("/");
+    signupHandler();
   };
 
   let emailRegex: RegExp = /^[^@]+@[^@]+\.[^@]+$/;

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getRefreshToken, getUserById } from "./api/auth";
+import { getRefreshToken } from "./api/auth";
+import { getUserById } from "./api/users";
 
 const AuthContext = createContext<any>(null);
 interface Session {
@@ -17,32 +18,35 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    if (!token && !session) {
+    if (token == null) {
       const validateAuth = async () => {
         const refreshToken = await getRefreshToken();
+
         if (refreshToken) {
           setToken(refreshToken.accessToken);
-          setSession(refreshToken.decoded);
+          setSession({
+            _id: refreshToken.session._id,
+          });
         } else {
+          console.error("Failed to get refresh token");
         }
       };
       validateAuth();
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => {
-    // use when needed user data
-    if (session?._id) {
-      const fetchData = async () => {
-        const user = await getUserById(session._id);
-        if (user) {
-          setSession(user);
-        } else {
-          console.error("Failed to fetch user by id");
-        }
-      };
-      fetchData();
-    }
+    if (!session?._id) return;
+    const fetchData = async () => {
+      const res = await getUserById(session._id);
+
+      if (!res) {
+        console.error("Failed to fetch user by id");
+      } else {
+        setSession(res.session);
+      }
+    };
+    fetchData();
   }, [session]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,5 +1,5 @@
 const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
-const saveTestResult = async (testData) => {
+const saveTest = async (testData: any) => {
   try {
     const res = await fetch(`${API_URL}api/tests/save`, {
       method: "POST",
@@ -8,17 +8,17 @@ const saveTestResult = async (testData) => {
       },
       body: JSON.stringify(testData),
     });
+
     if (!res.ok) {
       throw new Error(`http status:${res.status} ${res.statusText}`);
     }
-    const data = await res.json();
-    return data;
+
+    return await res.json();
   } catch (err) {
     if (err instanceof TypeError) {
       console.error("Error saving test result:", err.message);
-
-      return null;
     }
+    return null;
   }
 };
 
@@ -33,8 +33,8 @@ const getTestResults = async (userId: string) => {
   } catch (err) {
     if (err instanceof TypeError) {
       console.error("Error fetching test results:", err);
-      return null;
     }
+    return null;
   }
 };
 
@@ -48,9 +48,9 @@ const getTestLeaderboard = async () => {
   } catch (err) {
     if (err instanceof TypeError) {
       console.error("Error fetching test leaderboard:", err.message);
-      return null;
     }
+    return null;
   }
 };
 
-export { saveTestResult, getTestResults, getTestLeaderboard };
+export { saveTest, getTestResults, getTestLeaderboard };

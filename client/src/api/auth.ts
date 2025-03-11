@@ -23,24 +23,6 @@ const getRefreshToken = async () => {
   }
 };
 
-const getUserById = async (id: string) => {
-  try {
-    const res = await fetch(`${API_URL}/api/user/${id}`, {
-      credentials: "include",
-    });
-    if (!res.ok) {
-      throw new Error(`http status: ${res.status} ${res.statusText}`);
-    }
-
-    return await res.json();
-  } catch (err) {
-    if (err instanceof TypeError) {
-      console.error("Error fetching user by id: ", err.message);
-      return null;
-    }
-  }
-};
-
 const login = async (req: { email: string; password: string }) => {
   try {
     const res = await fetch(`${API_URL}/api/user/login`, {
@@ -68,4 +50,46 @@ const login = async (req: { email: string; password: string }) => {
   }
 };
 
-export { getRefreshToken, getUserById, login };
+const signup = async (req: any) => {
+  try {
+    const res = await fetch(`${API_URL}/api/user/create`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(req),
+    });
+
+    if (!res.ok) {
+      throw new Error(`http status: ${res.status} ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    if (err instanceof TypeError) {
+      console.error("Failed to sign up");
+      return null;
+    }
+  }
+};
+const logout = async () => {
+  try {
+    const res = await fetch(`${API_URL}/api/user/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error(`http status: ${res.status} ${res.statusText}`);
+    }
+    return await res.json();
+  } catch (err) {
+    if (err instanceof TypeError) {
+      console.error("Failed to logout");
+      return null;
+    }
+  }
+};
+
+export { getRefreshToken, login, signup, logout };
