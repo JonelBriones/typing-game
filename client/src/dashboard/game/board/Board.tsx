@@ -1,13 +1,11 @@
 import { useEffect, Fragment, useState } from "react";
 import styles from "./Board.module.scss";
-import { MdRefresh } from "react-icons/md";
 import Words from "./words/Words";
 const Board = ({
   toggleTypeCursor,
   setToggleTypeCursor,
   word,
   extraInputs,
-  resetTypeBoard,
   gameOver,
   toggleMode,
   toggleDuration,
@@ -26,13 +24,11 @@ const Board = ({
   setDisableBackspaceIdx,
   board,
   timeElapsed,
-  afk,
   setAfk,
+  resetTypeBoard,
 }: any) => {
-  // const [lastKey, setLastKey] = useState<string | null>(null);
-  // const [wordCharTracker, setWordCharTrack] = useState([]);
-  // const [cursorPosition, setCursorPosition] = useState(0);
   const [lastKeyDown, setLastKeyDown] = useState<string | null>(null);
+  const [keydownTime, setKeydownTime] = useState(0);
 
   const onHandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!toggleTypeCursor) return;
@@ -86,6 +82,12 @@ const Board = ({
 
     setKeydownTime(timeElapsed);
     setInput(input);
+    console.log(
+      input.split("")[input.split("").length - 1] ==
+        word.split("")[word.split("").length - 1] &&
+        input.length == word.length &&
+        "game complete"
+    );
     if (
       input.split("")[input.split("").length - 1] ==
         word.split("")[word.split("").length - 1] &&
@@ -97,13 +99,13 @@ const Board = ({
     }
   };
 
-  const [keydownTime, setKeydownTime] = useState(0);
   useEffect(() => {
-    if (startGame && toggleMode == "words") {
+    if (startGame && time) {
       const intervalId = setInterval(() => {
         const currentTime = Date.now();
         const elapsedTime = Math.floor((currentTime - time) / 1000);
         setTimeElapsed(elapsedTime);
+        console.log(elapsedTime);
       }, 1000);
       return () => clearInterval(intervalId);
     }
@@ -112,9 +114,9 @@ const Board = ({
   useEffect(() => {
     console.log(`last key down:${keydownTime}, current time:${timeElapsed}`);
     if (timeElapsed - keydownTime >= 5) {
-      console.log("afk");
-      // setAfk(true);
-      // resetTypeBoard();
+      setAfk(true);
+      resetTypeBoard();
+      setKeydownTime(0);
     }
   }, [timeElapsed]);
 
