@@ -20,7 +20,6 @@ const Game = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
 
-  const [loading, setLoading] = useState(true);
   const [afk, setAfk] = useState(false);
 
   // const modes = ["time", "words", "quote", "cloudy"];
@@ -53,7 +52,7 @@ const Game = () => {
     raw: number;
     language: string;
   };
-
+  console.log(error);
   const language = "English";
   const [testData, setTestData] = useState<Test | null>(null);
 
@@ -91,7 +90,7 @@ const Game = () => {
 
   useEffect(() => {
     if (!session || !session._id) return;
-    // saveHandler();
+    saveHandler();
   }, [testData]);
 
   function handleWpmConversion() {
@@ -356,7 +355,7 @@ const Game = () => {
         {/* GAME CONTAINER */}
         <div className={`${styles.game}`}>
           <div className={`${styles.timer}`}>
-            {startGame && toggleMode == "time" && <span>timeR:{time}</span>}
+            {startGame && toggleMode == "time" && <span>{time}</span>}
             {startGame && toggleMode == "cloudy" && <span>{timeElapsed}</span>}
             {startGame && toggleMode == "words" && toggleTypeCursor && (
               <span>
