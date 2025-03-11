@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 const createUser = async (req, res) => {
   let { email, password, username } = req.body;
   if (!email || !password || !username) {
-    res.status(400).send("invalid form submission");
+    res.status(401).send("invalid form submission");
   }
 
   let user = {
@@ -44,7 +44,6 @@ const createUser = async (req, res) => {
   });
 };
 const login = async (req, res) => {
-  // verify user is in database
   console.log("login");
   console.log(req.body.password);
   console.log(req.body.email);
@@ -63,7 +62,7 @@ const login = async (req, res) => {
     return res.status(401).json({ error: "Incorrect email/password" });
   }
 
-  const { email, username, _id } = userExist;
+  const { _id } = userExist;
 
   // validate password
 
@@ -84,8 +83,6 @@ const login = async (req, res) => {
   return res.status(201).json({
     accessToken,
     session: {
-      username,
-      email,
       _id,
     },
   });
@@ -105,7 +102,6 @@ const createToken = async (_id, res) => {
 };
 
 const refresh = (req, res) => {
-  console.log("refresh");
   if (req.cookies?.jwt) {
     const refreshToken = req.cookies.jwt;
     if (!refreshToken) return;
@@ -122,7 +118,13 @@ const refresh = (req, res) => {
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: "10m" }
           );
-          return res.json({ accessToken, decoded });
+
+          return res.json({
+            accessToken,
+            session: {
+              _id: decoded._id,
+            },
+          });
         }
       }
     );
@@ -132,25 +134,37 @@ const refresh = (req, res) => {
 };
 
 const logout = (req, res) => {
-  console.log("logout");
-  res.clearCookie("jwt", {
-    httpOnly: true,
-    sameSite: "None", // Should match your initial cookie settings
-    secure: true, // Change to true in production
-  });
-  res.status(200).json({ message: "Logout successful" });
+  try {
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "None", // Should match your initial cookie settings
+      secure: true, // Change to true in production
+    });
+    res.status(200).json({ message: "Logout successful" });
+  } catch (err) {
+    if (err instanceof TypeError) {
+      console.error("Logout failed", err.message);
+      return res.status(500).json({ message: "Logout failed" });
+    }
+  }
 };
 
 const getUserById = async (req, res) => {
-  console.log("getting user by id", req.params.id);
-  const result = await User.findById(req.params.id);
-  console.log(result);
-  if (!result) {
-    res.json(401).json({ message: "Could not find user" });
+  try {
+    const result = await User.findById(req.params.id);
+    console.log(result);
+    if (!result) {
+      res.json(401).json({ error: "Could not find user" });
+    }
+    const { email, username } = result;
+    console.log("got user");
+    res.status(201).json({ session: { email, username } });
+  } catch (err) {
+    if (err instanceof TypeError) {
+      console.error("Failed to get user by id: ", err.message);
+    }
+    res.status(500).json({ message: "Failed to get user", error: err.message });
   }
-  const { email, username } = result;
-
-  return res.json({ email, username });
 };
 
 const getUserByEmail = async (req, res) => {

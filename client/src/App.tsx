@@ -1,12 +1,11 @@
 import styles from "../App.module.scss";
 import "./index.scss";
-import Game from "./components/Game/Game";
+import Game from "./dashboard/game/Game";
 import { Route, Routes } from "react-router-dom";
-
-import Leaderboard from "./components/Leaderboard/Leaderboard";
-import Navbar from "./components/navbar/Navbar";
+import Leaderboard from "./dashboard/leaderboard/Leaderboard";
 import Authentication from "./dashboard/authentication/Authentication";
-import Footer from "./components/footer/Footer";
+import Footer from "./dashboard/footer/Footer";
+import Navbar from "./dashboard/navbar/Navbar";
 
 function App() {
   return (

@@ -1,13 +1,11 @@
 import Test from "../models/Test.js";
 
-const saveTest = async (request, response) => {
+const saveTest = async (req, res) => {
   try {
-    const { user, seconds, words, wpm, raw, language } = request.body;
+    const { user, seconds, words, wpm, raw, language } = req.body;
 
     if (!user || !seconds || !words || !wpm || !raw || !language) {
-      return request
-        .status(400)
-        .json(request.message, "Missing required fields");
+      return req.status(401).json(req.message, "Missing required fields");
     }
 
     const newTest = new Test({
@@ -20,28 +18,27 @@ const saveTest = async (request, response) => {
     });
 
     await newTest.save();
-
-    response
-      .status(201)
-      .json({ message: "Test saved successfully", test: newTest });
+    res.status(201).json({ message: "Test saved", test: newTest });
   } catch (error) {
-    request.status(500).json({ message: "Test saved unsuccessfully", error });
+    res
+      .status(500)
+      .json({ message: "Test failed to save", error: error.message });
   }
 };
-const getTests = async (request, response) => {
+const getTests = async (req, res) => {
   console.log("getting tests from db");
   try {
     const tests = await Test.find();
     if (!tests) {
-      return response
-        .status(400)
-        .json(response.message, "Could not retrieve tests");
+      return res.status(400).json(res.message, "Could not retrieve tests");
     }
     console.log(tests);
 
-    response.json(tests);
+    res.json(tests);
   } catch (error) {
-    response.status(500).json({ message: "Could not retrieve tests", error });
+    res
+      .status(500)
+      .json({ message: "Could not retrieve tests", error: error.message });
   }
 };
 

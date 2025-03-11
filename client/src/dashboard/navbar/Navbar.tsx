@@ -5,10 +5,12 @@ import styles from "./Navbar.module.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaRegUser } from "react-icons/fa6";
 
+import Logo from "/assets/logo-transparent-purple-theme.png";
 import { MdDarkMode } from "react-icons/md";
 import { IoSunnyOutline } from "react-icons/io5";
 import { useAuthContext } from "../../AuthProvider";
 import { FaTrophy } from "react-icons/fa";
+import { logout } from "../../api/auth";
 const Navbar = () => {
   const { setSession, setToken, session } = useAuthContext() as any;
   const navigate = useNavigate();
@@ -31,17 +33,8 @@ const Navbar = () => {
     console.log(localStorage.getItem("theme"));
   }, [toggleDarkMode]);
 
-  async function logout() {
-    const res = await fetch("http://localhost:2222/api/user/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-    if (!res) {
-      console.log("error");
-      throw new Error("go away");
-    }
-    const result = await res.json();
-    console.log("logged out", result);
+  async function logoutHandler() {
+    logout();
     setSession(null);
     setToken(null);
     navigate("/");
@@ -49,7 +42,9 @@ const Navbar = () => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.navLeft}>
-        <Link to="/">CloudType</Link>
+        <Link to="/" className={styles.logo}>
+          <img src={Logo} />
+        </Link>
         <Link to="/leaderboard">
           <FaTrophy size={"1.25rem"} />
         </Link>
@@ -57,7 +52,7 @@ const Navbar = () => {
           <FaRegKeyboard size={"1.25rem"} />
         </Link>
       </div>
-      <div>
+      <div className={styles.navRight}>
         <button
           onClick={() => setToggleDarkMode(!toggleDarkMode)}
           className={`${styles.toggleDarkMode}`}
@@ -84,7 +79,7 @@ const Navbar = () => {
                   className={styles.profileActions}
                   onMouseLeave={() => setHoverProfile(false)}
                 >
-                  <button onClick={() => logout()}>logout</button>
+                  <button onClick={() => logoutHandler()}>logout</button>
                   <span>something</span>
                   <span>something</span>
                   <span>something</span>

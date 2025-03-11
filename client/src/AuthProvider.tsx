@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { getRefreshToken } from "./api/auth";
+import { getUserById } from "./api/users";
 
 const AuthContext = createContext<any>(null);
 interface Session {
   _id: string;
 }
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
   const [session, setSession] = useState<Session | null>(null);
   const [token, setToken] = useState(null);
 
@@ -17,37 +18,35 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    console.log(token, session);
-    if (!token && !session) {
+    if (token == null) {
       const validateAuth = async () => {
-        const res = await fetch(`${API_URL}/api/user/refresh`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (!res) return;
-        const refreshToken = await res.json();
-        setToken(refreshToken.accessToken);
-        setSession(refreshToken.decoded);
+        const refreshToken = await getRefreshToken();
+
+        if (refreshToken) {
+          setToken(refreshToken.accessToken);
+          setSession({
+            _id: refreshToken.session._id,
+          });
+        } else {
+          console.error("Failed to get refresh token");
+        }
       };
       validateAuth();
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => {
-    // use when needed user data
-    console.log(session);
-    if (session?._id) {
-      console.log("token id valid", session._id);
-      const fetchData = async () => {
-        const resUser = await fetch(`${API_URL}/api/user/${session._id}`);
-        const user = await resUser.json();
-        setSession(user);
-      };
-      fetchData();
-    }
+    if (!session?._id) return;
+    const fetchData = async () => {
+      const res = await getUserById(session._id);
+
+      if (!res) {
+        console.error("Failed to fetch user by id");
+      } else {
+        setSession(res.session);
+      }
+    };
+    fetchData();
   }, [session]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

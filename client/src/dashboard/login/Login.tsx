@@ -1,55 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Login.module.scss";
 import { useAuthContext } from "../../AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { IoLogInOutline } from "react-icons/io5";
 import { FaGoogle } from "react-icons/fa";
+import { login } from "../../api/auth.ts";
 
-const Login = ({ error, setError }: any) => {
+const Login = ({ setError }: any) => {
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
 
   const { session, setSession, setToken } = useAuthContext();
-  // const [loading, setLoading] = useState(false);
-  // const [message, setMessage] = useState("");
 
   const [userForm, setUserForm] = useState({
     email: "",
     password: "",
   });
-  console.log(session, error);
-  async function login() {
-    // setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/api/user/login`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userForm),
+
+  async function handleLogin() {
+    const res = await login(userForm);
+    if (res.error) {
+      console.log(res.error);
+      setError(res.error);
+    } else {
+      console.log(res);
+      setToken(res.accessToken);
+      setSession({
+        _id: res.session._id,
       });
-
-      const data = await res.json();
-
-      if (res.status == 401) {
-        setError(data?.error);
-        throw new Error("wrong pass");
-      }
-
-      if (!data) {
-        console.log("error");
-      }
-      console.log(data);
-      setToken(data.accessToken);
-      setSession(data.session);
-      // setMessage(data.message);
       setError("");
       navigate("/");
-    } catch (error) {
-      console.log(error);
     }
   }
+
+  useEffect(() => {
+    if (session?._id) {
+      console.log("redirect");
+      navigate("/");
+    }
+  }, [session]);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserForm({
@@ -60,14 +48,13 @@ const Login = ({ error, setError }: any) => {
   const onSubmitHandler = (e: any) => {
     e.preventDefault();
     console.log("submit");
-    login();
+    handleLogin();
   };
+
   return (
     <div className={styles.loginContainer}>
-      {/* {error && <h4>{error}</h4>} */}
       <div className={styles.header}>
         <IoLogInOutline size={"1.5rem"} />
-
         <h4>login</h4>
       </div>
       <div className={styles.providers}>

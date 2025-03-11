@@ -5,8 +5,60 @@
   align-items: center;
   height: 100%;
   width: 100%;
+  overflow: hidden;
+
   position: relative;
   color: var(--text-color);
+  padding: 24px;
+}
+
+.words {
+  margin: auto;
+  width: 300px;
+  height: 180px;
+  font-family: Arial, sans-serif;
+  font-size: 1.5rem;
+  overflow: hidden;
+}
+
+.modesContainer {
+  visibility: hidden;
+}
+.game {
+  height: 100%;
+
+  cursor: default;
+  overflow: hidden;
+  .resetBtn {
+    margin: auto;
+  }
+}
+
+@media (min-width: 481px) {
+  .modesContainer {
+    visibility: visible;
+    height: 240px;
+  }
+  .gameFocus {
+    height: 180px;
+  }
+  .words {
+    height: 240px;
+    width: 100%;
+
+    margin: none;
+
+    font-size: 2rem;
+  }
+  .container {
+    width: 100%;
+  }
+}
+
+@media (min-width: 769px) {
+  .words {
+    height: 170px;
+  }
 }
 
 // RESULTS
@@ -103,23 +155,20 @@
 }
 
 // MODES
+
 .modesContainer {
-  width: 600px;
+  height: fit-content;
+  max-width: 600px;
   margin: auto;
   position: relative;
 }
 .modes {
-  position: absolute;
-  width: 600px;
   display: flex;
   align-items: center;
   .mode {
     flex: auto;
     display: flex;
     justify-content: space-evenly;
-  }
-  div {
-    display: flex;
   }
 }
 .optionSettings {
@@ -152,34 +201,26 @@
 }
 
 .game {
-  flex: 1;
-  padding-top: 5rem;
-  width: inherit;
   cursor: default;
+  position: relative;
   .resetBtn {
     margin: auto;
   }
 }
 
-.typingContainer {
-  min-width: 500px;
-  padding-inline: 24px;
-  height: 100%;
-  position: relative;
-}
-
 .timer {
   height: 100px;
-
   padding: 2rem;
   font-size: 2rem;
 }
 
 .gameFocus {
+  padding: 2rem;
   position: absolute;
-  z-index: 10;
-  width: 100%;
-
+  left: 0;
+  right: 0;
+  z-index: 9001;
+  margin: auto;
   p {
     text-align: center;
     font-size: 2rem;
@@ -191,15 +232,23 @@
   cursor: pointer;
 }
 
-.words {
-  height: 150px;
-  font-family: Arial, sans-serif;
-  font-size: 2rem;
-  background: transparent;
-  word-break: keep-all;
-  white-space: normal;
-  overflow: hidden;
+.resetBtn {
+  padding: 0.5rem 1rem;
+  transition: ease-in-out;
+  display: flex;
+  justify-content: center;
+  color: var(--text-color);
+  opacity: 0.5;
+  border: 2px solid transparent;
+  margin: auto;
+  &:hover {
+    opacity: 1;
+  }
+  &:active {
+    border: 2px solid var(--text-color);
+  }
 }
+
 span {
   // fix this
   display: inline-block;
@@ -220,4 +269,51 @@ span {
 }
 .infinite {
   color: var(--accent-color);
+}
+
+.afk {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  visibility: visible;
+  justify-content: center;
+  z-index: 100;
+  width: 300px;
+  margin: auto;
+  height: 80px;
+  opacity: 0;
+  transition: opacity 800ms ease-in;
+
+  animation: 6s ease-in-out afk;
+  background-color: var(--background-dimmed);
+  p {
+    justify-content: center;
+    width: 100%;
+    background-color: rgb(162, 155, 254, 0.2);
+    border: 2px solid var(--accent-color);
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+  }
+}
+@keyframes afk {
+  0% {
+    transform: translate(0, 0px);
+    visibility: hidden;
+  }
+  10% {
+    transform: translate(0, -40px);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, -40px);
+    visibility: hidden;
+    opacity: 0;
+  }
 }
