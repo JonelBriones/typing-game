@@ -15,8 +15,6 @@ const Cloudy = ({ resetTypeBoard }: any) => {
   cloudImage.src = "/assets/white-cloud.png"; // Ensure correct path
 
   useEffect(() => {
-    console.log("cloud moved");
-
     const board = boardRef.current;
     if (!board) return;
 
@@ -36,11 +34,8 @@ const Cloudy = ({ resetTypeBoard }: any) => {
 
     // **Cloud Movement Logic**
     const update = () => {
-      console.log("loading cloud gravity");
       context.clearRect(0, 0, board.width, board.height); // Clear canvas
       if (cloudRef.current.y == 536) {
-        console.log("game over", cloudRef.current.y);
-        // setTime(null);
         resetTypeBoard();
       }
       // Apply gravity

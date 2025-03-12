@@ -1,26 +1,145 @@
-.letter,
-.space {
-  flex-shrink: none;
-  border: 3px solid transparent;
-  opacity: 0.5;
-  width: 25px;
-  // border: 3px solid red;
-}
-
-.typingContainer {
+.typingContainerOverflow {
+  height: 150px;
+  width: screen;
   position: relative;
-  height: 100%;
+  border: 2px solid green;
+  overflow: hidden;
 }
 
-.cursor::before {
-  content: "";
-  margin-left: -3px;
-  border-left: 3px solid var(--text-color);
-  animation: blink;
-  animation-duration: 1.1s;
-  animation-iteration-count: infinite;
-  transition-timing-function: ease-out;
-  opacity: 1;
+@media (min-width: 375px) {
+  .typingContainerOverflow {
+    border: 2px solid red;
+    max-width: 375px;
+    // height: 200px;
+    top: 0;
+    // 10
+    // 25 3 lines, complete, 3-4 line extra
+    // 50 10-11 line extra
+    // 10
+  }
+}
+@media (min-width: 576px) {
+  .typingContainerOverflow {
+    border: 2px solid blue;
+    max-width: 576px;
+
+    // 10
+    // 25 3 lines, complete, 1 line extra
+    // 50 6-7 line extra
+    // 100
+  }
+}
+@media (min-width: 768px) {
+  .typingContainerOverflow {
+    border: 2px solid orange;
+    max-width: 768px;
+    // 10
+    // 25 3 lines, complete
+    // 50 4 line extra
+    // 100
+  }
+}
+/* Tablets only (between 768px and 992px) */
+@media (min-width: 992px) {
+  .typingContainerOverflow {
+    border: 2px solid pink;
+    max-width: 992px;
+    // 25 3 lines, complete
+    // 50 2 line extra
+  }
+}
+
+/* Laptops only (between 992px and 1200px) */
+@media (min-width: 1200px) {
+  .typingContainerOverflow {
+    border: 2px solid yellow;
+    max-width: 1200px;
+    // 50 1 line extra
+  }
+}
+
+@media (min-width: 1440px) {
+  // desktops
+  .typingContainerOverflow {
+    border: 2px solid purple;
+    max-width: 1440px;
+    margin: auto;
+    // 50 1 line extra
+  }
+}
+.typingContainerOverflow {
+  .typingContainer {
+    position: absolute;
+    // top: -45px;
+    top: 0;
+    width: 100%;
+    margin: auto;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    font-size: 1.75rem;
+
+    .word {
+      height: 40px;
+      display: inline-block;
+
+      .letter {
+        border: 3px solid transparent;
+        opacity: 0.5;
+        text-align: center;
+        width: fit-content;
+        position: relative;
+      }
+
+      .space {
+        padding: 4px;
+        width: 30px;
+      }
+      .cursor::before {
+        content: "";
+        margin-left: -3px;
+        border-left: 3px solid var(--text-color);
+        animation: blink;
+        animation-duration: 1.1s;
+        animation-iteration-count: infinite;
+        transition-timing-function: ease-out;
+        opacity: 1;
+      }
+
+      .valid {
+        color: var(--text-color);
+        opacity: 1;
+      }
+
+      .error {
+        color: red;
+      }
+    }
+
+    .gameFocus {
+      padding: 2rem;
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 9001;
+      margin: auto;
+      p {
+        text-align: center;
+        font-size: 2rem;
+      }
+    }
+  }
+}
+
+.blur {
+  filter: blur(4px);
+  cursor: pointer;
+}
+
+@media (min-width: 481px) {
+  .typingContainer {
+    width: 100%;
+    margin: none;
+  }
 }
 
 .typeInput {
@@ -38,13 +157,6 @@
   z-index: 9000;
 }
 
-.valid {
-  color: var(--text-color);
-  opacity: 1;
-}
-.error {
-  color: red;
-}
 @keyframes blink {
   from {
     opacity: 1;

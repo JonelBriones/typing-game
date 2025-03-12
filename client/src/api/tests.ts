@@ -1,13 +1,15 @@
 const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
 const saveTest = async (testData: any) => {
+  console.log("fetching...");
   try {
-    const res = await fetch(`${API_URL}api/tests/save`, {
+    const res = await fetch(`${API_URL}/api/tests/save`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(testData),
     });
+    console.log("route");
 
     if (!res.ok) {
       throw new Error(`http status:${res.status} ${res.statusText}`);
