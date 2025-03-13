@@ -156,9 +156,9 @@ const getUserById = async (req, res) => {
     if (!result) {
       res.json(401).json({ error: "Could not find user" });
     }
-    const { email, username } = result;
+    const { email, username, _id } = result;
     console.log("got user");
-    res.status(201).json({ session: { email, username } });
+    res.status(201).json({ session: { email, username, _id } });
   } catch (err) {
     if (err instanceof TypeError) {
       console.error("Failed to get user by id: ", err.message);

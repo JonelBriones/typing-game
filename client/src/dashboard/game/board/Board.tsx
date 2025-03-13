@@ -1,4 +1,4 @@
-import { useEffect, Fragment, useState } from "react";
+import { useEffect, Fragment, useState, useRef } from "react";
 import styles from "./Board.module.scss";
 import Words from "./words/Words";
 const Board = ({
@@ -25,26 +25,27 @@ const Board = ({
   board,
   timeElapsed,
   setAfk,
-  resetTypeBoard,
+  setCountdown,
+  afkTimer,
+  setAfkTimer,
+  typingContainerElement,
+  setTextHeight,
+  textHeight,
+  setValidLetter,
 }: any) => {
-  const [lastKeyDown, setLastKeyDown] = useState<string | null>(null);
   const [keydownTime, setKeydownTime] = useState(0);
+  const cursorRef = useRef(null);
 
   const onHandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!toggleTypeCursor) return;
     setAfk(false);
     let input = e.target.value;
+
     if (input.length == 1) {
       setToggleTypeCursor(true);
       setStartGame(true);
-      if (toggleMode == "words" || "cloudy") {
-        setTime(Date.now());
-      }
-      if (toggleMode == "time") {
-        setTime(toggleDuration);
-      }
-
-      console.log(lastKeyDown);
+      setTime(Date.now());
+      setAfkTimer(Date.now());
     }
     if (input.length < disableBackspaceIdx) return;
 
@@ -56,38 +57,40 @@ const Board = ({
     let matchCharInWord = word[inputCharArr.length - 1];
     if (currentInput == matchCharInWord && currentInput !== " ") {
       // console.log("correct letter");
+      setValidLetter(true);
     } else if (matchCharInWord == " ") {
       // console.log("char needs to be a space");
 
       if (inputCharArr[inputCharArr.length - 1] == " ") {
         // space in correct position
-
+        setValidLetter(true);
         let currentWord = input.split(" ")[wordCount];
         let isWordMatch = word.split(" ")[wordCount];
 
         if (currentWord == isWordMatch) {
-          console.log("correct word");
+          // console.log("correct word");
           setDisableBackspaceIdx(input.length);
-          console.log(
-            "is a space?",
-            input.split("")[input.split("").length - 1] == " "
-          );
           setWordCount(wordCount + 1);
-          // if (input.split("")[input.split("").length - 1] == " ") {
-          //   setWordCount(wordCount + 1);
-          // }
         }
       }
+    } else {
+      setValidLetter(false);
     }
-
     setKeydownTime(timeElapsed);
     setInput(input);
-    console.log(
-      input.split("")[input.split("").length - 1] ==
-        word.split("")[word.split("").length - 1] &&
-        input.length == word.length &&
-        "game complete"
-    );
+
+    const letter =
+      document.getElementById(`letter${input.length}`)?.getBoundingClientRect()
+        .bottom || 0;
+    // when next line is add, set current text == current view
+    console.log("text height", textHeight);
+    if (textHeight > 440 && Math.floor(letter) > 400) {
+      const style = window.getComputedStyle(typingContainerElement);
+      const marginVal = parseFloat(style.getPropertyValue("margin-top"));
+      typingContainerElement.style.marginTop = `${marginVal - 45}px`;
+      setTextHeight(textHeight - 45);
+    }
+
     if (
       input.split("")[input.split("").length - 1] ==
         word.split("")[word.split("").length - 1] &&
@@ -100,84 +103,104 @@ const Board = ({
   };
 
   useEffect(() => {
-    if (startGame && time) {
+    // needs to run to configure stats
+    if (startGame) {
       const intervalId = setInterval(() => {
         const currentTime = Date.now();
         const elapsedTime = Math.floor((currentTime - time) / 1000);
         setTimeElapsed(elapsedTime);
-        console.log(elapsedTime);
+
+        // track line position
       }, 1000);
       return () => clearInterval(intervalId);
     }
   }, [startGame]);
 
   useEffect(() => {
-    console.log(`last key down:${keydownTime}, current time:${timeElapsed}`);
-    if (timeElapsed - keydownTime >= 5) {
-      setAfk(true);
-      resetTypeBoard();
-      setKeydownTime(0);
-    }
-  }, [timeElapsed]);
-
-  useEffect(() => {
+    // could join both time useEffects
     if (startGame && toggleMode == "time") {
       let timer = toggleDuration;
       const intervalId = setInterval(() => {
+        // mode: word & cloudy / countup
+        const currentTime = Date.now();
+        const elapsedTime = Math.floor((currentTime - afkTimer) / 1000);
+        setAfkTimer(elapsedTime);
+
+        // mode: time / countdown
+
         timer--;
-        setTime(timer);
-        console.log("count down", timer);
+        setCountdown(timer);
         if (timer < 0 || gameOver) {
           clearInterval(intervalId);
           setGameOver(true);
         }
       }, 1000);
+
       return () => clearInterval(intervalId);
     }
   }, [startGame]);
 
+  useEffect(() => {
+    if (timeElapsed - keydownTime >= 15 && startGame && !toggleTypeCursor) {
+      // record the afk time, show afk warning if user also leaves page?
+      // setAfk(true);
+      // resetTypeBoard();
+    }
+  }, [timeElapsed, time]);
+
   return (
-    <div className={styles.typingContainer}>
-      <input
-        autoComplete="off"
-        spellCheck="false"
-        id="gameTypeInput"
-        ref={inputRef}
-        type="text"
-        value={input}
-        onChange={(e) => onHandleInputChange(e)}
-        onFocus={() => setToggleTypeCursor(true)}
-        onBlur={async () => {
-          setToggleTypeCursor(false);
-        }}
-        className={`${styles.typeInput}`}
-        onKeyDown={(e) => {
-          if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
-            e.preventDefault();
-          }
-          setLastKeyDown(e.key);
-        }}
-      />
+    <div className={styles.typingContainerOverflow}>
+      <div id="typingContainer" className={`${styles.typingContainer} `}>
+        {!toggleTypeCursor && (
+          <div
+            className={styles.gameFocus}
+            onClick={() => inputRef?.current?.focus()}
+          >
+            <p>click here or press any key to focus</p>
+          </div>
+        )}
+        <input
+          autoComplete="off"
+          spellCheck="false"
+          id="gameTypeInput"
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => onHandleInputChange(e)}
+          onFocus={() => setToggleTypeCursor(true)}
+          onMouseEnter={() => setToggleTypeCursor(true)}
+          onBlur={async () => {
+            setToggleTypeCursor(false);
+          }}
+          className={`${styles.typeInput}`}
+          onKeyDown={(e) => {
+            if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
+              e.preventDefault();
+            }
+          }}
+        />
 
-      <Words
-        board={board}
-        styles={styles}
-        input={input}
-        toggleTypeCursor={toggleTypeCursor}
-        word={word}
-      />
+        <Words
+          board={board}
+          styles={styles}
+          input={input}
+          word={word}
+          cursorRef={cursorRef}
+          toggleTypeCursor={toggleTypeCursor}
+        />
 
-      {extraInputs &&
-        extraInputs.split("").map((letter: string, idx: number) => (
-          <Fragment key={idx}>
-            <span className={styles.error}>
-              {toggleTypeCursor && idx == input.length && (
-                <span className={styles.cursor} />
-              )}
-              {letter}
-            </span>
-          </Fragment>
-        ))}
+        {extraInputs &&
+          extraInputs.split("").map((letter: string, idx: number) => (
+            <Fragment key={idx}>
+              <span className={styles.error}>
+                {toggleTypeCursor && idx == input.length && (
+                  <span className={styles.cursor} />
+                )}
+                {letter}
+              </span>
+            </Fragment>
+          ))}
+      </div>
     </div>
   );
 };

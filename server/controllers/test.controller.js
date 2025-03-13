@@ -1,6 +1,7 @@
 import Test from "../models/Test.js";
 
 const saveTest = async (req, res) => {
+  console.log("SAVING");
   try {
     const { user, seconds, words, wpm, raw, language } = req.body;
 
@@ -17,8 +18,8 @@ const saveTest = async (req, res) => {
       language,
     });
 
-    await newTest.save();
-    res.status(201).json({ message: "Test saved", test: newTest });
+    const result = await newTest.save();
+    res.status(201).json({ message: "Test saved" });
   } catch (error) {
     res
       .status(500)

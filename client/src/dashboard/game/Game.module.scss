@@ -1,64 +1,213 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
   height: 100%;
   width: 100%;
   overflow: hidden;
-
   position: relative;
   color: var(--text-color);
   padding: 24px;
 }
 
-.words {
-  margin: auto;
-  width: 300px;
-  height: 180px;
-  font-family: Arial, sans-serif;
-  font-size: 1.5rem;
-  overflow: hidden;
-}
-
-.modesContainer {
-  visibility: hidden;
-}
-.game {
-  height: 100%;
-
-  cursor: default;
-  overflow: hidden;
-  .resetBtn {
-    margin: auto;
-  }
-}
-
 @media (min-width: 481px) {
-  .modesContainer {
-    visibility: visible;
-    height: 240px;
-  }
   .gameFocus {
     height: 180px;
-  }
-  .words {
-    height: 240px;
-    width: 100%;
-
-    margin: none;
-
-    font-size: 2rem;
   }
   .container {
     width: 100%;
   }
 }
 
-@media (min-width: 769px) {
-  .words {
-    height: 170px;
+.cloudy {
+  position: absolute;
+  top: 0;
+  z-index: 0;
+}
+.cloudyImgContainer {
+  display: block;
+  width: 100%;
+  height: 100px;
+  .cloudyImg {
+    position: absolute;
+    display: flex;
+    width: 100px;
+    animation: linear infinite alternate clouds var(--animation-time);
   }
+  @keyframes clouds {
+    0% {
+      left: 0;
+      transform: translateX(0);
+    }
+    100% {
+      left: 100%;
+      transform: translateX(-100%);
+    }
+  }
+}
+
+// MODES
+
+.modes {
+  margin: auto;
+  position: relative;
+  width: fit-content;
+  height: 40px;
+  max-width: 700px;
+  display: none;
+  font-size: 0.75rem;
+  .mode,
+  .modeSettings {
+    gap: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .optionBtn {
+      color: var(--text-color);
+      background-color: transparent;
+      border: none;
+      padding: 8px;
+      transition: color 100ms ease-in;
+      &:hover {
+        color: var(--accent-color-dimmed);
+      }
+      &.toggle {
+        color: var(--accent-color);
+        &:hover {
+          color: var(--accent-color);
+        }
+      }
+    }
+    .infinite {
+      display: none;
+      color: var(--accent-color);
+    }
+  }
+
+  .optionBreaker {
+    width: 4px;
+    height: 25px;
+    background-color: var(--text-color);
+    border-radius: 32px;
+    margin-inline: 16px;
+  }
+}
+@media (min-width: 375px) {
+  .modes {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 700px;
+    font-size: 1rem;
+    .modeSettings {
+      gap: 1rem;
+    }
+    .infinite {
+      margin-inline: 16px;
+      display: flex;
+      align-items: center;
+      color: var(--accent-color);
+    }
+  }
+}
+
+@media (min-width: 576px) {
+  .modes {
+    flex-direction: row;
+    max-width: 700px;
+    font-size: 1rem;
+    .modeSettings {
+      gap: 1rem;
+    }
+    .optionBreaker {
+      display: block;
+    }
+  }
+}
+@media (min-width: 768px) {
+  .modes {
+  }
+}
+
+.timer {
+  height: 100px;
+  padding: 2rem;
+  font-size: 2rem;
+}
+
+.resetBtn {
+  padding: 0.5rem 1rem;
+  transition: ease-in-out;
+  display: flex;
+  justify-content: center;
+  color: var(--text-color);
+  opacity: 0.5;
+  border: 2px solid transparent;
+  margin: auto;
+  &:hover {
+    opacity: 1;
+  }
+  &:active {
+    border: 2px solid var(--text-color);
+  }
+}
+
+@keyframes blink {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.afk {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  visibility: visible;
+  justify-content: center;
+  z-index: 100;
+  width: 300px;
+  margin: auto;
+  height: 80px;
+  opacity: 0;
+  transition: opacity 800ms ease-in;
+
+  animation: 6s ease-in-out afk;
+  background-color: var(--background-dimmed);
+  p {
+    justify-content: center;
+    width: 100%;
+    background-color: rgb(162, 155, 254, 0.2);
+    border: 2px solid var(--accent-color);
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+  }
+}
+@keyframes afk {
+  0% {
+    transform: translate(0, 0px);
+    visibility: hidden;
+  }
+  10% {
+    transform: translate(0, -40px);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, -40px);
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+.blur {
+  filter: blur(4px);
+  cursor: pointer;
 }
 
 // RESULTS
@@ -126,194 +275,4 @@
   display: flex;
   justify-content: center;
   gap: 1rem;
-}
-.cloudy {
-  position: absolute;
-  top: 0;
-  z-index: 0;
-}
-.cloudyImgContainer {
-  display: block;
-  width: 100%;
-  height: 100px;
-  .cloudyImg {
-    position: absolute;
-    display: flex;
-    width: 100px;
-    animation: linear infinite alternate clouds var(--animation-time);
-  }
-  @keyframes clouds {
-    0% {
-      left: 0;
-      transform: translateX(0);
-    }
-    100% {
-      left: 100%;
-      transform: translateX(-100%);
-    }
-  }
-}
-
-// MODES
-
-.modesContainer {
-  height: fit-content;
-  max-width: 600px;
-  margin: auto;
-  position: relative;
-}
-.modes {
-  display: flex;
-  align-items: center;
-  .mode {
-    flex: auto;
-    display: flex;
-    justify-content: space-evenly;
-  }
-}
-.optionSettings {
-  width: 240px;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-.optionBtn {
-  color: var(--text-color);
-  background-color: transparent;
-  border: none;
-  padding: 0.5rem;
-  transition: color 100ms ease-in;
-  &:hover {
-    color: var(--accent-color);
-  }
-  &.toggle {
-    color: var(--accent-color);
-    &:hover {
-      color: var(--accent-color);
-    }
-  }
-}
-.optionBreaker {
-  width: 6px;
-  height: 30px;
-  background-color: var(--text-color);
-  border-radius: 2rem;
-}
-
-.game {
-  cursor: default;
-  position: relative;
-  .resetBtn {
-    margin: auto;
-  }
-}
-
-.timer {
-  height: 100px;
-  padding: 2rem;
-  font-size: 2rem;
-}
-
-.gameFocus {
-  padding: 2rem;
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 9001;
-  margin: auto;
-  p {
-    text-align: center;
-    font-size: 2rem;
-  }
-}
-
-.blur {
-  filter: blur(4px);
-  cursor: pointer;
-}
-
-.resetBtn {
-  padding: 0.5rem 1rem;
-  transition: ease-in-out;
-  display: flex;
-  justify-content: center;
-  color: var(--text-color);
-  opacity: 0.5;
-  border: 2px solid transparent;
-  margin: auto;
-  &:hover {
-    opacity: 1;
-  }
-  &:active {
-    border: 2px solid var(--text-color);
-  }
-}
-
-span {
-  // fix this
-  display: inline-block;
-  text-align: center;
-  word-break: keep-all;
-  white-space: normal;
-  color: var(--typing-fields-placeholder);
-  // border: 2px solid red;
-}
-
-@keyframes blink {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-.infinite {
-  color: var(--accent-color);
-}
-
-.afk {
-  position: absolute;
-  left: 0;
-  right: 0;
-  display: flex;
-  visibility: visible;
-  justify-content: center;
-  z-index: 100;
-  width: 300px;
-  margin: auto;
-  height: 80px;
-  opacity: 0;
-  transition: opacity 800ms ease-in;
-
-  animation: 6s ease-in-out afk;
-  background-color: var(--background-dimmed);
-  p {
-    justify-content: center;
-    width: 100%;
-    background-color: rgb(162, 155, 254, 0.2);
-    border: 2px solid var(--accent-color);
-    display: flex;
-    align-items: center;
-    border-radius: 8px;
-  }
-}
-@keyframes afk {
-  0% {
-    transform: translate(0, 0px);
-    visibility: hidden;
-  }
-  10% {
-    transform: translate(0, -40px);
-    opacity: 1;
-    visibility: visible;
-  }
-
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(0, -40px);
-    visibility: hidden;
-    opacity: 0;
-  }
 }

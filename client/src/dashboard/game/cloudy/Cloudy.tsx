@@ -1,6 +1,12 @@
 import { useEffect, useRef } from "react";
 
-const Cloudy = ({ resetTypeBoard }: any) => {
+const Cloudy = ({
+  resetTypeBoard,
+}: // input,
+// toggleDifficulty,
+// generatedWord,
+// wordCount,
+any) => {
   // interface Board {
   //   width: number;
   //   height: number;
@@ -9,17 +15,30 @@ const Cloudy = ({ resetTypeBoard }: any) => {
   const boardRef = useRef<any | null>(null);
   const cloudRef = useRef({ x: 45, y: 0, velocityY: 0 });
   const animationFrameId = useRef<number | null>(null);
-  const gravity = 0.2; // 🛠️ Reduced gravity for slower fall
-  const jumpVelocity = -3; // 🔼 Stronger upward force for better jump
+  // const difficulty = {
+  //   easy: 0.2,
+  //   medium: 0.3,
+  //   hard: 0.35,
+  //   expert: 0.4,
+  // };
+  // const velocities = {
+  //   expert: -8,
+  //   hard: -3,
+  //   medium: -2,
+  //   easy: -1,
+  // };
+  // const [jump, setJump] = useState(false);
+  // const gravity = difficulty[toggleDifficulty]; // 🛠️ Reduced gravity for slower fall
+  const gravity = 0.15;
+  const jumpVelocity = -2;
+
   const cloudImage = new Image();
   cloudImage.src = "/assets/white-cloud.png"; // Ensure correct path
 
   useEffect(() => {
-    console.log("cloud moved");
-
     const board = boardRef.current;
     if (!board) return;
-
+    // const jump = validLetter;
     const boardWidth = 360;
     const boardHeight = 640;
     board.width = boardWidth;
@@ -36,11 +55,8 @@ const Cloudy = ({ resetTypeBoard }: any) => {
 
     // **Cloud Movement Logic**
     const update = () => {
-      console.log("loading cloud gravity");
       context.clearRect(0, 0, board.width, board.height); // Clear canvas
       if (cloudRef.current.y == 536) {
-        console.log("game over", cloudRef.current.y);
-        // setTime(null);
         resetTypeBoard();
       }
       // Apply gravity
@@ -87,7 +103,7 @@ const Cloudy = ({ resetTypeBoard }: any) => {
       document.removeEventListener("keydown", moveCloud);
       cancelAnimationFrame(animationFrameId.current as any);
     };
-  }, []); // ✅ Empty dependency array ensures it runs only once
+  }, []); // ✅ Empty dependency array ensures it runs only one
 
   return <canvas ref={boardRef} />;
 };

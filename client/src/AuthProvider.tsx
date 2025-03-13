@@ -8,13 +8,15 @@ interface Session {
 }
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-
+  // const [loading, setLoading] = useState(false);
   const value: any = {
     session,
     setSession,
     token,
     setToken,
+    user,
   };
 
   useEffect(() => {
@@ -43,7 +45,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!res) {
         console.error("Failed to fetch user by id");
       } else {
-        setSession(res.session);
+        setUser(res.session);
       }
     };
     fetchData();
