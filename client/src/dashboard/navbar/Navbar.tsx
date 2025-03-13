@@ -5,7 +5,8 @@ import styles from "./Navbar.module.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaRegUser } from "react-icons/fa6";
 
-import Logo from "/assets/logo-transparent-purple-theme.png";
+import Logo from "/assets/logostacked.png";
+import Cloud from "/assets/cloudlogo.png";
 import { MdDarkMode } from "react-icons/md";
 import { IoSunnyOutline } from "react-icons/io5";
 import { useAuthContext } from "../../AuthProvider";
@@ -42,14 +43,17 @@ const Navbar = () => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.navLeft}>
+        <Link to="/" className={styles.logoMobile}>
+          <img src={Cloud} />
+        </Link>
         <Link to="/" className={styles.logo}>
           <img src={Logo} />
         </Link>
         <Link to="/leaderboard">
-          <FaTrophy size={"1.25rem"} />
+          <FaTrophy />
         </Link>
         <Link to="/">
-          <FaRegKeyboard size={"1.25rem"} />
+          <FaRegKeyboard />
         </Link>
       </div>
       <div className={styles.navRight}>
@@ -57,11 +61,7 @@ const Navbar = () => {
           onClick={() => setToggleDarkMode(!toggleDarkMode)}
           className={`${styles.toggleDarkMode}`}
         >
-          {toggleDarkMode ? (
-            <IoSunnyOutline size={"1.2rem"} />
-          ) : (
-            <MdDarkMode size={"1.2rem"} />
-          )}
+          {toggleDarkMode ? <IoSunnyOutline /> : <MdDarkMode />}
         </button>
 
         {session ? (

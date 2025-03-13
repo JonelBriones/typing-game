@@ -1,48 +1,39 @@
 .typingContainerOverflow {
-  height: 150px;
-  width: screen;
+  height: 140px;
+  width: 100%;
   position: relative;
-  border: 2px solid green;
-  overflow: hidden;
+  // overflow: hidden;
+  border: 2px solid red;
 }
-
 @media (min-width: 375px) {
-  .typingContainerOverflow {
-    border: 2px solid red;
+  .typingContainer {
+    // border: 2px solid red;
     max-width: 375px;
-    // height: 200px;
-    top: 0;
-    // 10
-    // 25 3 lines, complete, 3-4 line extra
-    // 50 10-11 line extra
-    // 10
   }
 }
 @media (min-width: 576px) {
-  .typingContainerOverflow {
-    border: 2px solid blue;
+  .typingContainer {
+    // border: 2px solid blue;
     max-width: 576px;
-
-    // 10
-    // 25 3 lines, complete, 1 line extra
-    // 50 6-7 line extra
-    // 100
   }
 }
+@media (min-width: 672px) {
+  .typingContainer {
+    // border: 2px solid red;
+    max-width: 672px;
+  }
+}
+
 @media (min-width: 768px) {
-  .typingContainerOverflow {
-    border: 2px solid orange;
+  .typingContainer {
+    // border: 2px solid orange;
     max-width: 768px;
-    // 10
-    // 25 3 lines, complete
-    // 50 4 line extra
-    // 100
   }
 }
 /* Tablets only (between 768px and 992px) */
 @media (min-width: 992px) {
-  .typingContainerOverflow {
-    border: 2px solid pink;
+  .typingContainer {
+    // border: 2px solid pink;
     max-width: 992px;
     // 25 3 lines, complete
     // 50 2 line extra
@@ -51,30 +42,27 @@
 
 /* Laptops only (between 992px and 1200px) */
 @media (min-width: 1200px) {
-  .typingContainerOverflow {
-    border: 2px solid yellow;
+  .typingContainer {
+    // border: 2px solid yellow;
     max-width: 1200px;
-    // 50 1 line extra
   }
 }
 
 @media (min-width: 1440px) {
   // desktops
-  .typingContainerOverflow {
-    border: 2px solid purple;
+  .typingContainer {
+    // border: 2px solid purple;
     max-width: 1440px;
     margin: auto;
-    // 50 1 line extra
   }
 }
+
 .typingContainerOverflow {
   .typingContainer {
-    position: absolute;
-    // top: -45px;
-    top: 0;
+    z-index: -1;
     width: 100%;
     margin: auto;
-    height: 100%;
+    margin-top: 0px;
     font-family: Arial, sans-serif;
     font-size: 1.75rem;
 
@@ -165,6 +153,6 @@
     opacity: 0;
   }
 }
-.infinite {
-  color: var(--accent-color);
-}
+// .infinite {
+//   color: var(--accent-color);
+// }

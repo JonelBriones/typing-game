@@ -25,18 +25,17 @@ const Board = ({
   board,
   timeElapsed,
   setAfk,
-  toggleTotalWords,
   setCountdown,
   afkTimer,
   setAfkTimer,
-
-  setCurrentLine,
+  typingContainerElement,
+  setTextHeight,
+  textHeight,
+  setValidLetter,
 }: any) => {
   const [keydownTime, setKeydownTime] = useState(0);
   const cursorRef = useRef(null);
 
-  const typingContainerElement = document.getElementById("typingContainer");
-  const [topValue, setTopValue] = useState(0);
   const onHandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!toggleTypeCursor) return;
     setAfk(false);
@@ -58,59 +57,38 @@ const Board = ({
     let matchCharInWord = word[inputCharArr.length - 1];
     if (currentInput == matchCharInWord && currentInput !== " ") {
       // console.log("correct letter");
+      setValidLetter(true);
     } else if (matchCharInWord == " ") {
       // console.log("char needs to be a space");
 
       if (inputCharArr[inputCharArr.length - 1] == " ") {
         // space in correct position
-
+        setValidLetter(true);
         let currentWord = input.split(" ")[wordCount];
         let isWordMatch = word.split(" ")[wordCount];
 
         if (currentWord == isWordMatch) {
           // console.log("correct word");
           setDisableBackspaceIdx(input.length);
-
           setWordCount(wordCount + 1);
-          // if (input.split("")[input.split("").length - 1] == " ") {
-          //   setWordCount(wordCount + 1);
-          // }
         }
       }
+    } else {
+      setValidLetter(false);
     }
     setKeydownTime(timeElapsed);
     setInput(input);
 
-    // track cursor
-    const letter = document.getElementById(`letter${input.length}`);
-    const nextLetter = letter?.nextElementSibling?.nextElementSibling;
-
-    if (nextLetter) {
-      const nextChar = Math.floor(nextLetter?.getBoundingClientRect().bottom);
-      //320 - 324
-      if (nextChar < 364) {
-        setCurrentLine(1);
-      } else if (nextChar < 410) {
-        setCurrentLine(2);
-      } else if (nextChar < 450) {
-        if (toggleTotalWords > 25) {
-          console.log("top value:", topValue);
-          // on min width 758px - ### /takes 4 lines
-          if (-45 * 4 == topValue) return;
-          let moveTopVal = topValue - 45;
-          typingContainerElement.style.top = `${moveTopVal}px`;
-          setTopValue(moveTopVal);
-
-          setCurrentLine(3);
-        }
-      } else {
-        console.log("touched");
-        // typingContainerElement.style.top = `${
-        //   typingContainerElement.style.top - 45
-        // }px`;
-        // if this is touched
-        // (nextChar < 490)
-      }
+    const letter =
+      document.getElementById(`letter${input.length}`)?.getBoundingClientRect()
+        .bottom || 0;
+    // when next line is add, set current text == current view
+    console.log("text height", textHeight);
+    if (textHeight > 440 && Math.floor(letter) > 400) {
+      const style = window.getComputedStyle(typingContainerElement);
+      const marginVal = parseFloat(style.getPropertyValue("margin-top"));
+      typingContainerElement.style.marginTop = `${marginVal - 45}px`;
+      setTextHeight(textHeight - 45);
     }
 
     if (
@@ -121,22 +99,8 @@ const Board = ({
       setGameOver(true);
       setStartGame(false);
       setDisableBackspaceIdx(null);
-      setTopValue(0);
     }
   };
-
-  //282.5
-  //335.3000183105469
-  // 388.1000061035156
-  // useEffect(() => {
-  //   if (!startGame) return;
-  //   window.addEventListener("keydown", () => {
-  //     console.log("key");
-  //   });
-  //   return () => {
-  //     window.removeEventListener("keydown", () => {});
-  //   };
-  // }, []);
 
   useEffect(() => {
     // needs to run to configure stats
@@ -177,37 +141,12 @@ const Board = ({
   }, [startGame]);
 
   useEffect(() => {
-    // if (timeElapsed - keydownTime >= 5 && startGame) {
-    //   // record the afk times, extend timer to a 1minute?
-    //   setAfk(true);
-    //   resetTypeBoard();
-    // }
+    if (timeElapsed - keydownTime >= 15 && startGame && !toggleTypeCursor) {
+      // record the afk time, show afk warning if user also leaves page?
+      // setAfk(true);
+      // resetTypeBoard();
+    }
   }, [timeElapsed, time]);
-
-  // useEffect(() => {
-  //   if (startGame) {
-  //     window.addEventListener("keydown", () => {
-  //       const letter = document.getElementById("currentLetter");
-  //       const letterRec = letter?.getBoundingClientRect().top;
-  //       console.log("position key press", Math.floor(letterRec));
-  //       if (Math.floor(letterRec) < 300) {
-  //         setCurrentLine(1);
-  //       } else if (Math.floor(letterRec) < 350) {
-  //         setCurrentLine(2);
-  //       } else {
-  //         setCurrentLine(3);
-  //       }
-  //     });
-  //   }
-  // }, [startGame]);
-
-  /* 
-  typeboard 
-
-  // max of 3 lines
-  // if words do not fit inside 3 lines, on 3rd line replace first line for 4th
-  if cursor is next to the right div 
-  */
 
   return (
     <div className={styles.typingContainerOverflow}>
@@ -230,9 +169,9 @@ const Board = ({
           onChange={(e) => onHandleInputChange(e)}
           onFocus={() => setToggleTypeCursor(true)}
           onMouseEnter={() => setToggleTypeCursor(true)}
-          // onBlur={async () => {
-          //   setToggleTypeCursor(false);
-          // }}
+          onBlur={async () => {
+            setToggleTypeCursor(false);
+          }}
           className={`${styles.typeInput}`}
           onKeyDown={(e) => {
             if (e.code == "ArrowRight" || e.code == "ArrowLeft") {
