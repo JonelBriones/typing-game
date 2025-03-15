@@ -8,18 +8,22 @@ const getRefreshToken = async () => {
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({}),
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
+      console.log(data.message);
       throw new Error(`http status: ${res.status} ${res.statusText}`);
     }
 
-    return await res.json();
+    return data;
   } catch (err) {
     if (err instanceof TypeError) {
-      console.log("Error fetching username:", err.message);
-      return null;
+      console.error(err);
     }
+    return null;
   }
 };
 
@@ -44,9 +48,9 @@ const login = async (req: { email: string; password: string }) => {
     return await res.json();
   } catch (err) {
     if (err instanceof TypeError) {
-      console.error("Failed to login");
-      return null;
+      console.error(err);
     }
+    return null;
   }
 };
 
@@ -68,9 +72,9 @@ const signup = async (req: any) => {
     return await res.json();
   } catch (err) {
     if (err instanceof TypeError) {
-      console.error("Failed to sign up");
-      return null;
+      console.error(err);
     }
+    return null;
   }
 };
 const logout = async () => {
@@ -86,9 +90,9 @@ const logout = async () => {
     return await res.json();
   } catch (err) {
     if (err instanceof TypeError) {
-      console.error("Failed to logout");
-      return null;
+      console.error(err);
     }
+    return null;
   }
 };
 

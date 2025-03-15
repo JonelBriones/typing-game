@@ -10,7 +10,7 @@ const Authentication = () => {
       <div className={styles.error}>
         <p>{error}</p>
       </div>
-      <Signup error={error} setError={setError} />
+      <Signup />
       <Login error={error} setError={setError} />
     </div>
   );

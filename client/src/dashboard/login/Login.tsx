@@ -3,7 +3,7 @@ import styles from "./Login.module.scss";
 import { useAuthContext } from "../../AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { IoLogInOutline } from "react-icons/io5";
-import { FaGoogle } from "react-icons/fa";
+// import { FaGoogle } from "react-icons/fa";
 import { login } from "../../api/auth.ts";
 
 const Login = ({ setError }: any) => {
@@ -57,7 +57,7 @@ const Login = ({ setError }: any) => {
         <IoLogInOutline size={"1.5rem"} />
         <h4>login</h4>
       </div>
-      <div className={styles.providers}>
+      {/* <div className={styles.providers}>
         <button className={styles.button}>
           <FaGoogle size={"1.5rem"} />
         </button>
@@ -65,7 +65,7 @@ const Login = ({ setError }: any) => {
           <FaGoogle size={"1.5rem"} />
         </button>
       </div>
-      <span>or</span>
+      <span>or</span> */}
       <form onSubmit={onSubmitHandler} className={styles.authForm}>
         <input
           autoComplete="off"

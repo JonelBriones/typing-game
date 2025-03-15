@@ -102,34 +102,39 @@ const createToken = async (_id, res) => {
 };
 
 const refresh = (req, res) => {
-  if (req.cookies?.jwt) {
-    const refreshToken = req.cookies.jwt;
-    if (!refreshToken) return;
+  try {
+    const refreshToken = req.cookies?.jwt;
+
+    if (!refreshToken) {
+      return res
+        .status(401)
+        .json({ message: "No refresh token available, user must login." });
+    }
 
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
       (err, decoded) => {
         if (err) {
-          return res.status(406).json({ message: "Unauthorized" });
-        } else {
-          const accessToken = jwt.sign(
-            { decoded },
-            process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: "10m" }
-          );
-
-          return res.json({
-            accessToken,
-            session: {
-              _id: decoded._id,
-            },
-          });
+          return res.status(401).json({ message: "Invalid refresh token." });
         }
+        const accessToken = jwt.sign(
+          { decoded },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: "10m" }
+        );
+
+        return res.json({
+          accessToken,
+          session: {
+            _id: decoded._id,
+          },
+        });
       }
     );
-  } else {
-    return res.status(406).json({ message: "Unauthorized" });
+  } catch (err) {
+    console.error("Unexpected error in retrieving refresh token:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -152,12 +157,12 @@ const logout = (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const result = await User.findById(req.params.id);
-    console.log(result);
+
     if (!result) {
       res.json(401).json({ error: "Could not find user" });
     }
     const { email, username, _id } = result;
-    console.log("got user");
+
     res.status(201).json({ session: { email, username, _id } });
   } catch (err) {
     if (err instanceof TypeError) {
@@ -168,7 +173,6 @@ const getUserById = async (req, res) => {
 };
 
 const getUserByEmail = async (req, res) => {
-  console.log("username", req.params.username);
   const user = await User.findOne({ username: req.params.username });
   return res.json({ user });
 };

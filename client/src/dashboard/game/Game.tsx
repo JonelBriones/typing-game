@@ -33,6 +33,7 @@ const Game = () => {
   const [toggleTotalWords, setToggleTotalWords] = useState(10);
   // const cloudyDifficulty = ["easy", "medium", "hard", "expert"];
   const [toggleDifficulty, setDifficulty] = useState("easy");
+
   console.log(setDifficulty);
   const [timer, setTimer] = useState(toggleDuration);
   const [afkTimer, setAfkTimer] = useState(null);
@@ -82,11 +83,11 @@ const Game = () => {
 
     if (!res) {
       console.error("Failed to save test. Pleast try again.");
+      // if (res?.error) {
+      //   console.error(res.error);
+      // }
     }
 
-    if (res?.error) {
-      console.error(res.error);
-    }
     console.log(res);
   }
   useEffect(() => {
@@ -96,9 +97,9 @@ const Game = () => {
       );
       setTextHeight(height);
       setInitialHeight(height);
-      console.log("height settin to", height);
     }
   }, [generatedWord]);
+
   useEffect(() => {
     if (gameOver) {
       setStartGame(false);
@@ -118,8 +119,7 @@ const Game = () => {
 
   useEffect(() => {
     if (user == null) return;
-    console.log("saving");
-    if (testData?.seconds !== undefined && toggleMode == "words") {
+    if (testData?.seconds !== undefined && toggleMode == "words" && gameOver) {
       saveHandler();
     }
   }, [testData]);
@@ -196,7 +196,7 @@ const Game = () => {
   useEffect(() => {
     fetchSentences();
   }, [toggleMode, toggleTotalWords, toggleDuration]);
-  function resetTypeBoard() {
+  async function resetTypeBoard() {
     // board
     setGameOver(false);
     setStartGame(false);
@@ -219,6 +219,17 @@ const Game = () => {
     setWpm(0);
     setRawWpm(0);
     setCorrectLetter(0);
+
+    setDisableGame(true);
+    await sleep(1000);
+    setDisableGame(false);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }
+  const [disableGame, setDisableGame] = useState(false);
+  function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   function randomCloudGenerate() {
@@ -250,8 +261,6 @@ const Game = () => {
 
   return (
     <div className={`${styles.container}`}>
-      {/* <button onClick={() => setGameOver(!gameOver)}>GAME OVER</button> */}
-      {/* GAME RESULT */}
       <div
         className={`${styles.results} ${gameOver ? styles.show : styles.hide}`}
       >
@@ -281,14 +290,15 @@ const Game = () => {
             }/${board.length}`}</span>
           </p>
           {/* <p>
-            <span>consistency</span>
-            <span>#%</span>
-          </p> */}
+                    <span>consistency</span>
+                    <span>#%</span>
+                 </p> */}
           <p>
             <span>time</span>
             <span>{Math.round(timeElapsed ? timeElapsed : 0)}s</span>
           </p>
         </div>
+
         <div className={styles.resultBtnContainer}>
           <button
             className={styles.resetBtn}
@@ -322,6 +332,8 @@ const Game = () => {
               generatedWord={generatedWord}
               input={input}
               wordCount={wordCount}
+              sleep={sleep}
+              setDisableGame={setDisableGame}
             />
           </div>
         )}
@@ -481,6 +493,7 @@ const Game = () => {
             setTextHeight={setTextHeight}
             generatedWord={generatedWord}
             setValidLetter={setValidLetter}
+            disableGame={disableGame}
           />
           <button
             className={styles.resetBtn}

@@ -12,9 +12,9 @@ const Leaderboard = () => {
     const fetchData = async () => {
       setLoading(true);
       const leaderboard = await getTestLeaderboard();
-
+      console.log(leaderboard.data);
       if (leaderboard) {
-        setTests(leaderboard);
+        setTests(leaderboard.data);
       } else {
         console.error("Failed to fetch leaderboard data.");
       }

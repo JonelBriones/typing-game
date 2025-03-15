@@ -2,11 +2,17 @@
   color: var(--text-color);
   opacity: 0.6;
   height: 220px;
+  padding-inline: 24px;
   .guide {
     text-align: center;
   }
   ul {
     display: flex;
     gap: 0.5rem;
+  }
+}
+@media (min-width: 481px) {
+  .container {
+    padding-inline: none;
   }
 }

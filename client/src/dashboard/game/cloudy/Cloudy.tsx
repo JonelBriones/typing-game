@@ -6,6 +6,7 @@ const Cloudy = ({
 // toggleDifficulty,
 // generatedWord,
 // wordCount,
+
 any) => {
   // interface Board {
   //   width: number;

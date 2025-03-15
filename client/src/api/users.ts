@@ -6,7 +6,25 @@ const getUsername = async (search: string) => {
     const res = await fetch(`${API_URL}/api/user/${search}`);
 
     if (!res.ok) {
-      throw new Error(`http statis: ${res.status} ${res.statusText} `);
+      throw new Error(`http status: ${res.status} ${res.statusText} `);
+    }
+
+    const { user } = await res.json();
+    return user;
+  } catch (err) {
+    if (err instanceof TypeError) {
+      console.log("Error fetching username:", err.message);
+      return null;
+    }
+  }
+};
+const getEmail = async (search: string) => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  try {
+    const res = await fetch(`${API_URL}/api/user/${search}`);
+
+    if (!res.ok) {
+      throw new Error(`http status: ${res.status} ${res.statusText} `);
     }
 
     const { user } = await res.json();
@@ -37,4 +55,4 @@ const getUserById = async (id: string) => {
   }
 };
 
-export { getUsername, getUserById };
+export { getUsername, getUserById, getEmail };
