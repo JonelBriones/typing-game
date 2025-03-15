@@ -1,6 +1,5 @@
 const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
 const saveTest = async (testData: any) => {
-  console.log("fetching...");
   try {
     const res = await fetch(`${API_URL}/api/tests/save`, {
       method: "POST",
@@ -9,7 +8,6 @@ const saveTest = async (testData: any) => {
       },
       body: JSON.stringify(testData),
     });
-    console.log("route");
 
     if (!res.ok) {
       throw new Error(`http status:${res.status} ${res.statusText}`);
@@ -42,7 +40,7 @@ const getTestResults = async (userId: string) => {
 
 const getTestLeaderboard = async () => {
   try {
-    const res = await fetch(`${API_URL}/api/tests`);
+    const res = await fetch(`${API_URL}/api/tests/leaderboard`);
     if (!res.ok) {
       throw new Error(`http status:${res.status} ${res.statusText}`);
     }
@@ -54,5 +52,41 @@ const getTestLeaderboard = async () => {
     return null;
   }
 };
+const getUpdatedLeaderboard = async () => {
+  try {
+    const res = await fetch(`${API_URL}/api/leaderboard/update`);
+    if (!res.ok) {
+      throw new Error(`http status:${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    if (err instanceof TypeError) {
+      console.error("Error fetching leaderboard update timer:", err);
+    }
+    return null;
+  }
+};
+const updateLeaderboard = async () => {
+  try {
+    const res = await fetch(`${API_URL}/api/leaderboard/update`);
+    if (!res.ok) {
+      throw new Error(`http status:${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    if (err instanceof TypeError) {
+      console.error("Error fetching leaderboard update timer:", err);
+    }
+    return null;
+  }
+};
 
-export { saveTest, getTestResults, getTestLeaderboard };
+export {
+  saveTest,
+  getTestResults,
+  getTestLeaderboard,
+  getUpdatedLeaderboard,
+  updateLeaderboard,
+};

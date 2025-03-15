@@ -5,12 +5,20 @@
   height: 100vh;
   width: 100%;
   margin: auto;
-  // padding: 8px;
+  padding-inline: 24px;
 }
 /* Small Laptops (769px - 1024px) */
-@media (min-width: 375px) {
+@media (min-width: 576px) {
   .app {
     // width: 70%;
+    padding-inline: 24px;
+  }
+}
+@media (min-width: 1440px) {
+  // desktops
+  .app {
+    // border: 2px solid purple;
+    max-width: 1440px;
   }
 }
 .content {

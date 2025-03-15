@@ -20,19 +20,18 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    if (token == null) {
+    if (!token) {
       const validateAuth = async () => {
         const refreshToken = await getRefreshToken();
 
-        if (refreshToken) {
-          setToken(refreshToken.accessToken);
-          setSession({
-            _id: refreshToken.session._id,
-          });
-        } else {
-          console.error("Failed to get refresh token");
-        }
+        if (!refreshToken) return;
+
+        setToken(refreshToken.accessToken);
+        setSession({
+          _id: refreshToken.session._id,
+        });
       };
+
       validateAuth();
     }
   }, []);

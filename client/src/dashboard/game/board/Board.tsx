@@ -32,6 +32,7 @@ const Board = ({
   setTextHeight,
   textHeight,
   setValidLetter,
+  disableGame,
 }: any) => {
   const [keydownTime, setKeydownTime] = useState(0);
   const cursorRef = useRef(null);
@@ -160,6 +161,7 @@ const Board = ({
           </div>
         )}
         <input
+          disabled={disableGame}
           autoComplete="off"
           spellCheck="false"
           id="gameTypeInput"

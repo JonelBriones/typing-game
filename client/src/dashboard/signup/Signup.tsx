@@ -19,12 +19,12 @@ const defaultForm = {
   confirmPassword: "",
   username: "",
 };
-const Signup = ({ error, setError }: any) => {
+const Signup = () => {
   const navigate = useNavigate();
 
   const [userForm, setUserForm] = useState(defaultForm);
-  const { session, setSession, setToken } = useAuthContext();
-  console.log(error, session);
+  const { setSession, setToken } = useAuthContext();
+  // console.log(error, session);
   const [isloading, setIsLoading] = useState(false);
   const [userTaken, setUserTaken] = useState(false);
   const debounceSearch = useDebounceSearch(userForm.username);
@@ -44,7 +44,7 @@ const Signup = ({ error, setError }: any) => {
       navigate("/");
     }
   }
-  console.log(setError);
+
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserForm({
       ...userForm,
