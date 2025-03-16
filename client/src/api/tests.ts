@@ -38,35 +38,6 @@ const getTestResults = async (userId: string) => {
   }
 };
 
-const getTestLeaderboard = async () => {
-  try {
-    const res = await fetch(`${API_URL}/api/tests/leaderboard`);
-    if (!res.ok) {
-      throw new Error(`http status:${res.status} ${res.statusText}`);
-    }
-    return await res.json();
-  } catch (err) {
-    if (err instanceof TypeError) {
-      console.error("Error fetching test leaderboard:", err.message);
-    }
-    return null;
-  }
-};
-const getUpdatedLeaderboard = async () => {
-  try {
-    const res = await fetch(`${API_URL}/api/leaderboard/update`);
-    if (!res.ok) {
-      throw new Error(`http status:${res.status} ${res.statusText}`);
-    }
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    if (err instanceof TypeError) {
-      console.error("Error fetching leaderboard update timer:", err);
-    }
-    return null;
-  }
-};
 const updateLeaderboard = async () => {
   try {
     const res = await fetch(`${API_URL}/api/leaderboard/update`);
@@ -83,10 +54,6 @@ const updateLeaderboard = async () => {
   }
 };
 
-export {
-  saveTest,
-  getTestResults,
-  getTestLeaderboard,
-  getUpdatedLeaderboard,
-  updateLeaderboard,
-};
+const getProfileStats = async (username: string) => {};
+
+export { saveTest, getTestResults, updateLeaderboard, getProfileStats };

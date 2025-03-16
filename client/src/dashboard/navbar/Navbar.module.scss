@@ -80,30 +80,33 @@
   }
   .profileActionsContainer {
     position: relative;
-  }
-  .hoverActive {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 10;
-    width: 140px;
-    border-radius: 8px;
-    height: fit-content;
+    .hoverActive {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 10;
+      width: 140px;
+      border-radius: 8px;
+      height: fit-content;
+      .profileActions {
+        background-color: var(--background);
+        width: 100%;
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        border-radius: 8px;
+        gap: 16px;
+        padding-block: 16px;
+        * {
+          width: 100%;
+          text-align: center;
+          display: block;
+          cursor: pointer;
+        }
+      }
+    }
   }
 
-  .profileActions {
-    background-color: var(--background);
-    width: 100%;
-    margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    padding: 8px;
-    border-radius: 8px;
-  }
-  button {
-    width: 100%;
-    text-align: center;
-  }
   .navbutton {
     display: flex;
     align-items: center;

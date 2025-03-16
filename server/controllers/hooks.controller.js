@@ -1,4 +1,5 @@
 export function sort(users, tests) {
+  // tests.find({user: users.username})
   function getHighestTest() {
     let result = [];
     users.forEach((user) => {

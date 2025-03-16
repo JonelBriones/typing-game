@@ -6,6 +6,8 @@ import Leaderboard from "./dashboard/leaderboard/Leaderboard";
 import Authentication from "./dashboard/authentication/Authentication";
 import Footer from "./dashboard/footer/Footer";
 import Navbar from "./dashboard/navbar/Navbar";
+import Settings from "./dashboard/settings/Settings";
+import Profile from "./dashboard/profile/Profile";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="/" element={<Game />} />
           <Route path="/login" element={<Authentication />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/profile/:username" element={<Profile />} />
         </Routes>
       </div>
       <Footer />
