@@ -2,7 +2,7 @@ import { decode } from "punycode";
 import { createHashPassword, validatePassword } from "../middleware/hash.js";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
-
+import Test from "../models/Test.js";
 const createUser = async (req, res) => {
   let { email, password, username } = req.body;
   if (!email || !password || !username) {
@@ -154,6 +154,23 @@ const logout = (req, res) => {
   }
 };
 
+const getUserStats = async (req, res) => {
+  try {
+    const tests = await Test.find({ user: req.params.username });
+
+    if (!tests) {
+      res.status(401).json({ message: "Failed to get user's tests" });
+    }
+
+    return res.status(201).json({ tests });
+  } catch (err) {
+    if (err instanceof TypeError) {
+      console.log("Failed to get user stats:", err.message);
+    }
+    return res.status(500).json({ message: "Failed to get user stats" });
+  }
+};
+
 const getUserById = async (req, res) => {
   try {
     const result = await User.findById(req.params.id);
@@ -161,9 +178,10 @@ const getUserById = async (req, res) => {
     if (!result) {
       res.json(401).json({ error: "Could not find user" });
     }
-    const { email, username, _id } = result;
 
-    res.status(201).json({ session: { email, username, _id } });
+    const { email, username, _id, createdAt } = result;
+
+    res.status(201).json({ session: { email, username, _id, createdAt } });
   } catch (err) {
     if (err instanceof TypeError) {
       console.error("Failed to get user by id: ", err.message);
@@ -177,4 +195,12 @@ const getUserByEmail = async (req, res) => {
   return res.json({ user });
 };
 
-export { createUser, login, refresh, getUserById, logout, getUserByEmail };
+export {
+  createUser,
+  login,
+  refresh,
+  getUserById,
+  logout,
+  getUserByEmail,
+  getUserStats,
+};

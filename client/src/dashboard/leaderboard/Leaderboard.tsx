@@ -23,7 +23,6 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       const leaderboard = await getLeaderboard();
-      console.log(leaderboard.data);
       if (leaderboard) {
         setTests(leaderboard.data);
         setLoading(false);
@@ -78,9 +77,9 @@ const Leaderboard = () => {
       </h1>
       {!loading && (
         <>
-          <p>
-            updates in{" "}
-            {`${String(24 - hours).padStart(2, "0")}:${String(
+          <p className={styles.leaderboard_clock}>
+            Next update in:{" "}
+            {`${String(23 - hours).padStart(2, "0")}:${String(
               59 - minutes
             ).padStart(2, "0")}:${String(59 - seconds).padStart(2, "0")}`}
           </p>

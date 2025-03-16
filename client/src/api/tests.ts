@@ -54,6 +54,4 @@ const updateLeaderboard = async () => {
   }
 };
 
-const getProfileStats = async (username: string) => {};
-
-export { saveTest, getTestResults, updateLeaderboard, getProfileStats };
+export { saveTest, getTestResults, updateLeaderboard };

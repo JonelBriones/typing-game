@@ -54,5 +54,21 @@ const getUserById = async (id: string) => {
     }
   }
 };
+const getProfileStats = async (username: string) => {
+  try {
+    const res = await fetch(`${API_URL}/api/user/stats/${username}`);
 
-export { getUsername, getUserById, getEmail };
+    if (!res.ok) {
+      throw new Error(`http status: ${res.status} ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    if (err instanceof TypeError) {
+      console.error("Failed to get profile stats:", err.message);
+    }
+    return null;
+  }
+};
+
+export { getUsername, getUserById, getEmail, getProfileStats };

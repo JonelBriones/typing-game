@@ -1,18 +1,5 @@
 const API_URL = import.meta.env.VITE_BACKEND_BASEURL;
 
-const getLeaderboardRefreshTimer = async () => {
-  try {
-    const res = await fetch(`${API_URL}/api/leaderboard/time`);
-
-    if (!res.ok) {
-      console.error("Failed to get leaderboard time");
-    }
-    return await res.json();
-  } catch (err) {
-    console.log(err);
-    return null;
-  }
-};
 const getLeaderboard = async () => {
   try {
     const res = await fetch(`${API_URL}/api/tests/leaderboard`);
@@ -27,4 +14,4 @@ const getLeaderboard = async () => {
     return null;
   }
 };
-export { getLeaderboardRefreshTimer, getLeaderboard };
+export { getLeaderboard };

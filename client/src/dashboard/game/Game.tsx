@@ -65,6 +65,7 @@ const Game = () => {
     wpm: number;
     raw: number;
     language: string;
+    mode: string;
   };
   const test = {
     user: "",
@@ -73,6 +74,7 @@ const Game = () => {
     wpm: 0,
     raw: 0,
     language: "",
+    mode: "",
   };
   const language = "English";
   const [testData, setTestData] = useState<Test | null>(test);
@@ -148,6 +150,7 @@ const Game = () => {
       wpm: parseFloat(wpm.toFixed(2)),
       raw: parseFloat(raw.toFixed(2)),
       language,
+      mode: toggleMode,
     });
   }
 
