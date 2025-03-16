@@ -33,6 +33,7 @@ const Board = ({
   textHeight,
   setValidLetter,
   disableGame,
+  resetTypeBoard,
 }: any) => {
   const [keydownTime, setKeydownTime] = useState(0);
   const cursorRef = useRef(null);
@@ -112,6 +113,9 @@ const Board = ({
         setTimeElapsed(elapsedTime);
 
         // track line position
+        if (elapsedTime == toggleDuration && toggleMode == "time") {
+          clearInterval(intervalId);
+        }
       }, 1000);
       return () => clearInterval(intervalId);
     }
@@ -142,10 +146,10 @@ const Board = ({
   }, [startGame]);
 
   useEffect(() => {
-    if (timeElapsed - keydownTime >= 15 && startGame && !toggleTypeCursor) {
+    if (timeElapsed - keydownTime >= 60 && startGame && !toggleTypeCursor) {
       // record the afk time, show afk warning if user also leaves page?
-      // setAfk(true);
-      // resetTypeBoard();
+      setAfk(true);
+      resetTypeBoard();
     }
   }, [timeElapsed, time]);
 

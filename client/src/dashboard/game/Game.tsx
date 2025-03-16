@@ -8,6 +8,7 @@ import { saveTest } from "../../api/tests.ts";
 import Cloudy from "./cloudy/Cloudy.js";
 import Board from "./board/Board.tsx";
 import { useAuthContext } from "../../AuthProvider.tsx";
+import useGameLogic from "../../hooks/useGameLogic.tsx";
 const Game = () => {
   const { user } = useAuthContext();
 
@@ -34,7 +35,6 @@ const Game = () => {
   // const cloudyDifficulty = ["easy", "medium", "hard", "expert"];
   const [toggleDifficulty, setDifficulty] = useState("easy");
 
-  console.log(setDifficulty);
   const [timer, setTimer] = useState(toggleDuration);
   const [afkTimer, setAfkTimer] = useState(null);
 
@@ -45,17 +45,29 @@ const Game = () => {
   const [disableBackspaceIdx, setDisableBackspaceIdx] = useState<number | null>(
     null
   );
+  const language = "English";
+
   useEffect(() => {
     // console.log("valid letter", validLetter);
   }, [validLetter]);
   // SCORE TRACKING
   const [input, setInput] = useState("");
-  const [time, setTime] = useState<number | null>(toggleDuration);
+  const [time, setTime] = useState<number>(toggleDuration);
   const [timeElapsed, setTimeElapsed] = useState<number | null>(null);
   const [wordCount, setWordCount] = useState(0);
   const [wpm, setWpm] = useState(0);
   const [raw, setRawWpm] = useState(0);
   const [correctletter, setCorrectLetter] = useState(0);
+  const username = "ijonel906";
+  const { handleWpmConversion } = useGameLogic({
+    user,
+    generatedWord,
+    toggleTotalWords,
+    language,
+    toggleMode,
+    time,
+    input,
+  });
 
   // const [error, setError] = useState<string>("");
   type Test = {
@@ -76,11 +88,12 @@ const Game = () => {
     language: "",
     mode: "",
   };
-  const language = "English";
-  const [testData, setTestData] = useState<Test | null>(test);
+
+  const [testData, setTestData] = useState<any | null>(test);
 
   async function saveHandler() {
     console.log("saving test result", testData);
+    return;
     const res = await saveTest(testData);
 
     if (!res) {
@@ -104,15 +117,15 @@ const Game = () => {
 
   useEffect(() => {
     if (gameOver) {
-      setStartGame(false);
-      handleWpmConversion();
+      setTestData(handleWpmConversion());
+
       // customize cloud speed & position
-      let time = () => Math.floor(Math.random() * (7 - 3 + 1)) + 3;
+      let duration = () => Math.floor(Math.random() * (7 - 3 + 1)) + 3;
       let positionY = () => Math.floor(Math.random() * 100);
       const clouds = document.getElementsByClassName("cloudyImg");
       Array.from(clouds).forEach((cloud) => {
         if (cloud instanceof HTMLElement) {
-          cloud?.style.setProperty("--animation-time", time() + "s");
+          cloud?.style.setProperty("--animation-time", duration() + "s");
           cloud?.style.setProperty("top", positionY() + "px");
         }
       });
@@ -125,34 +138,6 @@ const Game = () => {
       saveHandler();
     }
   }, [testData]);
-
-  function handleWpmConversion() {
-    if (generatedWord == null) return;
-    let correctedLetters = 0;
-    for (let i = 0; i < generatedWord.length; i++) {
-      if (generatedWord[i] == input[i]) {
-        correctedLetters++;
-      }
-    }
-    const timer = (Date.now() - time!) / 1000;
-    const wordsTyped = correctedLetters / 5;
-    const wpm = (wordsTyped * 60) / timer;
-    const raw = ((generatedWord.length / 5) * 60) / timer;
-
-    setCorrectLetter(correctedLetters);
-    setWpm(parseFloat(wpm.toFixed(2)));
-    setRawWpm(parseFloat(raw.toFixed(2)));
-    setTimeElapsed(parseFloat(timer.toFixed(2)));
-    setTestData({
-      user: user?.username,
-      seconds: timeElapsed!,
-      words: toggleTotalWords,
-      wpm: parseFloat(wpm.toFixed(2)),
-      raw: parseFloat(raw.toFixed(2)),
-      language,
-      mode: toggleMode,
-    });
-  }
 
   async function fetchSentences() {
     resetTypeBoard();
@@ -262,6 +247,28 @@ const Game = () => {
     }
   }, [inputRef, toggleTypeCursor]);
 
+  const showTestResult = () => {
+    console.log("test results", testData);
+    if (testData.mode == "words") {
+      return (
+        <span>
+          {`${testData.correctLettersCount}/${
+            word.length - testData.correctLettersCount
+          }/${word.length - input.length}/${word.length - input.length}`}
+        </span>
+      );
+    }
+    if (testData.mode == "time") {
+      return (
+        <span>
+          {`${testData.correctLettersCount}/${
+            input.length - testData.correctLettersCount
+          }/0/0`}
+        </span>
+      );
+    }
+  };
+
   return (
     <div className={`${styles.container}`}>
       <div
@@ -274,33 +281,43 @@ const Game = () => {
           {randomCloudGenerate()}
         </div>
 
-        <p>WPM:{Math.round(wpm)}</p>
-        <div className={styles.resultStatsContainer}>
-          <p>
-            <span>test type</span>
-            <span>
-              words {toggleTotalWords} {language.toLocaleLowerCase()}
-            </span>
-          </p>
-          <p>
-            <span>raw</span>
-            <span>{Math.round(raw)}</span>
-          </p>
-          <p>
-            <span>characters</span>
-            <span>{`${correctletter}/${word?.length - correctletter}/${
-              input.length - word?.length
-            }/${board.length}`}</span>
-          </p>
-          {/* <p>
+        {gameOver && (
+          <>
+            <p>WPM:{Math.round(testData.wpm)}</p>
+            <div className={styles.resultStatsContainer}>
+              <p>
+                <span>test type</span>
+                <span>
+                  {testData.mode} {testData.toggleTotalWords}{" "}
+                  {testData.language.toLocaleLowerCase()}
+                </span>
+              </p>
+              <p>
+                <span>raw</span>
+                <span>{Math.round(testData.raw)}</span>
+              </p>
+              <p>
+                <span>characters</span>
+                {/* correct/inncorrect/extra/missed(letters didnt complete/timed)*/}
+                {showTestResult()}
+              </p>
+              {/* <p>
                     <span>consistency</span>
                     <span>#%</span>
                  </p> */}
-          <p>
-            <span>time</span>
-            <span>{Math.round(timeElapsed ? timeElapsed : 0)}s</span>
-          </p>
-        </div>
+              <p>
+                <span>time</span>
+                <span>
+                  {testData.mode == "words"
+                    ? Math.round(testData.seconds)
+                    : toggleDuration}
+                  s
+                </span>
+                {/* <span>hover{testData.seconds}</span> */}
+              </p>
+            </div>
+          </>
+        )}
 
         <div className={styles.resultBtnContainer}>
           <button
