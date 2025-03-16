@@ -25,7 +25,7 @@ const Game = () => {
   const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
 
   const quotes = ["short", "medium", "long"];
-  const modes = ["time", "words", "cloudy"];
+  const modes = ["words", "cloudy"]; // removed timed mode
   const [toggleMode, setToggleMode] = useState("words");
   const durations = [15, 30, 60, 120];
   const [toggleDuration, setToggleDuration] = useState(15);
