@@ -99,7 +99,7 @@ const Game = () => {
   async function saveHandler() {
     if (afk || toggleMode == "cloudy" || !user) return;
     console.log("savinig test", testData);
-    return;
+
     const res = await saveTest(testData);
 
     if (!res) {
