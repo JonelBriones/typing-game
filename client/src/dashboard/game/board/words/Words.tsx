@@ -18,7 +18,11 @@ const Words = ({ board, styles, input, cursorRef, toggleTypeCursor }: any) => {
                   : input[charIndex] == char
                   ? styles.valid
                   : styles.error
-              } ${input.length == charIndex ? styles.cursor : ""}`}
+              } ${
+                input.length == charIndex && toggleTypeCursor
+                  ? styles.cursor
+                  : ""
+              }`}
             >
               {char}
             </span>

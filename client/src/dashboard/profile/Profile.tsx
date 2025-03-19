@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Profile.module.scss";
 import { useAuthContext } from "../../AuthProvider";
 import { getProfileStats } from "../../api/users";
 
-interface WordsStats {
+interface Stats {
   [key: number]: {
     wpm: number | null;
     accuracy: number | null;
@@ -17,6 +17,7 @@ interface Test {
   user: string;
   words: number;
   wpm: number;
+  mode: string;
   _id: number;
 }
 type TestExclude = Omit<Test, "__v">;
@@ -28,7 +29,7 @@ const Profile = () => {
   const MODE_WORDS = [10, 25, 50, 100];
   const [tests, setTests] = useState<null | TestExclude[]>(null);
 
-  const [wordsStats, setWordsStats] = useState<WordsStats>({
+  const [wordsStats, setWordsStats] = useState<Stats>({
     10: {
       wpm: null,
       accuracy: null,
@@ -46,24 +47,22 @@ const Profile = () => {
       accuracy: null,
     },
   });
-  const [timedStats, setTimedStats] = useState({
-    timed: {
-      15: {
-        wpm: null,
-        accuracy: null,
-      },
-      30: {
-        wpm: null,
-        accuracy: null,
-      },
-      60: {
-        wpm: null,
-        accuracy: null,
-      },
-      120: {
-        wpm: null,
-        accuracy: null,
-      },
+  const [timedStats, setTimedStats] = useState<Stats>({
+    15: {
+      wpm: null,
+      accuracy: null,
+    },
+    30: {
+      wpm: null,
+      accuracy: null,
+    },
+    60: {
+      wpm: null,
+      accuracy: null,
+    },
+    120: {
+      wpm: null,
+      accuracy: null,
     },
   });
 
@@ -88,19 +87,33 @@ const Profile = () => {
     if (!tests) return;
     if (!tests.length) return;
 
-    let testByWords = tests.filter((test) => test.words == count);
+    let testByWords = tests.filter((test) =>
+      mode == "words" ? test.words == count : test.seconds == count
+    );
 
     testByWords.sort((a, b) => b.wpm - a.wpm);
 
     if (!testByWords.length) return;
     const bestwpm = testByWords[0].wpm;
-    (mode == "words" ? setWordsStats : setTimedStats)((prev: any) => ({
-      ...prev,
-      [count]: {
-        ...prev[count],
-        wpm: bestwpm,
-      },
-    }));
+
+    if (mode == "words") {
+      setWordsStats((prev: any) => ({
+        ...prev,
+        [count]: {
+          ...prev[count],
+          wpm: bestwpm,
+        },
+      }));
+    }
+    if (mode == "time") {
+      setTimedStats((prev: any) => ({
+        ...prev,
+        [count]: {
+          ...prev[count],
+          wpm: bestwpm,
+        },
+      }));
+    }
   }
 
   useEffect(() => {
@@ -109,13 +122,14 @@ const Profile = () => {
       handleStats("words", count);
     });
     MODE_TIMED.forEach((count) => {
-      handleStats("timed", count);
+      handleStats("time", count);
     });
   }, [tests]);
 
   useEffect(() => {
-    console.log(wordsStats);
-  }, [wordsStats]);
+    console.log("word stats", wordsStats);
+    console.log(timedStats);
+  }, [wordsStats, timedStats]);
 
   if (loading) return <div>loading...</div>;
 
@@ -124,7 +138,8 @@ const Profile = () => {
     month: "short",
     year: "numeric",
   };
-  let joined = new Date(Date.now(user.createdAt)).toLocaleDateString(
+
+  let joined = new Date(user.createdAt).toLocaleDateString(
     "en-us",
     options as any
   );
@@ -156,8 +171,12 @@ const Profile = () => {
           {MODE_TIMED.map((seconds) => (
             <div key={seconds} className={styles.mode}>
               <span className={styles.mode_label}>{seconds} seconds</span>
-              <span className={styles.mode_wpm}>num</span>
-              <span className={styles.mode_accuracy}>%</span>
+              <span className={styles.mode_wpm}>
+                {timedStats[seconds]?.wpm || "-"}
+              </span>
+              <span className={styles.mode_accuracy}>
+                {timedStats[seconds]?.accuracy || "-"}
+              </span>
             </div>
           ))}
         </div>
@@ -165,8 +184,13 @@ const Profile = () => {
           {MODE_WORDS.map((word) => (
             <div key={word} className={styles.mode}>
               <span className={styles.mode_label}>{word} words</span>
-              <span className={styles.mode_wpm}>num</span>
-              <span className={styles.mode_accuracy}>%</span>
+              <span className={styles.mode_wpm}>
+                {wordsStats[word].wpm || "-"}
+              </span>
+              <span className={styles.mode_accuracy}>
+                {" "}
+                {wordsStats[word].accuracy || "-"}
+              </span>
             </div>
           ))}
         </div>

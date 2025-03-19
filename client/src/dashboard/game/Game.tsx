@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MdRefresh } from "react-icons/md";
-import data from "../../../data.json";
+
 import styles from "./Game.module.scss";
 import { IoIosInfinite } from "react-icons/io";
 
@@ -9,110 +9,119 @@ import Cloudy from "./cloudy/Cloudy.js";
 import Board from "./board/Board.tsx";
 import { useAuthContext } from "../../AuthProvider.tsx";
 import useGameLogic from "../../hooks/useGameLogic.tsx";
+// type Test = {
+//   user: string;
+//   seconds: number;
+//   words: number;
+//   wpm: number;
+//   raw: number;
+//   language: string;
+//   mode: string;
+// };
+const test = {
+  user: "",
+  seconds: 0,
+  words: 0,
+  wpm: 0,
+  raw: 0,
+  language: "",
+  mode: "",
+};
 const Game = () => {
   const { user } = useAuthContext();
-
-  const typingContainerElement = document.getElementById("typingContainer");
-  const [initialHeight, setInitialHeight] = useState(0);
-  const [textHeight, setTextHeight] = useState(0);
-
-  const [generatedWord, setGeneratedWord] = useState<string>("");
-  const [word, setWord] = useState<string>("");
-
-  const [board, setBoard] = useState<any>([]);
-  const [startGame, setStartGame] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
 
   const quotes = ["short", "medium", "long"];
   const modes = ["time", "words", "cloudy"];
   const [toggleMode, setToggleMode] = useState("words");
+
   const durations = [15, 30, 60, 120];
   const [toggleDuration, setToggleDuration] = useState(15);
   const totalWords = [10, 25, 50, 100];
   const [toggleTotalWords, setToggleTotalWords] = useState(10);
   // const cloudyDifficulty = ["easy", "medium", "hard", "expert"];
-  const [toggleDifficulty, setDifficulty] = useState("easy");
-
-  const [timer, setTimer] = useState(toggleDuration);
-  const [afkTimer, setAfkTimer] = useState(null);
-
-  const [afk, setAfk] = useState(false);
-  const [countdown, setCountdown] = useState(toggleDuration);
 
   const [validLetter, setValidLetter] = useState(false);
-  const [disableBackspaceIdx, setDisableBackspaceIdx] = useState<number | null>(
-    null
-  );
-  const language = "English";
-
-  useEffect(() => {
-    // console.log("valid letter", validLetter);
-  }, [validLetter]);
-  // SCORE TRACKING
-  const [input, setInput] = useState("");
-  const [time, setTime] = useState<number>(toggleDuration);
-  const [timeElapsed, setTimeElapsed] = useState<number | null>(null);
-  const [wordCount, setWordCount] = useState(0);
-  const [wpm, setWpm] = useState(0);
-  const [raw, setRawWpm] = useState(0);
-  const [correctletter, setCorrectLetter] = useState(0);
-  const username = "ijonel906";
-  const { handleWpmConversion } = useGameLogic({
-    user,
-    generatedWord,
-    toggleTotalWords,
-    language,
-    toggleMode,
-    time,
-    input,
-  });
-
-  // const [error, setError] = useState<string>("");
-  type Test = {
-    user: string;
-    seconds: number;
-    words: number;
-    wpm: number;
-    raw: number;
-    language: string;
-    mode: string;
-  };
-  const test = {
-    user: "",
-    seconds: 0,
-    words: 0,
-    wpm: 0,
-    raw: 0,
-    language: "",
-    mode: "",
-  };
+  const typingContainerElement = document.getElementById("typingContainer");
 
   const [testData, setTestData] = useState<any | null>(test);
+  const [initialHeight, setInitialHeight] = useState(0);
+  const [textHeight, setTextHeight] = useState(0);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [toggleTypeCursor, setToggleTypeCursor] = useState(false);
+
+  const {
+    generatedWord,
+    word,
+    disableGame,
+    board,
+    startGame,
+    gameOver,
+
+    input,
+    time,
+    timeElapsed,
+    wordCount,
+    afkTimer,
+    afk,
+    disableBackspaceIdx,
+    extraInputs,
+    countdown,
+    setCountdown,
+    handleWpmConversion,
+    resetTypeBoard,
+    setGameOver,
+    setWordCount,
+    setStartGame,
+    setTimeElapsed,
+    setTime,
+    setInput,
+    sleep,
+    setDisableGame,
+    fetchSentences,
+    setDisableBackspaceIdx,
+    setAfk,
+    setAfkTimer,
+  } = useGameLogic({
+    user,
+    inputRef,
+    toggleTotalWords,
+    toggleMode,
+    toggleDuration,
+    setToggleTypeCursor,
+
+    initialHeight,
+    setTextHeight,
+    typingContainerElement,
+    setInitialHeight,
+  });
 
   async function saveHandler() {
-    console.log("saving test result", testData);
+    if (afk || toggleMode == "cloudy" || !user) return;
+    console.log("savinig test", testData);
     return;
     const res = await saveTest(testData);
 
     if (!res) {
       console.error("Failed to save test. Pleast try again.");
-      // if (res?.error) {
-      //   console.error(res.error);
-      // }
     }
 
     console.log(res);
   }
   useEffect(() => {
-    if (typingContainerElement) {
+    function handleResize() {
+      if (!typingContainerElement) return;
       let height = Math.floor(
         typingContainerElement?.getBoundingClientRect().bottom
       );
       setTextHeight(height);
       setInitialHeight(height);
     }
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, [generatedWord]);
 
   useEffect(() => {
@@ -133,40 +142,9 @@ const Game = () => {
   }, [gameOver]);
 
   useEffect(() => {
-    if (user == null) return;
-    if (testData?.seconds !== undefined && toggleMode == "words" && gameOver) {
-      saveHandler();
-    }
+    if (!gameOver) return;
+    saveHandler();
   }, [testData]);
-
-  async function fetchSentences() {
-    resetTypeBoard();
-    let random = () => Math.floor(Math.random() * 200);
-    let selectedWords = [];
-    const totalWords = toggleMode == "words" ? toggleTotalWords : 200;
-    while (selectedWords.length <= totalWords - 1) {
-      selectedWords.push(data.commonWords[random()]);
-    }
-    let words = selectedWords.join(" ");
-    setGeneratedWord(words);
-    setWord(words);
-    createBoard(words.split(" "));
-  }
-  function createBoard(words: string[]) {
-    let board = [];
-    for (let i = 0; i < words.length; i++) {
-      let currentWord = words[i];
-      let charIdx = [];
-      for (let j = 0; j < currentWord.length; j++) {
-        charIdx.push(currentWord[j]);
-      }
-      if (i !== words.length - 1) {
-        charIdx.push(" ");
-      }
-      board[i] = charIdx;
-    }
-    setBoard(board);
-  }
 
   // async function fetchQuotes() {
   //   resetTypeBoard();
@@ -181,45 +159,6 @@ const Game = () => {
   //   setWord(quote);
   // }
 
-  useEffect(() => {
-    fetchSentences();
-  }, [toggleMode, toggleTotalWords, toggleDuration]);
-  async function resetTypeBoard() {
-    // board
-    setGameOver(false);
-    setStartGame(false);
-    setTimer(toggleDuration);
-    setToggleTypeCursor(true);
-    setWord(generatedWord);
-    setDisableBackspaceIdx(null);
-    setCountdown(toggleDuration);
-
-    if (typingContainerElement) {
-      typingContainerElement.style.marginTop = `0px`;
-      setTextHeight(initialHeight);
-    }
-
-    // stats
-    setInput("");
-    setTime(0);
-    setTimeElapsed(0);
-    setWordCount(0);
-    setWpm(0);
-    setRawWpm(0);
-    setCorrectLetter(0);
-
-    setDisableGame(true);
-    await sleep(1000);
-    setDisableGame(false);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }
-  const [disableGame, setDisableGame] = useState(false);
-  function sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   function randomCloudGenerate() {
     return (
       <img
@@ -232,23 +171,12 @@ const Game = () => {
 
   useEffect(() => {
     if (inputRef.current) {
-      inputRef?.current?.focus();
-    }
-    if (!toggleTypeCursor) {
-      window.addEventListener("keydown", () => {
-        setToggleTypeCursor(true);
-      });
-      return () => {
-        window.removeEventListener("keydown", () => {});
-      };
-    }
-    if (toggleTypeCursor) {
+      // setToggleTypeCursor(true);
       inputRef?.current?.focus();
     }
   }, [inputRef, toggleTypeCursor]);
 
   const showTestResult = () => {
-    console.log("test results", testData);
     if (testData.mode == "words") {
       return (
         <span>
@@ -347,7 +275,6 @@ const Game = () => {
           <div className={styles.cloudy}>
             <Cloudy
               resetTypeBoard={resetTypeBoard}
-              toggleDifficulty={toggleDifficulty}
               validLetter={validLetter}
               generatedWord={generatedWord}
               input={input}
@@ -457,7 +384,7 @@ const Game = () => {
         {/* GAME CONTAINER */}
         <div className={styles.game}>
           <div className={`${styles.timer}`}>
-            {startGame && toggleMode == "time" && <span>timer{countdown}</span>}
+            {startGame && toggleMode == "time" && <span>{countdown}</span>}
             {startGame && toggleMode == "cloudy" && <span>{timeElapsed}</span>}
             {startGame && toggleMode == "words" && toggleTypeCursor && (
               <span>
@@ -477,43 +404,38 @@ const Game = () => {
           )}
 
           <Board
-            timer={timer}
             toggleTypeCursor={toggleTypeCursor}
             setToggleTypeCursor={setToggleTypeCursor}
-            toggleTotalWords={toggleTotalWords}
             word={word}
-            resetTypeBoard={resetTypeBoard}
+            extraInputs={extraInputs}
+            gameOver={gameOver}
             toggleMode={toggleMode}
             toggleDuration={toggleDuration}
-            gameOver={gameOver}
             setGameOver={setGameOver}
             wordCount={wordCount}
             setWordCount={setWordCount}
             setStartGame={setStartGame}
-            timeElapsed={timeElapsed}
-            setTimeElapsed={setTimeElapsed}
-            time={time}
-            setTime={setTime}
-            startGame={startGame}
             input={input}
             setInput={setInput}
+            setTimeElapsed={setTimeElapsed}
+            startGame={startGame}
+            time={time}
+            setTime={setTime}
             inputRef={inputRef}
             disableBackspaceIdx={disableBackspaceIdx}
             setDisableBackspaceIdx={setDisableBackspaceIdx}
             board={board}
-            afk={afk}
+            timeElapsed={timeElapsed}
             setAfk={setAfk}
-            setTimer={setTimer}
+            setCountdown={setCountdown}
             afkTimer={afkTimer}
             setAfkTimer={setAfkTimer}
-            countdown={countdown}
-            setCountdown={setCountdown}
             typingContainerElement={typingContainerElement}
-            textHeight={textHeight}
             setTextHeight={setTextHeight}
-            generatedWord={generatedWord}
+            textHeight={textHeight}
             setValidLetter={setValidLetter}
             disableGame={disableGame}
+            resetTypeBoard={resetTypeBoard}
           />
           <button
             className={styles.resetBtn}

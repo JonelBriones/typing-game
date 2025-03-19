@@ -1,34 +1,97 @@
 "use client";
+import data from "../../data.json";
 
 import { useEffect, useState } from "react";
-type Test = {
-  user: string;
-  seconds: number;
-  words: number;
-  wpm: number;
-  raw: number;
-  language: string;
-  mode: string;
-};
-const test = {
-  user: "",
-  seconds: 0,
-  words: 0,
-  wpm: 0,
-  raw: 0,
-  language: "",
-  mode: "",
-};
+
 const useGameLogic = ({
   user = null,
-  generatedWord,
+  toggleDuration,
+  inputRef,
   toggleTotalWords,
-  language,
   toggleMode,
-  input,
-  time,
+  initialHeight,
+  setTextHeight,
+  typingContainerElement,
 }: any) => {
-  const [correctLettersCount, setCorrectLetterCount] = useState(0);
+  const [generatedWord, setGeneratedWord] = useState<string>("");
+  const [word, setWord] = useState<string>("");
+  const [disableGame, setDisableGame] = useState(false);
+  const [board, setBoard] = useState<any>([]);
+  const [startGame, setStartGame] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+
+  const [input, setInput] = useState("");
+  const [time, setTime] = useState<number>(toggleDuration);
+  const [timeElapsed, setTimeElapsed] = useState<number | null>(null);
+  const [wordCount, setWordCount] = useState(0);
+  const [afkTimer, setAfkTimer] = useState(null);
+  const [countdown, setCountdown] = useState(toggleDuration);
+
+  const [afk, setAfk] = useState(false);
+  const [disableBackspaceIdx, setDisableBackspaceIdx] = useState<number | null>(
+    null
+  );
+  const language = "English";
+  const [extraInputs, setExtraInputs] = useState(null);
+
+  async function fetchSentences() {
+    resetTypeBoard();
+    let random = () => Math.floor(Math.random() * 200);
+    let selectedWords = [];
+    const totalWords = toggleMode == "words" ? toggleTotalWords : 200;
+    while (selectedWords.length <= totalWords - 1) {
+      selectedWords.push(data.commonWords[random()]);
+    }
+    let words = selectedWords.join(" ");
+    setGeneratedWord(words);
+    setWord(words);
+    createBoard(words.split(" "));
+  }
+
+  function createBoard(words: string[]) {
+    let board = [];
+    for (let i = 0; i < words.length; i++) {
+      let currentWord = words[i];
+      let charIdx = [];
+      for (let j = 0; j < currentWord.length; j++) {
+        charIdx.push(currentWord[j]);
+      }
+      if (i !== words.length - 1) {
+        charIdx.push(" ");
+      }
+      board[i] = charIdx;
+    }
+    setBoard(board);
+  }
+
+  async function resetTypeBoard() {
+    // board
+    setGameOver(false);
+    setStartGame(false);
+    setWord(generatedWord);
+    setDisableBackspaceIdx(null);
+    setCountdown(toggleDuration);
+    if (typingContainerElement) {
+      typingContainerElement.style.marginTop = `0px`;
+      setTextHeight(initialHeight);
+    }
+
+    // stats
+
+    setInput("");
+    setTime(toggleDuration);
+    setTimeElapsed(null);
+    setWordCount(0);
+    // setDisableGame(true);
+    // await sleep(1000);
+    // setDisableGame(false);
+    inputRef.current.focus();
+  }
+
+  function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   function handleWpmConversion() {
     if (generatedWord == null) return;
     let correctLettersCount = 0;
@@ -42,9 +105,9 @@ const useGameLogic = ({
     const wordsTyped = correctLettersCount / 5;
     const wpm = (wordsTyped * 60) / timer;
     const raw = ((input.length / 5) * 60) / timer;
-
-    setCorrectLetterCount(correctLettersCount);
-
+    let SECONDS =
+      toggleMode == "words" ? parseFloat(timer.toFixed(2)) : toggleDuration;
+    console.log("mode", toggleMode);
     return {
       user: user?.username || "Guest",
       words: toggleTotalWords,
@@ -52,10 +115,48 @@ const useGameLogic = ({
       language,
       wpm: parseFloat(wpm.toFixed(2)),
       raw: parseFloat(raw.toFixed(2)),
-      seconds: parseFloat(timer.toFixed(2)),
+      seconds: SECONDS,
       correctLettersCount,
     };
   }
-  return { handleWpmConversion };
+
+  useEffect(() => {
+    fetchSentences();
+  }, [toggleMode, toggleTotalWords, toggleDuration]);
+
+  return {
+    generatedWord,
+    word,
+    disableGame,
+    board,
+    startGame,
+    gameOver,
+    input,
+    time,
+    timeElapsed,
+    wordCount,
+    afkTimer,
+    afk,
+    disableBackspaceIdx,
+    inputRef,
+    extraInputs,
+    countdown,
+    setCountdown,
+    handleWpmConversion,
+    resetTypeBoard,
+    setGameOver,
+    setWordCount,
+    setStartGame,
+    setTimeElapsed,
+    setTime,
+    setInput,
+    sleep,
+    setDisableGame,
+    fetchSentences,
+    setDisableBackspaceIdx,
+    setAfk,
+    setAfkTimer,
+    setExtraInputs,
+  };
 };
 export default useGameLogic;

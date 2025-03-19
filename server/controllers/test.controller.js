@@ -7,7 +7,7 @@ const saveTest = async (req, res) => {
   try {
     const { user, seconds, words, wpm, raw, language, mode } = req.body;
 
-    if (!user || !seconds || !words || !wpm || !raw || !language || mode) {
+    if (!user || !seconds || !words || !wpm || !raw || !language || !mode) {
       return req.status(401).json(req.message, "Missing required fields");
     }
 
