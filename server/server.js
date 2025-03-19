@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import testRoute from "./routes/testRoute.js";
 import userRoute from "./routes/userRoute.js";
+import leaderboardRoute from "./routes/leaderboardRoute.js";
 import cookieParser from "cookie-parser";
 import cron from "node-cron";
 dotenv.config();
@@ -43,6 +44,7 @@ task.start();
 
 app.use("/api/user", userRoute);
 app.use("/api/tests", testRoute);
+app.use("/api/leaderboard", leaderboardRoute);
 
 const PORT = 2222;
 // const PORT = process.env.PORT || 2222;

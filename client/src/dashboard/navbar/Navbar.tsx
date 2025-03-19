@@ -13,9 +13,8 @@ import { useAuthContext } from "../../AuthProvider";
 import { FaTrophy } from "react-icons/fa";
 import { logout } from "../../api/auth";
 const Navbar = () => {
-  const { setSession, setToken, session } = useAuthContext() as any;
+  const { setSession, setToken, user } = useAuthContext() as any;
   const navigate = useNavigate();
-
   const preferenceTheme = () => {
     const preference = localStorage.getItem("theme");
     if (preference) return preference === "dark";
@@ -23,6 +22,7 @@ const Navbar = () => {
   };
   const [toggleDarkMode, setToggleDarkMode] = useState(preferenceTheme());
   const [hoverProfile, setHoverProfile] = useState(false);
+
   useEffect(() => {
     if (toggleDarkMode) {
       document.body.classList.add("dark");
@@ -64,7 +64,7 @@ const Navbar = () => {
           {toggleDarkMode ? <IoSunnyOutline /> : <MdDarkMode />}
         </button>
 
-        {session ? (
+        {user ? (
           <div
             onMouseEnter={() => setHoverProfile(true)}
             className={`${styles.profileActionsContainer}`}
@@ -79,10 +79,14 @@ const Navbar = () => {
                   className={styles.profileActions}
                   onMouseLeave={() => setHoverProfile(false)}
                 >
-                  <button onClick={() => logoutHandler()}>logout</button>
-                  <span>something</span>
-                  <span>something</span>
-                  <span>something</span>
+                  <Link to={`/profile/${user.username}`}>profile</Link>
+                  <Link to="/settings">settings</Link>
+                  <button
+                    onClick={() => logoutHandler()}
+                    className={styles.logoutBtn}
+                  >
+                    logout
+                  </button>
                 </div>
               </div>
             )}

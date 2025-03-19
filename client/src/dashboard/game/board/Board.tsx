@@ -33,6 +33,7 @@ const Board = ({
   textHeight,
   setValidLetter,
   disableGame,
+  resetTypeBoard,
 }: any) => {
   const [keydownTime, setKeydownTime] = useState(0);
   const cursorRef = useRef(null);
@@ -43,7 +44,7 @@ const Board = ({
     let input = e.target.value;
 
     if (input.length == 1) {
-      setToggleTypeCursor(true);
+      // setToggleTypeCursor(true);
       setStartGame(true);
       setTime(Date.now());
       setAfkTimer(Date.now());
@@ -83,9 +84,8 @@ const Board = ({
     const letter =
       document.getElementById(`letter${input.length}`)?.getBoundingClientRect()
         .bottom || 0;
-    // when next line is add, set current text == current view
-    console.log("text height", textHeight);
-    if (textHeight > 440 && Math.floor(letter) > 400) {
+
+    if (textHeight > 450 && Math.floor(letter) > 400) {
       const style = window.getComputedStyle(typingContainerElement);
       const marginVal = parseFloat(style.getPropertyValue("margin-top"));
       typingContainerElement.style.marginTop = `${marginVal - 45}px`;
@@ -104,7 +104,7 @@ const Board = ({
   };
 
   useEffect(() => {
-    // needs to run to configure stats
+    // tracks test time completion
     if (startGame) {
       const intervalId = setInterval(() => {
         const currentTime = Date.now();
@@ -112,6 +112,9 @@ const Board = ({
         setTimeElapsed(elapsedTime);
 
         // track line position
+        if (elapsedTime >= toggleDuration && toggleMode == "time") {
+          clearInterval(intervalId);
+        }
       }, 1000);
       return () => clearInterval(intervalId);
     }
@@ -142,10 +145,10 @@ const Board = ({
   }, [startGame]);
 
   useEffect(() => {
-    if (timeElapsed - keydownTime >= 15 && startGame && !toggleTypeCursor) {
+    if (timeElapsed - keydownTime >= 60 && startGame && !toggleTypeCursor) {
       // record the afk time, show afk warning if user also leaves page?
-      // setAfk(true);
-      // resetTypeBoard();
+      setAfk(true);
+      resetTypeBoard();
     }
   }, [timeElapsed, time]);
 
@@ -171,9 +174,9 @@ const Board = ({
           onChange={(e) => onHandleInputChange(e)}
           onFocus={() => setToggleTypeCursor(true)}
           onMouseEnter={() => setToggleTypeCursor(true)}
-          onBlur={async () => {
-            setToggleTypeCursor(false);
-          }}
+          // onBlur={async () => {
+          //   setToggleTypeCursor(false);
+          // }}
           className={`${styles.typeInput}`}
           onKeyDown={(e) => {
             if (e.code == "ArrowRight" || e.code == "ArrowLeft") {

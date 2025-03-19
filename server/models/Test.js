@@ -8,6 +8,7 @@ const TestSchema = new mongoose.Schema({
     required: true,
   },
   seconds: { type: Number, required: true }, // Duration of the test
+  mode: { type: String, required: true }, // Mode
   words: { type: Number, required: true }, // Total words typed
   wpm: { type: Number, required: true }, // Words per minute
   raw: { type: Number, required: true }, // Raw speed (before errors)

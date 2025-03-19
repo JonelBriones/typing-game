@@ -3,7 +3,7 @@ import styles from "./Login.module.scss";
 import { useAuthContext } from "../../AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { IoLogInOutline } from "react-icons/io5";
-// import { FaGoogle } from "react-icons/fa";
+// import { FaGoogle } from "react-icons/fa";∂
 import { login } from "../../api/auth.ts";
 
 const Login = ({ setError }: any) => {

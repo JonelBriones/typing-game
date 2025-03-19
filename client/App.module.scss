@@ -11,16 +11,46 @@
 @media (min-width: 576px) {
   .app {
     // width: 70%;
-    padding-inline: 24px;
+    width: 90%;
   }
 }
 @media (min-width: 1440px) {
   // desktops
   .app {
     // border: 2px solid purple;
-    max-width: 1440px;
+    // max-width: 1440px;
   }
 }
 .content {
   height: 100%;
+}
+
+/* Extra Small Devices (Phones) */
+@media (min-width: 320px) {
+  /* Smallest phones */
+}
+
+/* Small Devices (Phones) */
+@media (min-width: 480px) {
+  /* Larger phones */
+}
+
+/* Medium Devices (Tablets) */
+@media (min-width: 768px) {
+  /* Tablets & small laptops */
+}
+
+/* Large Devices (Laptops & Desktops) */
+@media (min-width: 1024px) {
+  /* Laptops */
+}
+
+/* Extra Large Devices (Large Desktops) */
+@media (min-width: 1200px) {
+  /* Big screens */
+}
+
+/* Ultra Wide Screens */
+@media (min-width: 1600px) {
+  /* Ultra-wide monitors */
 }

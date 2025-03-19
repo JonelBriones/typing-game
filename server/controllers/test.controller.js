@@ -5,9 +5,9 @@ import { sort } from "./hooks.controller.js";
 
 const saveTest = async (req, res) => {
   try {
-    const { user, seconds, words, wpm, raw, language } = req.body;
+    const { user, seconds, words, wpm, raw, language, mode } = req.body;
 
-    if (!user || !seconds || !words || !wpm || !raw || !language) {
+    if (!user || !seconds || !words || !wpm || !raw || !language || !mode) {
       return req.status(401).json(req.message, "Missing required fields");
     }
 
@@ -18,6 +18,7 @@ const saveTest = async (req, res) => {
       wpm,
       raw,
       language,
+      mode,
     });
 
     const result = await newTest.save();
@@ -44,6 +45,7 @@ const getTests = async (req, res) => {
       .json({ message: "Could not retrieve tests", error: error.message });
   }
 };
+
 const getLeaderboard = async (req, res) => {
   console.log("getting leaderboard in controllers");
   try {
